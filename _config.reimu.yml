@@ -110,3 +110,11 @@ giscus:
 
 # Google Analytics
 google_analytics: false
+
+# 自定义鼠标指针（伊蕾娜主题）
+reimu_cursor:
+  enable: true
+  cursor:
+    default: ../images/cursor/elaina-cursor-default.png
+    pointer: ../images/cursor/elaina-cursor-pointer.png
+    text: ../images/cursor/elaina-cursor-text.png
