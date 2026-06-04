@@ -33,14 +33,14 @@ subtitle:
     showCursor: true
     cursorChar: "|"
 
-# 横幅图片 (可以自己替换)
-banner: "https://picsum.photos/1200/600?random=1"
+# 横幅图片（伊蕾娜）
+banner: "/images/banner.webp"
 
-# 头像
-avatar: "https://picsum.photos/200/200?random=2"
+# 头像（伊蕾娜）
+avatar: "/images/avatar.webp"
 
-# 站点图标
-favicon: "https://www.google.com/s2/favicons?domain=github.com&sz=64"
+# 站点图标（伊蕾娜）
+favicon: "/images/avatar.webp"
 
 # 侧边栏
 sidebar:
