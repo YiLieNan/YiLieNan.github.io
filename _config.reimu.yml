@@ -34,13 +34,13 @@ subtitle:
     cursorChar: "|"
 
 # 横幅图片（伊蕾娜）
-banner: "/images/banner.webp"
+banner: "/images/elaina-banner.webp"
 
 # 头像（伊蕾娜）
-avatar: "/images/avatar.webp"
+avatar: "/images/elaina-avatar.webp"
 
 # 站点图标（伊蕾娜）
-favicon: "/images/avatar.webp"
+favicon: "/images/elaina-avatar.webp"
 
 # 侧边栏
 sidebar:
