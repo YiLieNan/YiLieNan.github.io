@@ -65,7 +65,7 @@ date: 2026-06-04 23:00:00
 // ── 密码验证 ──
 // 密码用 SHA-256 哈希后对比，不会存明文
 // 设置方法：打开浏览器控制台，输入 btoa(sha256('你的密码'))，把结果贴到下面
-var PWD_HASH = btoa(sha256('elaina123'));
+var PWD_HASH = '+OXCNEBvOo+ddQDoezfK9NJaTTwmU3eGulsXpPJpoHo=';
 
 function checkPwd() {
   var input = document.getElementById('admin-pwd').value;
