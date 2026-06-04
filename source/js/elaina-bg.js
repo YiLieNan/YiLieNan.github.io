@@ -19,7 +19,7 @@
     bgDiv.id = 'elaina-bg';
     bgDiv.style.cssText =
       'position:fixed;top:0;left:0;width:100%;height:100%;' +
-      'z-index:-1;transition:opacity ' + fade + 'ms ease;' +
+      'z-index:-1;pointer-events:none;transition:opacity ' + fade + 'ms ease;' +
       'background:url(' + bgList[0] + ') center/cover no-repeat';
 
     // 把背景插入到 body 最前面
