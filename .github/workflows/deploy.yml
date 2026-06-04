@@ -25,6 +25,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx hexo generate
+      - run: touch ./public/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
