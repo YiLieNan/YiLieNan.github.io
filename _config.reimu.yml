@@ -36,8 +36,8 @@ subtitle:
     showCursor: true
     cursorChar: "|"
 
-# 横幅图片（伊蕾娜）
-banner: "/images/elaina-banner.webp"
+# 横幅图片（背景切换覆盖，此项无效）
+banner: ""
 
 # 头像（伊蕾娜）
 avatar: "elaina-avatar.webp"
