@@ -31,6 +31,13 @@ code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
 
+# RSS Feed
+feed:
+  enable: true
+  type: atom
+  path: atom.xml
+  limit: 20
+
 # Writing
 new_post_name: :title.md
 default_layout: post
@@ -93,12 +100,6 @@ generator_search:
   enable: true
   field: post
   content: true
-
-# RSS
-feed:
-  type: atom
-  path: atom.xml
-  limit: 20
 
 # Deployment - 后面再配置
 deploy:
