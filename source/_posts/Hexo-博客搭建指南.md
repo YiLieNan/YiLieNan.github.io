@@ -3,7 +3,7 @@ title: Hexo 博客搭建指南
 date: 2026-06-04 17:30:00
 tags: [Hexo, 教程]
 categories: 技术
-cover: /images/covers/cover-4.webp
+cover: /images/covers/cover-3.webp
 ---
 
 ## 前言
