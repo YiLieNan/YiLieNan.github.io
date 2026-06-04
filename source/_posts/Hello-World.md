@@ -3,7 +3,7 @@ title: Hello World
 date: 2026-06-04 17:20:00
 tags: [杂谈]
 categories: 随笔
-cover: /images/backgrounds/bg-2.webp
+cover: /images/covers/cover-2.webp
 ---
 
 欢迎来到我的博客！
