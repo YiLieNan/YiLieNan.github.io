@@ -34,7 +34,7 @@ subtitle:
     cursorChar: "|"
 
 # 头图（背景切换覆盖，用背景图做头图）
-banner: "/images/backgrounds/bg-1.webp"
+banner: "/images/elaina-banner.webp"
 
 # 头像（伊蕾娜）
 avatar: "elaina-avatar.webp"
