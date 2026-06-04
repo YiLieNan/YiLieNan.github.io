@@ -115,6 +115,6 @@ google_analytics: false
 reimu_cursor:
   enable: true
   cursor:
-    default: ../images/cursor/elaina-cursor-default.png
-    pointer: ../images/cursor/elaina-cursor-pointer.png
-    text: ../images/cursor/elaina-cursor-text.png
+    default: ../images/cursor/elaina-default.ani
+    pointer: ../images/cursor/elaina-pointer.ani
+    text: ../images/cursor/elaina-text.ani
