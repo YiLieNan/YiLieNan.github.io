@@ -1,0 +1,112 @@
+# ========================================
+# Reimu 主题配置
+# ========================================
+
+# 菜单导航
+menu:
+  - name: home
+    url: /
+    icon: f015
+  - name: archives
+    url: /archives
+    icon: f187
+  - name: about
+    url: /about
+    icon: f007
+  - name: friend
+    url: /friend
+    icon: f2b5
+
+# 打字机副标题
+subtitle:
+  typing:
+    enable: true
+    strings:
+      - 记录学习，分享生活
+      - 一个技术宅的小窝
+      - (∠・ω< )⌒☆
+    typeSpeed: 100
+    backSpeed: 50
+    backDelay: 2000
+    startDelay: 300
+    loop: true
+    showCursor: true
+    cursorChar: "|"
+
+# 横幅图片 (可以自己替换)
+banner: "https://picsum.photos/1200/600?random=1"
+
+# 头像
+avatar: "https://picsum.photos/200/200?random=2"
+
+# 站点图标
+favicon: "https://www.google.com/s2/favicons?domain=github.com&sz=64"
+
+# 侧边栏
+sidebar:
+  position: right
+  menu: true
+  article:
+    show_common: true
+
+# 小部件
+widgets:
+  - category
+  - tag
+  - archive
+  - recent_posts
+
+# 社交链接
+social:
+  github: https://github.com/YiLieNan
+  # bilibili: https://space.bilibili.com/你的UID
+  # email: mailto:xxx@gmail.com
+  # zhihu: https://www.zhihu.com/people/你的用户名
+
+# 页脚
+footer:
+  since: 2026
+  powered: true
+  count: true
+  busuanzi: true
+
+# 目录
+toc: true
+toc_options:
+  list_number: true
+  min_depth: 1
+  max_depth: 6
+
+# 暗色模式 (自动跟随系统)
+dark_mode:
+  enable: auto
+
+# 代码块默认展开
+code_block:
+  expand: true
+
+# 文章摘要
+summary:
+  enable: true
+  style: subtitle
+
+# 评论系统 (先用 giscus, 基于 GitHub Discussion)
+# 不需要服务器, 有 GitHub 即可
+comment:
+  title:
+    zh-CN: 说些什么吧！
+  default: giscus
+
+giscus:
+  enable: false  # 后面可以开启，需要配置 repo
+  repo: 你的用户名/你的用户名.github.io
+  repoId: ''
+  category: Announcements
+  categoryId: ''
+  mapping: pathname
+  strict: 0
+  reactionsEnabled: 1
+  inputPosition: bottom
+
+# Google Analytics
+google_analytics: false
