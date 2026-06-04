@@ -33,8 +33,8 @@ subtitle:
     showCursor: true
     cursorChar: "|"
 
-# 横幅图片（背景切换覆盖，此项无效）
-banner: ""
+# 头图（背景切换覆盖，用背景图做头图）
+banner: "/images/backgrounds/bg-1.webp"
 
 # 头像（伊蕾娜）
 avatar: "elaina-avatar.webp"
