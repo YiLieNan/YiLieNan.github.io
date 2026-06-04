@@ -16,9 +16,6 @@ menu:
   - name: friend
     url: /friend
     icon: f2b5
-  - name: circuit
-    url: /circuit-tool
-    icon: f0e7
 
 # 打字机副标题
 subtitle:
