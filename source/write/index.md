@@ -60,16 +60,26 @@ date: 2026-06-04 23:00:00
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
 <script>
-// ── 密码验证 ──
-// 密码用 SHA-256 哈希后对比，不会存明文
-// 设置方法：打开浏览器控制台，输入 btoa(sha256('你的密码'))，把结果贴到下面
-var PWD_HASH = 'ZjhlNWMyMzQ0MDZmM2E4ZjlkNzUwMGU4N2IzN2NhZjRkMjVhNGQzYzI2NTM3Nzg2YmE1YjE3YTRmMjY5YTA3YQ==';
+// ── 密码验证（使用浏览器内置 Crypto API，无需外部库）──
+// 密码哈希（SHA-256 后 Base64 编码）
+var PWD_HASH = '+OXCNEBvOo+ddQDoezfK9NJaTTwmU3eGulsXpPJpoHo=';
 
-function checkPwd() {
+async function sha256Base64(str) {
+  var encoder = new TextEncoder();
+  var data = encoder.encode(str);
+  var hash = await crypto.subtle.digest('SHA-256', data);
+  var bytes = new Uint8Array(hash);
+  var binary = '';
+  for (var i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+async function checkPwd() {
   var input = document.getElementById('admin-pwd').value;
-  var hash = btoa(sha256(input));
+  var hash = await sha256Base64(input);
   if (hash === PWD_HASH) {
     document.getElementById('admin-login').style.display = 'none';
     document.getElementById('admin-editor').style.display = 'block';
