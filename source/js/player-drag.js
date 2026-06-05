@@ -1,75 +1,106 @@
 /**
- * APlayer 拖拽 — 让固定播放器可自由拖动
+ * APlayer 浮动播放器 — 左上角 + 圆角 + 可拖动
+ * 在 MetingJS 渲染完成后接管样式和拖拽
  */
 (function() {
   'use strict';
 
-  let player = null;        // APlayer 实例
-  let body = null;          // .aplayer-body 元素
-  let isDragging = false;
-  let startX, startY, origX, origY;
+  var container = null;     // .aplayer-fixed 容器
+  var body = null;          // .aplayer-body 拖拽手柄
+  var isDragging = false;
+  var startX, startY, origX, origY;
 
-  // ========== 拖拽逻辑 ==========
+  // ========== 初始定位和样式 ==========
+  function applyStyle() {
+    if (!container) return;
+    container.style.top = '20px';
+    container.style.left = '20px';
+    container.style.bottom = 'auto';
+    container.style.right = 'auto';
+    container.style.zIndex = '99999';
+    container.style.boxShadow = '0 8px 32px rgba(0,0,0,0.35)';
+
+    var apBody = container.querySelector('.aplayer-body');
+    if (apBody) {
+      apBody.style.borderRadius = '16px';
+      apBody.style.overflow = 'hidden';
+      apBody.style.cursor = 'grab';
+      apBody.style.userSelect = 'none';
+    }
+
+    var sw = container.querySelector('.aplayer-miniswitcher');
+    if (sw) {
+      sw.style.borderRadius = '10px';
+      sw.style.overflow = 'hidden';
+    }
+  }
+
+  // ========== 拖拽 ==========
   function onDown(e) {
-    // 点在按钮/控制条上不拖拽
-    if (e.target.closest('.aplayer-info') || e.target.closest('.aplayer-miniswitcher')) return;
+    if (e.target.closest('.aplayer-info')) return;
+    if (e.target.closest('.aplayer-miniswitcher')) return;
     e.preventDefault();
-    const ev = e.touches ? e.touches[0] : e;
+    var ev = e.touches ? e.touches[0] : e;
     isDragging = true;
     startX = ev.clientX;
     startY = ev.clientY;
-    const rect = player.container.getBoundingClientRect();
-    origX = rect.left;
-    origY = rect.top;
-    player.container.style.transition = 'none';
-    player.container.style.cursor = 'grabbing';
-    // 禁用 APlayer 内部迷你切换器的点击，防止误触
-    const sw = player.container.querySelector('.aplayer-miniswitcher');
+    origX = container.offsetLeft;
+    origY = container.offsetTop;
+    container.style.transition = 'none';
+    if (body) body.style.cursor = 'grabbing';
+    var sw = container.querySelector('.aplayer-miniswitcher');
     if (sw) sw.style.pointerEvents = 'none';
   }
 
   function onMove(e) {
     if (!isDragging) return;
     e.preventDefault();
-    const ev = e.touches ? e.touches[0] : e;
-    const dx = ev.clientX - startX;
-    const dy = ev.clientY - startY;
-    player.container.style.left = (origX + dx) + 'px';
-    player.container.style.top = (origY + dy) + 'px';
+    var ev = e.touches ? e.touches[0] : e;
+    container.style.left = (origX + ev.clientX - startX) + 'px';
+    container.style.top = (origY + ev.clientY - startY) + 'px';
   }
 
   function onUp() {
     if (!isDragging) return;
     isDragging = false;
-    player.container.style.transition = '';
-    player.container.style.cursor = '';
-    const sw = player.container.querySelector('.aplayer-miniswitcher');
+    container.style.transition = '';
+    if (body) body.style.cursor = 'grab';
+    var sw = container.querySelector('.aplayer-miniswitcher');
     if (sw) sw.style.pointerEvents = '';
   }
 
-  // ========== 等待 APlayer 初始化完成 ==========
-  function tryBind() {
-    // 等 meting-js 渲染完成
-    const container = document.getElementById('aplayer') || document.querySelector('.aplayer-fixed');
-    if (!container || !container.querySelector('.aplayer-body')) {
-      return setTimeout(tryBind, 300);
-    }
-    player = { container };
-    body = container.querySelector('.aplayer-body');
-
-    // 挂载事件
+  // ========== 挂载事件 ==========
+  function bindDrag() {
+    if (!body) return;
     body.addEventListener('mousedown', onDown);
+    body.addEventListener('touchstart', onDown, { passive: false });
+    // document 级别保证拖出元素也能捕捉
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onUp);
-    body.addEventListener('touchstart', onDown, { passive: false });
     document.addEventListener('touchmove', onMove, { passive: false });
     document.addEventListener('touchend', onUp);
   }
 
+  // ========== 等待 APlayer 渲染 ==========
+  function waitForPlayer() {
+    container = document.getElementById('aplayer') || document.querySelector('.aplayer-fixed');
+    if (!container || !container.querySelector('.aplayer-body') || !container.querySelector('.aplayer-info')) {
+      return setTimeout(waitForPlayer, 200);
+    }
+    body = container.querySelector('.aplayer-body');
+    applyStyle();
+    bindDrag();
+  }
+
+  // Pjax 导航后重新绑定
+  document.addEventListener('pjax:complete', function() {
+    setTimeout(waitForPlayer, 300);
+  });
+
   // 启动
-  if (document.readyState === 'complete') {
-    tryBind();
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    waitForPlayer();
   } else {
-    window.addEventListener('load', tryBind);
+    document.addEventListener('DOMContentLoaded', waitForPlayer);
   }
 })();

@@ -133,10 +133,9 @@ player:
       server: netease
       type: playlist
 
-# 自定义播放器样式和拖拽（覆盖默认 APlayer 定位）
+# 自定义播放器样式和拖拽（JS 接管定位和拖拽）
 injector:
   body_end:
-    - <link rel="stylesheet" href="/css/music-player.css">
     - <script src="/js/player-drag.js"></script>
 
 # Google Analytics
