@@ -1,0 +1,193 @@
+/* 可拖动音乐播放器 - 伊蕾娜风格 */
+.elaina-player {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 99999;
+  width: 320px;
+  background: rgba(30, 30, 40, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #fff;
+  user-select: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  cursor: grab;
+  overflow: hidden;
+}
+.elaina-player:active { cursor: grabbing; }
+.elaina-player.minimized {
+  width: auto;
+  min-width: 0;
+}
+
+/* 拖动条区域 */
+.elaina-player .ep-header {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  gap: 10px;
+  cursor: grab;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.elaina-player .ep-header:active { cursor: grabbing; }
+
+/* 封面 */
+.elaina-player .ep-cover {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* 歌曲信息 */
+.elaina-player .ep-info {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.3;
+}
+.elaina-player .ep-info .ep-name {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.elaina-player .ep-info .ep-artist {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 控制按钮 */
+.elaina-player .ep-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.elaina-player .ep-ctrl button {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 16px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+.elaina-player .ep-ctrl button:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.elaina-player .ep-ctrl button.ep-play-btn {
+  font-size: 18px;
+  width: 34px;
+  height: 34px;
+  background: rgba(180, 130, 255, 0.2);
+  color: #c8a8ff;
+}
+.elaina-player .ep-ctrl button.ep-play-btn:hover {
+  background: rgba(180, 130, 255, 0.35);
+}
+.elaina-player .ep-ctrl .ep-toggle-btn {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* 进度条 */
+.elaina-player .ep-progress {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  position: relative;
+}
+.elaina-player .ep-progress .ep-progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #b482ff, #e0b0ff);
+  border-radius: 2px;
+  transition: width 0.3s linear;
+}
+.elaina-player .ep-progress:hover { height: 5px; }
+
+/* 最小化状态 */
+.elaina-player.minimized .ep-header {
+  border-bottom: none;
+  padding: 8px 12px;
+}
+.elaina-player.minimized .ep-cover,
+.elaina-player.minimized .ep-info,
+.elaina-player.minimized .ep-progress,
+.elaina-player.minimized .ep-prev-btn,
+.elaina-player.minimized .ep-next-btn {
+  display: none;
+}
+.elaina-player.minimized .ep-ctrl .ep-toggle-btn {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 加载状态 */
+.elaina-player.loading .ep-cover { opacity: 0.4; }
+.elaina-player.loading .ep-info .ep-name::after {
+  content: '加载歌单...';
+  color: rgba(255, 255, 255, 0.35);
+  font-weight: normal;
+}
+
+/* 歌单展开 */
+.elaina-player .ep-playlist {
+  display: none;
+  max-height: 200px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.elaina-player .ep-playlist.open { display: block; }
+.elaina-player .ep-playlist::-webkit-scrollbar { width: 4px; }
+.elaina-player .ep-playlist::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+.elaina-player .ep-playlist .ep-pl-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 14px;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 12px;
+}
+.elaina-player .ep-playlist .ep-pl-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+.elaina-player .ep-playlist .ep-pl-item.active {
+  background: rgba(180, 130, 255, 0.15);
+  color: #c8a8ff;
+}
+.elaina-player .ep-playlist .ep-pl-item .ep-pl-idx {
+  color: rgba(255,255,255,0.3);
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.elaina-player .ep-playlist .ep-pl-item .ep-pl-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

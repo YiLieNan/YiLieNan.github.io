@@ -114,24 +114,26 @@ player:
   disable_on_mobile: false
   position: before_sidebar
   aplayer:
-    enable: true
+    enable: false
     options:
       audio: []
-      fixed: true
+      fixed: false
       autoplay: false
       loop: all
-      order: list
+      order: random
       preload: auto
       volume: 0.7
       mutex: true
       listFolded: true
       lrcType: 0
   meting:
-    enable: true
-    options:
-      id: 9161327200
-      server: netease
-      type: playlist
+    enable: false
+
+# 自定义播放器（可拖动小窗口）
+injector:
+  body_end:
+    - <link rel="stylesheet" href="/css/music-player.css">
+    - <script src="/js/music-player.js"></script>
 
 # Google Analytics
 google_analytics: false
