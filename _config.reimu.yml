@@ -109,29 +109,17 @@ giscus:
   reactionsEnabled: 1
   inputPosition: bottom
 
-# 音乐播放器 (APlayer + Meting 自动拉取)
+# 音乐播放器 (独立播放器，不依赖主题系统)
 player:
   disable_on_mobile: false
   position: before_sidebar
   aplayer:
-    enable: true
+    enable: false
     options:
       audio: []
-      fixed: true
-      autoplay: false
-      loop: all
-      order: random
-      preload: auto
-      volume: 0.7
-      mutex: true
-      listFolded: true
-      lrcType: 0
+      fixed: false
   meting:
-    enable: true
-    options:
-      id: 6759056661
-      server: netease
-      type: playlist
+    enable: false
 
 # 自定义播放器样式和拖拽（JS 接管定位和拖拽）
 injector:
