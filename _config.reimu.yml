@@ -115,14 +115,126 @@ giscus:
   reactionsEnabled: 1
   inputPosition: bottom
 
-# 背景音乐（网易云歌单）
+# 背景音乐（17首本地MP3）
 player:
   disable_on_mobile: false
   position: before_sidebar
   aplayer:
     enable: true
     options:
-      audio: []
+      audio:
+        - name: "shall we talk."
+          artist: "8bite"
+          url: "/music/8bite_-_shall_we_talk.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "暗恋人类日记"
+          artist: "Bo Peep"
+          url: "/music/Bo_Peep_洛天依Official_-_暗恋人类日记.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "罗曼蒂克"
+          artist: "Kevin罗凯文"
+          url: "/music/Kevin罗凯文_Top_Barry_-_罗曼蒂克.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "I don't wanna see u anymore"
+          artist: "NINEONE#乃万"
+          url: "/music/NINEONE_乃万_-_I_don_t_wanna_see_u_anymore.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "风的颜色"
+          artist: "NINEONE#乃万"
+          url: "/music/NINEONE_乃万_-_风的颜色.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "小星球 feat.洛天依"
+          artist: "QGRay"
+          url: "/music/QGRay_洛天依_-_小星球_feat.洛天依.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "察觉"
+          artist: "TC"
+          url: "/music/TC_-_察觉.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "Perfect Version Of Me"
+          artist: "Vicky宣宣"
+          url: "/music/Vicky宣宣_-_Perfect_Version_Of_Me.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "Iced Americano"
+          artist: "Vincentz"
+          url: "/music/Vincentz_-_Iced_Americano.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "黑怕蒙太奇"
+          artist: "XMASwu(吴骜)"
+          url: "/music/XMASwu_吴骜__-_黑怕蒙太奇.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "异地恋"
+          artist: "ZAVIS"
+          url: "/music/ZAVIS_坤木Joymo_-_异地恋.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "东京不太热"
+          artist: "Z新豪"
+          url: "/music/Z新豪_洛天依Official_-_东京不太热.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "Last Day"
+          artist: "ljz329"
+          url: "/music/ljz329_YuGo_-_Last_Day.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "你的谎"
+          artist: "徐梓淳"
+          url: "/music/徐梓淳_-_你的谎.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "故犯"
+          artist: "暴躁的兔子"
+          url: "/music/暴躁的兔子_-_故犯.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "画皮"
+          artist: "阿YueYue"
+          url: "/music/阿YueYue_-_画皮.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "前所未见"
+          artist: "陈慧琳"
+          url: "/music/陈慧琳_-_前所未见.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "敷衍设定"
+          artist: "刘大拿"
+          url: "/music/刘大拿_刘思达_敷衍设定.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "读自"
+          artist: "刘思鉴"
+          url: "/music/刘思鉴_读自.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "偏偏要"
+          artist: "庄东茹（豆芽鱼）"
+          url: "/music/庄东茹_豆芽鱼__偏偏要.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "April Encounter"
+          artist: "很美味"
+          url: "/music/很美味_阿彻_April_Encounter.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "恋人未满"
+          artist: "杜宣达"
+          url: "/music/杜宣达_恋人未满.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "早点早点"
+          artist: "沙一汀EL"
+          url: "/music/沙一汀EL_早点早点.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "Darling"
+          artist: "空匪"
+          url: "/music/空匪_Darling.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "Violet"
+          artist: "郑润泽"
+          url: "/music/郑润泽_Violet.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "小微光"
+          artist: "郑润泽"
+          url: "/music/郑润泽_小微光.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "Till We Fall in Love"
+          artist: "颜人中"
+          url: "/music/颜人中_Till_We_Fall_in_Love.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "篡改"
+          artist: "颜人中"
+          url: "/music/颜人中_篡改.mp3"
+          cover: "/images/elaina-avatar.webp"
       fixed: true
       autoplay: false
       loop: all
@@ -133,11 +245,7 @@ player:
       listFolded: true
       lrcType: 0
   meting:
-    enable: true
-    options:
-      id: 6759056661
-      server: netease
-      type: playlist
+    enable: false
 
 # 播放器拖拽 + 重定位
 injector:
