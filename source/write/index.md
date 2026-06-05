@@ -287,7 +287,7 @@ body {
 
 var CONFIG = {
   // 密码哈希 — SHA-256("elaina123")
-  pwdHash: '+OXCNEBvOo+ddQDoezfK9NJaTTwmU3eGulsXpPJpoHo=',
+  pwdHash: '2WL45h/6VFXeucWncCHdhaSKvRHw7crqQxuRqUHaEg0=',
   // 仓库信息
   repo: 'YiLieNan/YiLieNan.github.io',
   branch: 'main',
