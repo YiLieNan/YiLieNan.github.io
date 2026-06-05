@@ -115,14 +115,22 @@ giscus:
   reactionsEnabled: 1
   inputPosition: bottom
 
-# 背景音乐（右下角浮动播放器）
+# 背景音乐（本地 MP3）
 player:
   disable_on_mobile: false
   position: before_sidebar
   aplayer:
     enable: true
     options:
-      audio: []
+      audio:
+        - name: "Where Did U Go"
+          artist: "G.E.M.邓紫棋"
+          url: "/music/where-did-u-go.mp3"
+          cover: "/images/elaina-avatar.webp"
+        - name: "公路商店"
+          artist: "沧桑Cang333,Vital马睿骋"
+          url: "/music/road-shop.mp3"
+          cover: "/images/elaina-avatar.webp"
       fixed: true
       autoplay: false
       loop: all
@@ -133,11 +141,7 @@ player:
       listFolded: true
       lrcType: 0
   meting:
-    enable: true
-    options:
-      id: 6759056661
-      server: netease
-      type: playlist
+    enable: false
 
 # 播放器拖拽 + 重定位
 injector:
