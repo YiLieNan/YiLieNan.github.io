@@ -133,7 +133,10 @@ body{
       <div class="code" id="room-code-text">0000</div>
       <div class="hint">等待对方加入中...</div>
     </div>
-    <div style="margin-top:16px"><button class="btn btn-back btn-sm" onclick="backMenu()">← 返回</button></div>
+    <div style="margin-top:16px">
+      <button class="btn btn-back btn-sm" onclick="document.getElementById('settings-modal').classList.add('active');initSettings()">⚙️ 设置</button>
+      <button class="btn btn-back btn-sm" onclick="backMenu()" style="margin-left:8px">← 返回</button>
+    </div>
     <div id="room-status"></div>
   </div>
 
@@ -151,6 +154,23 @@ body{
         <button class="btn btn-sm btn-back" onclick="doLeave()">🚪 退出</button>
         <button class="btn btn-sm btn-back" onclick="resetGame()">🔄 新局</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal-box" style="max-width:480px">
+    <h3>⚙️ 设置</h3>
+    <div style="margin:16px 0">
+      <label style="color:#aaa;font-size:13px;display:block;margin-bottom:6px">WebSocket 服务器地址</label>
+      <input type="text" id="settings-ws-url" style="width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.06);color:#fff;font-size:14px;outline:none;font-family:monospace" placeholder="wss://your-server.com">
+      <div style="font-size:12px;color:#666;margin-top:6px">部署服务器后填入地址。不填则默认使用公共服务器。</div>
+    </div>
+    <div class="btn-row">
+      <span id="settings-status" style="font-size:13px;color:#2ecc71;flex:1"></span>
+      <button class="btn btn-back btn-sm" onclick="closeModal('settings-modal')">关闭</button>
+      <button class="btn btn-primary btn-sm" onclick="saveSettings()">保存</button>
     </div>
   </div>
 </div>
@@ -534,124 +554,134 @@ function closeGameOver(){
 // ── 模式 ──
 function startLocal(){mode='local';document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');document.getElementById('room-bar').classList.add('hidden');resetGame()}
 function backMenu(){
-  if(pollTimer){clearInterval(pollTimer);pollTimer=null}
+  if(ws){ws.close();ws=null}
   document.getElementById('mode-select').classList.remove('hidden');document.getElementById('room-panel').classList.add('hidden');
   document.getElementById('game-area').classList.add('hidden');document.getElementById('room-created-box').classList.add('hidden');
   document.getElementById('room-status').textContent='';mode='local';
 }
 function showRoom(){document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.remove('hidden')}
 
-// ── 联网 (Gist 中继，双方都需要 Token 但只需配置一次) ──
-let pollTimer = null;
-let lastMoveTime = 0;
-let gistId = null;
-let isCreator = false;
+// ── 联网 (WebSocket 中继，零配置) ──
+// 需要部署服务器到 Render，部署后所有人都能直接连
+// 部署指南：https://render.com/deploy?repo=你的仓库地址
+let ws = null;
+let wsTimer = null;
 
-function getToken(){try{return localStorage.getItem('gh_token')||''}catch(e){return ''}}
-
-function createRoom(){
-  const tk=getToken();
-  if(!tk){st('❌ 先去⚙️设置页配置 GitHub Token','error');return}
-  st('⏳ 创建房间...','connecting');
-  fetch('https://api.github.com/gists',{
-    method:'POST',headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},
-    body:JSON.stringify({description:'象棋房间',public:true,
-      files:{'state.json':{content:JSON.stringify({state:'waiting',moves:[],lastMove:0})}}})
-  }).then(r=>r.json()).then(d=>{
-    if(!d.id){st('❌ '+(d.message||'创建失败'),'error');return}
-    gistId=d.id;
-    roomCode=d.id.slice(-4).toUpperCase();
-    document.getElementById('room-code-text').textContent=roomCode;
-    document.getElementById('room-created-box').classList.remove('hidden');
-    st('✅ 房间已创建，等待对方...','connected');
-    isCreator=true;
-    // 开始轮询
-    pollGame(tk);
-  }).catch(()=>st('❌ 网络错误','error'));
-}
-
-function joinRoom(){
-  const code=document.getElementById('room-code-input').value.trim().toUpperCase();
-  if(!code||code.length!==4){st('⚠️ 输入4位房间号','error');return}
-  const tk=getToken();
-  if(!tk){st('❌ 先去⚙️设置页配置 GitHub Token','error');return}
-  st('⏳ 查找房间...','connecting');
-  // 列自己的 gist 找匹配
-  fetch('https://api.github.com/gists?per_page=50',{headers:{'Authorization':'Bearer '+tk}})
-  .then(r=>r.json()).then(list=>{
-    const g=list.find(x=>x.id.slice(-4).toUpperCase()===code&&x.files&&x.files['state.json']);
-    if(!g){st('❌ 房间不存在','error');return}
-    gistId=g.id;
-    // 读取并加入
-    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+tk}})
-    .then(r=>r.json()).then(gist=>{
-      const s=JSON.parse(gist.files['state.json'].content);
-      if(s.state!=='waiting'){st('❌ 房间已满','error');return}
-      s.state='playing';s.joiner=Date.now();
-      fetch('https://api.github.com/gists/'+gistId,{
-        method:'PATCH',headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},
-        body:JSON.stringify({files:{'state.json':{content:JSON.stringify(s)}}})
-      }).then(r=>r.json()).then(()=>{myColor=BLACK;startOnline(tk)})
-      .catch(()=>st('❌ 加入失败','error'));
-    });
-  }).catch(()=>st('❌ 读取失败','error'));
-}
-
-function pollGame(tk){
-  if(pollTimer)clearInterval(pollTimer);
-  pollTimer=setInterval(()=>{
-    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+tk}})
-    .then(r=>r.json()).then(g=>{
-      if(!g.files||!g.files['state.json'])return;
-      const s=JSON.parse(g.files['state.json'].content);
-      // 检测对方加入
-      if(s.state==='playing'&&!mode.started){
-        mode.started=true;
-        if(isCreator)startOnline(tk);
+function connectWS(action){
+  if(ws){ws.close();ws=null}
+  const url = getServerUrl();
+  if(!url){st('⚠️ 未配置服务器地址，请在⚙️设置页配置','error');return}
+  try{
+    ws=new WebSocket(url);
+    wsTimer=setTimeout(()=>{
+      if(ws&&ws.readyState!==1){st('⏰ 服务器连接超时','error');ws.close();}
+    },8000);
+    ws.onopen=()=>{
+      clearTimeout(wsTimer);
+      if(action==='create'){
+        ws.send(JSON.stringify({type:'create'}));
+        st('⏳ 创建房间中...','connecting');
+      }else{
+        const code=document.getElementById('room-code-input').value.trim();
+        if(!code||code.length!==4){st('⚠️ 输入4位房间号','error');return}
+        ws.send(JSON.stringify({type:'join',room:code}));
+        st('⏳ 加入中...','connecting');
       }
-      // 检测对方走棋
-      if(s.lastMove&&s.lastMove!==lastMoveTime){
-        const nm=s.moves.filter(m=>m.time>lastMoveTime);
-        lastMoveTime=s.lastMove;
-        for(const mv of nm){
-          if(mv.by!==myColor&&mv.type==='move')doRemoteMove(mv.from.row,mv.from.col,mv.to.row,mv.to.col);
-          else if(mv.type==='gameover'){gameOver=true;document.getElementById('turn-indicator').className='over';document.getElementById('turn-indicator').textContent='🏆 '+mv.winner+'胜！';msg('🏆 '+mv.winner+'获胜！');draw();}
+      wsTimer=setTimeout(()=>{
+        st('⏰ 操作超时，服务器无响应','error');
+        if(ws)ws.close();
+      },15000);
+    };
+    ws.onmessage=(e)=>{
+      try{
+        const msg=JSON.parse(e.data);
+        clearTimeout(wsTimer);
+        switch(msg.type){
+          case 'created':
+            roomCode=msg.room;
+            document.getElementById('room-code-text').textContent=roomCode;
+            document.getElementById('room-created-box').classList.remove('hidden');
+            document.getElementById('room-panel').classList.add('hidden');
+            myColor=RED;startOnline();break;
+          case 'joined':
+            myColor=BLACK;startOnline();break;
+          case 'start':
+            // 双方就绪，已经在 startOnline 里了
+            break;
+          case 'move':
+            doRemoteMove(msg.from.row,msg.from.col,msg.to.row,msg.to.col);break;
+          case 'gameover':
+            gameOver=true;
+            document.getElementById('turn-indicator').className='over';
+            document.getElementById('turn-indicator').textContent='🏆 '+msg.winner+'胜！';
+            msg('🏆 '+msg.winner+'获胜！');draw();break;
+          case 'opponent_left':
+            msg('⚠️ 对手已离开');
+            document.getElementById('opp-dot').className='opp-dot offline';
+            document.getElementById('opp-status').textContent='已离开';break;
+          case 'error':
+            st('❌ '+msg.message,'error');break;
         }
-      }
-    }).catch(()=>{});
-  },2000);
+      }catch(e){}
+    };
+    ws.onerror=()=>{clearTimeout(wsTimer);st('❌ 无法连接服务器','error');document.getElementById('room-created-box').classList.add('hidden')};
+    ws.onclose=()=>{clearTimeout(wsTimer);if(mode==='online'){msg('与服务器断开');document.getElementById('opp-dot').className='opp-dot offline'}};
+  }catch(e){st('❌ 连接失败','error')}
 }
 
-function startOnline(tk){
+function getServerUrl(){
+  try{
+    let url=localStorage.getItem('ws_url');
+    if(!url) url='wss://xiangqi-relay.onrender.com'; // 默认
+    return url;
+  }catch(e){return null}
+}
+
+function saveServerUrl(url){
+  localStorage.setItem('ws_url',url);
+}
+
+function createRoom(){connectWS('create')}
+function joinRoom(){connectWS('join')}
+
+function startOnline(){
   mode='online';
-  document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');
-  document.getElementById('room-created-box').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');
-  document.getElementById('room-bar').classList.remove('hidden');document.getElementById('room-info-code').textContent=roomCode;
-  document.getElementById('opp-status').textContent='已连接';document.getElementById('opp-dot').className='opp-dot online';
-  resetGame();msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
+  document.getElementById('mode-select').classList.add('hidden');
+  document.getElementById('game-area').classList.remove('hidden');
+  document.getElementById('room-bar').classList.remove('hidden');
+  document.getElementById('room-info-code').textContent=roomCode;
+  document.getElementById('opp-status').textContent='已连接';
+  document.getElementById('opp-dot').className='opp-dot online';
+  resetGame();
+  msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
 }
 
 function send(m){
-  if(mode!=='online'||!gistId)return;
-  const tk=getToken();if(!tk)return;
-  fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+tk}})
-  .then(r=>r.json()).then(g=>{
-    if(!g.files||!g.files['state.json'])return;
-    const s=JSON.parse(g.files['state.json'].content);
-    s.moves.push({...m,time:Date.now(),by:myColor});
-    s.lastMove=Date.now();
-    return fetch('https://api.github.com/gists/'+gistId,{
-      method:'PATCH',headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},
-      body:JSON.stringify({files:{'state.json':{content:JSON.stringify(s)}}})
-    });
-  }).catch(()=>{});
+  if(ws&&ws.readyState===WebSocket.OPEN){
+    ws.send(JSON.stringify({...m,room:roomCode}));
+  }
+}
+
+// 设置页初始化
+function initSettings(){
+  const el=document.getElementById('settings-ws-url');
+  if(el) el.value=getServerUrl();
+}
+function saveSettings(){
+  const el=document.getElementById('settings-ws-url');
+  if(el) saveServerUrl(el.value.trim());
+  document.getElementById('settings-status').textContent='✅ 已保存';
+  setTimeout(()=>document.getElementById('settings-status').textContent='',2000);
 }
 
 function st(t,c){const el=document.getElementById('room-status');el.textContent=t;el.className=c||''}
 
 function doLeave(){document.getElementById('leave-modal-text').textContent=mode==='online'?'退出将断开与对手的连接':'确定退出对局吗？';document.getElementById('leave-modal').classList.add('active')}
-function closeModal(){document.getElementById('leave-modal').classList.remove('active')}
-function confirmLeave(){closeModal();if(pollTimer){clearInterval(pollTimer);pollTimer=null}backMenu()}
+function closeModal(id){
+  if(id) document.getElementById(id).classList.remove('active');
+  else document.getElementById('leave-modal').classList.remove('active');
+}
+function confirmLeave(){closeModal();if(ws){ws.close();ws=null}backMenu()}
 
 // ── 启动 ──
 initBoard();draw();
