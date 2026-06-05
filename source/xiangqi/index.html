@@ -439,7 +439,7 @@ function doMove(fr,fc,tr,tc){
 
   // 吃将直接获胜
   if(cap&&cap.type==='general'){
-    gameOver(true);
+    gameOver=true;
     const winner=movingColor===RED?'红方':'黑方';
     const loser=movingColor===RED?'黑方':'红方';
     showGameOver(winner, '吃掉了对方'+NAMES[movingColor===RED?BLACK:RED]['general']);
