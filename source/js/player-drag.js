@@ -134,7 +134,7 @@
 
   // 拖拽
   var dx = false, sx, sy, ox, oy;
-  function ds(e) { if (e.target.closest('.hm-ct') || e.target.closest('.hm-prg') || e.target.closest('.hm-plst')) return; e.preventDefault(); var ev = e.touches ? e.touches[0] : e; dx = true; sx = ev.clientX; sy = ev.clientY; ox = w.offsetLeft; oy = w.offsetTop; w.style.transition = 'none'; }
+  function ds(e) { if (e.target.closest('.hm-ct') || e.target.closest('.hm-prg') || e.target.closest('.hm-plst')) return; e.preventDefault(); var ev = e.touches ? e.touches[0] : e; dx = true; sx = ev.clientX; sy = ev.clientY; var r = w.getBoundingClientRect(); ox = r.left; oy = r.top; w.style.transition = 'none'; }
   function dm(e) { if (!dx) return; e.preventDefault(); var ev = e.touches ? e.touches[0] : e; w.style.left = (ox + ev.clientX - sx) + 'px'; w.style.top = (oy + ev.clientY - sy) + 'px'; }
   function de() { if (dx) { dx = false; w.style.transition = ''; } }
 
