@@ -115,14 +115,24 @@ giscus:
   reactionsEnabled: 1
   inputPosition: bottom
 
-# 音乐播放器 (使用主题内置 MetingJS 引擎，可靠播放)
+# 音乐播放器 (本地 MP3 模式)
 player:
   disable_on_mobile: false
   position: before_sidebar
   aplayer:
     enable: true
     options:
-      audio: []
+      audio:
+        - name: "Where Did U Go"
+          artist: "G.E.M.邓紫棋"
+          url: "/music/where-did-u-go.mp3"
+          cover: "/images/elaina-avatar.webp"
+          lrc: "/music/where-did-u-go.lrc"
+        - name: "公路商店"
+          artist: "沧桑Cang333,Vital马睿骋"
+          url: "/music/road-shop.mp3"
+          cover: "/images/elaina-avatar.webp"
+          lrc: "/music/road-shop.lrc"
       fixed: true
       autoplay: false
       loop: all
@@ -131,13 +141,9 @@ player:
       volume: 0.7
       mutex: true
       listFolded: true
-      lrcType: 0
+      lrcType: 3
   meting:
-    enable: true
-    options:
-      id: 6759056661
-      server: netease
-      type: playlist
+    enable: false
 
 # 播放器拖拽 + 重定位
 injector:
