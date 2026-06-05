@@ -166,6 +166,19 @@ body{
   </div>
 </div>
 
+<!-- 结算弹窗 -->
+<div class="modal-overlay" id="gameover-modal">
+  <div class="modal-box" style="text-align:center;padding:36px 28px">
+    <div id="go-icon" style="font-size:56px;margin-bottom:8px">🏆</div>
+    <h3 id="go-title" style="color:#fff;font-size:22px;margin-bottom:4px">红方胜！</h3>
+    <p id="go-desc" style="color:#aaa;font-size:14px;margin-bottom:20px">吃掉了对方将</p>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-primary" onclick="closeGameOver();resetGame()">🔄 再来一局</button>
+      <button class="btn btn-back btn-sm" onclick="closeGameOver();doLeave()">🚪 退出</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
 // ══════════════════════════════════════════
@@ -424,6 +437,16 @@ function doMove(fr,fc,tr,tc){
   const p=board[fr][fc],cap=board[tr][tc];
   board[tr][tc]=p;board[fr][fc]=null;p.row=tr;p.col=tc;
 
+  // 吃将直接获胜
+  if(cap&&cap.type==='general'){
+    gameOver(true);
+    const winner=movingColor===RED?'红方':'黑方';
+    const loser=movingColor===RED?'黑方':'红方';
+    showGameOver(winner, '吃掉了对方'+NAMES[movingColor===RED?BLACK:RED]['general']);
+    if(mode==='online'&&conn)send({type:'gameover',winner});
+    return;
+  }
+
   // 将帅对面检测：谁造成的谁输
   const rg=findGen(RED),bg=findGen(BLACK);
   if(rg&&bg&&rg.col===bg.col){
@@ -433,10 +456,7 @@ function doMove(fr,fc,tr,tc){
       gameOver=true;
       const loser=movingColor===RED?'红方':'黑方';
       const winner=movingColor===RED?'黑方':'红方';
-      document.getElementById('turn-indicator').className='over';
-      document.getElementById('turn-indicator').textContent='🏆 '+winner+'胜！（将帅对面）';
-      msg('🏆 '+winner+'获胜！'+loser+'造成将帅对面');
-      draw();
+      showGameOver(winner, loser+'造成将帅对面');
       if(mode==='online'&&conn)send({type:'gameover',winner});
       return;
     }
@@ -451,9 +471,7 @@ function doMove(fr,fc,tr,tc){
   if(!legal){
     gameOver=true;
     const w=turn===RED?'黑方':'红方';
-    document.getElementById('turn-indicator').className='over';
-    document.getElementById('turn-indicator').textContent='🏆 '+w+'胜！';
-    msg('🏆 '+w+'获胜！');
+    showGameOver(w, '对方无棋可走');
     if(mode==='online'&&conn)send({type:'gameover',winner:w});
     return;
   }
@@ -477,9 +495,7 @@ function doRemoteMove(fr,fc,tr,tc){
     if(!blocked){
       gameOver=true;
       const winner=turn===RED?'黑方':'红方';
-      document.getElementById('turn-indicator').className='over';
-      document.getElementById('turn-indicator').textContent='🏆 '+winner+'胜！（将帅对面）';
-      msg('🏆 '+winner+'获胜！对方造成将帅对面');draw();return;
+      showGameOver(winner, '对方造成将帅对面');return;
     }
   }
 
@@ -488,9 +504,7 @@ function doRemoteMove(fr,fc,tr,tc){
   draw();
   if(!legal){
     gameOver=true;const w=turn===RED?'黑方':'红方';
-    document.getElementById('turn-indicator').className='over';
-    document.getElementById('turn-indicator').textContent='🏆 '+w+'胜！';
-    msg('🏆 '+w+'获胜！');return;
+    showGameOver(w, '对方无棋可走');return;
   }
   if(chk)msg('⚠️ 将军！');else msg('轮到 '+(turn===RED?'红方':'黑方'));
   document.getElementById('turn-indicator').className=turn;
@@ -505,6 +519,18 @@ function resetGame(){
   msg('点击棋子选中，再点击目标移动');draw();
 }
 function msg(t){document.getElementById('message').textContent=t}
+
+function showGameOver(winner, reason){
+  document.getElementById('turn-indicator').className='over';
+  document.getElementById('turn-indicator').textContent='🏆 '+winner+'胜！';
+  document.getElementById('go-title').textContent=winner+'胜！';
+  document.getElementById('go-desc').textContent=reason;
+  document.getElementById('gameover-modal').classList.add('active');
+  draw();
+}
+function closeGameOver(){
+  document.getElementById('gameover-modal').classList.remove('active');
+}
 
 // ── 模式 ──
 function startLocal(){mode='local';document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');document.getElementById('room-bar').classList.add('hidden');resetGame()}
