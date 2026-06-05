@@ -541,90 +541,79 @@ function backMenu(){
 }
 function showRoom(){document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.remove('hidden')}
 
-// ── 联网 (GitHub Gist 中继) ──
+// ── 联网 (Gist 中继，双方都需要 Token 但只需配置一次) ──
 let pollTimer = null;
 let lastMoveTime = 0;
 let gistId = null;
 let isCreator = false;
 
+function getToken(){try{return localStorage.getItem('gh_token')||''}catch(e){return ''}}
+
 function createRoom(){
-  const token=getToken();
-  if(!token){st('❌ 请先设置 GitHub Token','error');return}
+  const tk=getToken();
+  if(!tk){st('❌ 先去⚙️设置页配置 GitHub Token','error');return}
   st('⏳ 创建房间...','connecting');
   fetch('https://api.github.com/gists',{
-    method:'POST',
-    headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-    body:JSON.stringify({description:'象棋房间',public:true,files:{'state.json':{content:JSON.stringify({state:'waiting',moves:[],lastMove:0})}}})
-  }).then(r=>r.json()).then(data=>{
-    if(data.id){
-      gistId=data.id;
-      roomCode=data.id.slice(-4).toUpperCase();
-      document.getElementById('room-code-text').textContent=roomCode;
-      document.getElementById('room-created-box').classList.remove('hidden');
-      isCreator=true;
-      st('✅ 已创建，分享房间号给朋友','connected');
-      waitForOpponent();
-    }else st('❌ 创建失败: '+(data.message||''),'error');
+    method:'POST',headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},
+    body:JSON.stringify({description:'象棋房间',public:true,
+      files:{'state.json':{content:JSON.stringify({state:'waiting',moves:[],lastMove:0})}}})
+  }).then(r=>r.json()).then(d=>{
+    if(!d.id){st('❌ '+(d.message||'创建失败'),'error');return}
+    gistId=d.id;
+    roomCode=d.id.slice(-4).toUpperCase();
+    document.getElementById('room-code-text').textContent=roomCode;
+    document.getElementById('room-created-box').classList.remove('hidden');
+    st('✅ 房间已创建，等待对方...','connected');
+    isCreator=true;
+    // 开始轮询
+    pollGame(tk);
   }).catch(()=>st('❌ 网络错误','error'));
 }
 
 function joinRoom(){
   const code=document.getElementById('room-code-input').value.trim().toUpperCase();
   if(!code||code.length!==4){st('⚠️ 输入4位房间号','error');return}
-  const token=getToken();
-  if(!token){st('❌ 请先设置 GitHub Token','error');return}
+  const tk=getToken();
+  if(!tk){st('❌ 先去⚙️设置页配置 GitHub Token','error');return}
   st('⏳ 查找房间...','connecting');
-  fetch('https://api.github.com/gists?per_page=50',{headers:{'Authorization':'Bearer '+token}})
-  .then(r=>r.json()).then(gists=>{
-    const found=gists.find(g=>g.id.slice(-4).toUpperCase()===code&&g.files&&g.files['state.json']);
-    if(!found){st('❌ 房间不存在','error');return}
-    gistId=found.id;roomCode=code;
-    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
+  // 列自己的 gist 找匹配
+  fetch('https://api.github.com/gists?per_page=50',{headers:{'Authorization':'Bearer '+tk}})
+  .then(r=>r.json()).then(list=>{
+    const g=list.find(x=>x.id.slice(-4).toUpperCase()===code&&x.files&&x.files['state.json']);
+    if(!g){st('❌ 房间不存在','error');return}
+    gistId=g.id;
+    // 读取并加入
+    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+tk}})
     .then(r=>r.json()).then(gist=>{
-      const state=JSON.parse(gist.files['state.json'].content);
-      if(state.state!=='waiting'){st('❌ 房间已满','error');return}
-      state.state='playing';state.joiner=Date.now();
+      const s=JSON.parse(gist.files['state.json'].content);
+      if(s.state!=='waiting'){st('❌ 房间已满','error');return}
+      s.state='playing';s.joiner=Date.now();
       fetch('https://api.github.com/gists/'+gistId,{
-        method:'PATCH',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-        body:JSON.stringify({files:{'state.json':{content:JSON.stringify(state)}}})
-      }).then(r=>r.json()).then(()=>{myColor=BLACK;startOnline(token)})
+        method:'PATCH',headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},
+        body:JSON.stringify({files:{'state.json':{content:JSON.stringify(s)}}})
+      }).then(r=>r.json()).then(()=>{myColor=BLACK;startOnline(tk)})
       .catch(()=>st('❌ 加入失败','error'));
     });
   }).catch(()=>st('❌ 读取失败','error'));
 }
 
-function waitForOpponent(){
-  const token=getToken();if(!token)return;
-  const poll=()=>{
-    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
-    .then(r=>r.json()).then(gist=>{
-      if(!gist.files||!gist.files['state.json'])return;
-      const state=JSON.parse(gist.files['state.json'].content);
-      if(state.state==='playing'){myColor=RED;startOnline(token);return}
-      setTimeout(poll,2000);
-    }).catch(()=>setTimeout(poll,2000));
-  };
-  setTimeout(poll,2000);
-  setTimeout(()=>{if(mode!=='online'){st('⏰ 等待超时','error');document.getElementById('room-created-box').classList.add('hidden')}},60000);
-}
-
-function startOnline(token){
-  mode='online';
-  document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');
-  document.getElementById('room-created-box').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');
-  document.getElementById('room-bar').classList.remove('hidden');document.getElementById('room-info-code').textContent=roomCode;
-  document.getElementById('opp-status').textContent='已连接';document.getElementById('opp-dot').className='opp-dot online';
-  resetGame();msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
+function pollGame(tk){
   if(pollTimer)clearInterval(pollTimer);
   pollTimer=setInterval(()=>{
-    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
-    .then(r=>r.json()).then(gist=>{
-      if(!gist.files||!gist.files['state.json'])return;
-      const state=JSON.parse(gist.files['state.json'].content);
-      if(state.lastMove&&state.lastMove!==lastMoveTime){
-        const newMoves=state.moves.filter(m=>m.time>lastMoveTime);
-        lastMoveTime=state.lastMove;
-        for(const mv of newMoves){
+    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+tk}})
+    .then(r=>r.json()).then(g=>{
+      if(!g.files||!g.files['state.json'])return;
+      const s=JSON.parse(g.files['state.json'].content);
+      // 检测对方加入
+      if(s.state==='playing'&&!mode.started){
+        mode.started=true;
+        if(isCreator)startOnline(tk);
+      }
+      // 检测对方走棋
+      if(s.lastMove&&s.lastMove!==lastMoveTime){
+        const nm=s.moves.filter(m=>m.time>lastMoveTime);
+        lastMoveTime=s.lastMove;
+        for(const mv of nm){
           if(mv.by!==myColor&&mv.type==='move')doRemoteMove(mv.from.row,mv.from.col,mv.to.row,mv.to.col);
           else if(mv.type==='gameover'){gameOver=true;document.getElementById('turn-indicator').className='over';document.getElementById('turn-indicator').textContent='🏆 '+mv.winner+'胜！';msg('🏆 '+mv.winner+'获胜！');draw();}
         }
@@ -633,23 +622,31 @@ function startOnline(token){
   },2000);
 }
 
+function startOnline(tk){
+  mode='online';
+  document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');
+  document.getElementById('room-created-box').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');
+  document.getElementById('room-bar').classList.remove('hidden');document.getElementById('room-info-code').textContent=roomCode;
+  document.getElementById('opp-status').textContent='已连接';document.getElementById('opp-dot').className='opp-dot online';
+  resetGame();msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
+}
+
 function send(m){
   if(mode!=='online'||!gistId)return;
-  const token=getToken();if(!token)return;
-  fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
-  .then(r=>r.json()).then(gist=>{
-    if(!gist.files||!gist.files['state.json'])return;
-    const state=JSON.parse(gist.files['state.json'].content);
-    state.moves.push({...m,time:Date.now(),by:myColor});
-    state.lastMove=Date.now();
+  const tk=getToken();if(!tk)return;
+  fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+tk}})
+  .then(r=>r.json()).then(g=>{
+    if(!g.files||!g.files['state.json'])return;
+    const s=JSON.parse(g.files['state.json'].content);
+    s.moves.push({...m,time:Date.now(),by:myColor});
+    s.lastMove=Date.now();
     return fetch('https://api.github.com/gists/'+gistId,{
-      method:'PATCH',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
-      body:JSON.stringify({files:{'state.json':{content:JSON.stringify(state)}}})
+      method:'PATCH',headers:{'Authorization':'Bearer '+tk,'Content-Type':'application/json'},
+      body:JSON.stringify({files:{'state.json':{content:JSON.stringify(s)}}})
     });
   }).catch(()=>{});
 }
 
-function getToken(){try{return localStorage.getItem('gh_token')||''}catch(e){return ''}}
 function st(t,c){const el=document.getElementById('room-status');el.textContent=t;el.className=c||''}
 
 function doLeave(){document.getElementById('leave-modal-text').textContent=mode==='online'?'退出将断开与对手的连接':'确定退出对局吗？';document.getElementById('leave-modal').classList.add('active')}
