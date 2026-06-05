@@ -123,9 +123,7 @@ player:
 
 # 自定义播放器样式和拖拽（JS 接管定位和拖拽）
 injector:
-  body_end:
-    - <script src="/js/player-drag.js"></script>
-    - <script>function bindAvatar(){var a=document.querySelector('.sidebar-author img');if(a){a.style.cursor='pointer';a.onclick=function(){location.href='/about'}}}document.addEventListener('DOMContentLoaded',bindAvatar);document.addEventListener('pjax:complete',bindAvatar);</script>
+  body_end: '<script src="/js/player-drag.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/about"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
 
 # Google Analytics
 google_analytics: false
