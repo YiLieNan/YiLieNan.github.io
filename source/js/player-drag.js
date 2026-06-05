@@ -24,15 +24,16 @@
   document.addEventListener('scroll',cleanNav,{passive:true})
 
   // 3. PJAX 无感切换 —— 阻止 Pjax 库的 scrollTo 行为
-  // theme-shokax-pjax@0.0.3 在 afterAllSwitches 中调用 window.scrollTo(0, scrollTo)
-  // 我们劫持原型方法，在切换期间临时禁用 scrollTo
+  // theme-shokax-pjax@0.0.3 在 afterAllSwitches 中用 this.state.options.scrollTo
+  // 注意：不是 this.options，而是 loadUrl 中拷贝的 this.state.options
   if(window.Pjax && window.Pjax.prototype){
     var origAfterSwitches = window.Pjax.prototype.afterAllSwitches
     window.Pjax.prototype.afterAllSwitches = function(){
-      var st = this.options.scrollTo
-      this.options.scrollTo = false  // 禁用滚动到顶部
+      // 覆盖 state 中的 scrollTo（Pjax 读的是这里）
+      if(this.state && this.state.options){
+        this.state.options.scrollTo = false
+      }
       origAfterSwitches.call(this)
-      this.options.scrollTo = st     // 恢复原值（用于浏览器前进后退的 scrollPos 恢复）
     }
   }
 

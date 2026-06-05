@@ -7,9 +7,9 @@ menu:
   - name: home
     url: /
     icon: f015
-  - name: archives
-    url: /archives
-    icon: f187
+  - name: 标签
+    url: /tags
+    icon: f02c
   - name: 学习
     url: /categories/学习/
     icon: f19d
