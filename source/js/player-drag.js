@@ -119,25 +119,20 @@
     document.addEventListener('touchend', onUp)
   }
 
-  // 强制设在左上角（覆盖 APlayer 的 bottom/right 内联样式）
-  function setTopLeft(){
-    if(!_container) return
-    _container.style.position = 'fixed'
-    _container.style.top = '62px'
-    _container.style.left = '16px'
-    _container.style.bottom = 'auto'
-    _container.style.right = 'auto'
-    _container.style.zIndex = '99999'
-  }
-
   // 恢复上次位置
   function restorePos(){
     if(!_container) return
+    // 总是先清掉 bottom/right（APlayer 默认设的）
+    _container.style.bottom = ''
+    _container.style.right = ''
+    _container.style.position = 'fixed'
+    _container.style.zIndex = '99999'
     if(_savedPos){
-      _container.style.left = _savedPos.left + 'px'
       _container.style.top = _savedPos.top + 'px'
+      _container.style.left = _savedPos.left + 'px'
     } else {
-      setTopLeft()
+      _container.style.top = '62px'
+      _container.style.left = '16px'
     }
   }
 
