@@ -305,8 +305,9 @@ function setupCanvas() {
 
 function resizeCanvasInternal() {
   const wrap = canvas.parentElement;
-  const w = wrap.clientWidth - 16;
-  const size = Math.min(w, 520);
+  let parentW = wrap.clientWidth - 16;
+  if (parentW < 100) parentW = 520; // 隐藏时用默认大小
+  const size = Math.min(parentW, 520);
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = size + 'px';
   canvas.style.height = size + 'px';
@@ -760,7 +761,7 @@ function startLocal() {
   document.getElementById('room-panel').classList.add('hidden');
   document.getElementById('game-area').classList.remove('hidden');
   document.getElementById('room-bar').classList.add('hidden');
-  resetGame();
+  setTimeout(function() { resizeCanvasInternal(); resetGame(); }, 50);
 }
 
 function backToMenu() {
@@ -894,7 +895,7 @@ function startOnlineGame() {
   const colorName = myColor===RED ? '红方（先手）' : '黑方（后手）';
   document.getElementById('message').textContent = `你是 ${colorName}`;
 
-  resetGame();
+  setTimeout(function() { resizeCanvasInternal(); resetGame(); }, 50);
 
   // 联网模式下，后手不能操作
   if (myColor === BLACK) {
@@ -1000,13 +1001,12 @@ function confirmLeave() {
 document.addEventListener('DOMContentLoaded', function() {
   setupCanvas();
   window.addEventListener('resize', resizeCanvasInternal);
-});
-
-canvas.addEventListener('click', function(e) { handleClick(e.clientX, e.clientY); });
-canvas.addEventListener('touchstart', function(e) {
-  e.preventDefault();
-  const t = e.touches[0];
-  handleClick(t.clientX, t.clientY);
+  canvas.addEventListener('click', function(e) { handleClick(e.clientX, e.clientY); });
+  canvas.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    const t = e.touches[0];
+    handleClick(t.clientX, t.clientY);
+  });
 });
 </script>
 </body>
