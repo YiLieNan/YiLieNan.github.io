@@ -538,25 +538,78 @@ function backMenu(){if(peer){peer.destroy();peer=null}if(conn){conn.close();conn
 function showRoom(){document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.remove('hidden')}
 
 // ── 联网 ──
+let connTimer = null;
+
 function createRoom(){
   roomCode=String(Math.floor(1000+Math.random()*9000));
   document.getElementById('room-code-text').textContent=roomCode;
   document.getElementById('room-created-box').classList.remove('hidden');
-  st('⏳ 创建中...','connecting');
-  try{peer=new Peer('xiangqi-'+roomCode,{debug:0});
-    peer.on('open',()=>st('✅ 已创建，等待对方...','connected'));
-    peer.on('connection',c=>{conn=c;conn.on('open',()=>{myColor=RED;startOnline()});conn.on('data',hm);conn.on('close',()=>{if(mode==='online'){msg('对手已断开');document.getElementById('opp-dot').className='opp-dot offline';document.getElementById('opp-status').textContent='已断开'}})});
-    peer.on('error',e=>st('❌ '+e.type,'error'))}catch(e){st('❌ 创建失败','error')}
+  st('⏳ 连接信令服务器...','connecting');
+  try{
+    peer=new Peer('xiangqi-'+roomCode,{
+      config:{iceServers:[
+        {urls:'stun:stun.l.google.com:19302'},
+        {urls:'stun:stun1.l.google.com:19302'}
+      ]}
+    });
+    peer.on('open',()=>{st('✅ 已创建，等待对方加入...','connected')});
+    peer.on('connection',c=>{
+      conn=c;
+      conn.on('open',()=>{if(connTimer){clearTimeout(connTimer);connTimer=null}myColor=RED;startOnline()});
+      conn.on('data',hm);
+      conn.on('close',()=>{if(mode==='online'){msg('对手已断开');document.getElementById('opp-dot').className='opp-dot offline';document.getElementById('opp-status').textContent='已断开';st('已断开','error')}});
+    });
+    peer.on('error',e=>{
+      st('❌ 连接失败: '+e.type+' 可尝试刷新页面重试','error');
+      document.getElementById('room-created-box').classList.add('hidden');
+    });
+    // 30秒超时
+    setTimeout(()=>{
+      if(!conn&&!gameOver){
+        st('⏰ 超时：对方未连接，可刷新重试或换房间号','error');
+        document.getElementById('room-created-box').classList.add('hidden');
+        if(peer){peer.destroy();peer=null}
+      }
+    },30000);
+  }catch(e){st('❌ 创建失败: '+e.message,'error')}
 }
+
 function joinRoom(){
   const code=document.getElementById('room-code-input').value.trim();
   if(!code||code.length!==4){st('⚠️ 输入4位房间号','error');return}
-  roomCode=code;st('⏳ 连接中...','connecting');
-  try{peer=new Peer(undefined,{debug:0});
-    peer.on('open',()=>{conn=peer.connect('xiangqi-'+roomCode,{reliable:true});
-      conn.on('open',()=>{document.getElementById('room-created-box').classList.add('hidden');myColor=BLACK;startOnline()});
-      conn.on('data',hm);conn.on('close',()=>{if(mode==='online'){msg('对手已断开');document.getElementById('opp-dot').className='opp-dot offline';document.getElementById('opp-status').textContent='已断开'}})});
-    peer.on('error',e=>st('❌ 连接失败: '+e.type,'error'))}catch(e){st('❌ 连接失败','error')}
+  roomCode=code;st('⏳ 连接信令服务器...','connecting');
+  try{
+    peer=new Peer(undefined,{
+      config:{iceServers:[
+        {urls:'stun:stun.l.google.com:19302'},
+        {urls:'stun:stun1.l.google.com:19302'}
+      ]}
+    });
+    peer.on('open',()=>{
+      st('⏳ 正在连接对方...','connecting');
+      conn=peer.connect('xiangqi-'+roomCode,{reliable:true});
+      connTimer=setTimeout(()=>{
+        st('⏰ 连接超时：对方不在线或房间号错误，请确认房间号','error');
+        if(conn){conn.close();conn=null}
+      },15000);
+      conn.on('open',()=>{
+        if(connTimer){clearTimeout(connTimer);connTimer=null}
+        document.getElementById('room-created-box').classList.add('hidden');
+        myColor=BLACK;startOnline()
+      });
+      conn.on('data',hm);
+      conn.on('close',()=>{if(mode==='online'){msg('对手已断开');document.getElementById('opp-dot').className='opp-dot offline';document.getElementById('opp-status').textContent='已断开'}});
+    });
+    peer.on('error',e=>{st('❌ 连接失败: '+e.type+' 可刷新重试','error')});
+    // 整体30秒超时
+    setTimeout(()=>{
+      if(!conn||!conn.open){
+        st('⏰ 连接超时，请确认房间号正确后重试','error');
+        if(conn){conn.close();conn=null}
+        if(peer){peer.destroy();peer=null}
+      }
+    },30000);
+  }catch(e){st('❌ 连接失败: '+e.message,'error')}
 }
 function startOnline(){
   mode='online';
