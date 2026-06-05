@@ -344,11 +344,10 @@ function getMoves(r,c){
       if(crs){if(ib(r,c-1))res.push({row:r,col:c-1});if(ib(r,c+1))res.push({row:r,col:c+1})}break;
     }
   }
-  // 过滤：不能吃自己 + 不能将帅对面
+  // 过滤：不能吃自己
   return res.filter(m=>{
     const t=board[m.row][m.col];
-    if(t&&t.color===cl)return false;
-    return !flyingGenAfter(r,c,m.row,m.col,cl);
+    return !(t&&t.color===cl);
   });
 }
 
@@ -421,8 +420,28 @@ function handleClick(ev){
 }
 
 function doMove(fr,fc,tr,tc){
+  const movingColor=turn; // 谁走这步棋
   const p=board[fr][fc],cap=board[tr][tc];
   board[tr][tc]=p;board[fr][fc]=null;p.row=tr;p.col=tc;
+
+  // 将帅对面检测：谁造成的谁输
+  const rg=findGen(RED),bg=findGen(BLACK);
+  if(rg&&bg&&rg.col===bg.col){
+    let blocked=false;
+    for(let r=Math.min(rg.row,bg.row)+1;r<Math.max(rg.row,bg.row);r++){if(board[r][rg.col]){blocked=true;break;}}
+    if(!blocked){
+      gameOver=true;
+      const loser=movingColor===RED?'红方':'黑方';
+      const winner=movingColor===RED?'黑方':'红方';
+      document.getElementById('turn-indicator').className='over';
+      document.getElementById('turn-indicator').textContent='🏆 '+winner+'胜！（将帅对面）';
+      msg('🏆 '+winner+'获胜！'+loser+'造成将帅对面');
+      draw();
+      if(mode==='online'&&conn)send({type:'gameover',winner});
+      return;
+    }
+  }
+
   turn=turn===RED?BLACK:RED;
 
   // 检测将军和将杀（仅用于显示，不限制）
@@ -449,6 +468,21 @@ function doMove(fr,fc,tr,tc){
 function doRemoteMove(fr,fc,tr,tc){
   const p=board[fr][fc];
   board[tr][tc]=p;board[fr][fc]=null;p.row=tr;p.col=tc;
+
+  // 远程走棋也检查将帅对面
+  const rg=findGen(RED),bg=findGen(BLACK);
+  if(rg&&bg&&rg.col===bg.col){
+    let blocked=false;
+    for(let r=Math.min(rg.row,bg.row)+1;r<Math.max(rg.row,bg.row);r++){if(board[r][rg.col]){blocked=true;break;}}
+    if(!blocked){
+      gameOver=true;
+      const winner=turn===RED?'黑方':'红方';
+      document.getElementById('turn-indicator').className='over';
+      document.getElementById('turn-indicator').textContent='🏆 '+winner+'胜！（将帅对面）';
+      msg('🏆 '+winner+'获胜！对方造成将帅对面');draw();return;
+    }
+  }
+
   turn=turn===RED?BLACK:RED;
   const chk=inCheck(turn),legal=hasLegalMoves(turn);
   draw();
