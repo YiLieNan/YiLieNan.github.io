@@ -10,6 +10,12 @@ menu:
   - name: archives
     url: /archives
     icon: f187
+  - name: 学习
+    url: /categories/学习/
+    icon: f19d
+  - name: 日常
+    url: /categories/日常/
+    icon: f0e7
   - name: about
     url: /about
     icon: f007

@@ -2,7 +2,7 @@
 title: Hello World
 date: 2026-06-04 17:20:00
 tags: [杂谈]
-categories: 随笔
+categories: 日常
 cover: /images/covers/cover-1.webp
 ---
 

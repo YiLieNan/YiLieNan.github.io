@@ -2,7 +2,7 @@
 title: 🧙 Hermes Agent Windows 配置指南 — 连接 DeepSeek 模型
 date: 2026-06-05 18:30:00
 tags: [Hermes Agent, AI, DeepSeek, 配置教程, Windows]
-categories: 技术
+categories: 学习
 cover: /images/covers/cover-4.webp
 ---
 
