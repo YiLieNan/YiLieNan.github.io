@@ -116,11 +116,7 @@ player:
   aplayer:
     enable: true
     options:
-      audio:
-        - name: "等待添加..."
-          artist: "待定"
-          url: ""
-          cover: ""
+      audio: []
       fixed: true
       autoplay: false
       loop: all
@@ -131,7 +127,11 @@ player:
       listFolded: true
       lrcType: 0
   meting:
-    enable: false
+    enable: true
+    options:
+      id: 9161327200
+      server: netease
+      type: playlist
 
 # Google Analytics
 google_analytics: false
