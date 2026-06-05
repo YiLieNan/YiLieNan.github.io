@@ -136,6 +136,16 @@ player:
 # Google Analytics
 google_analytics: false
 
+# Pjax（页面无刷新跳转，加快导航速度，播放器不重载）
+pjax:
+  enable: true
+
+# Quicklink（预加载页面链接）
+quicklink:
+  enable: true
+  timeout: 3000
+  priority: true
+
 # 自定义鼠标指针（伊蕾娜主题）
 reimu_cursor:
   enable: true
