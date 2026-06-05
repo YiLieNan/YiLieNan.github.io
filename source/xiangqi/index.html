@@ -574,27 +574,36 @@ function initGun(){
     st('⏰ 连接超时，请确认房间号后重试','error');
     document.getElementById('room-created-box').classList.add('hidden');
     roomRef=null;
-  },15000);
+  },30000);
 
-  // 监听房间状态
-  roomRef.once(data => {
-    clearTimeout(connTimer);
-    if(isCreator){
-      // 创建者：设置房间
-      roomRef.put({state:'waiting', creator:Date.now()});
+  if(isCreator){
+    // 创建者：先等一会确保 Gun 就绪，再设置房间
+    setTimeout(()=>{
+      roomRef.put({state:'waiting', creator:Date.now(), ts:Date.now()});
       st('✅ 房间已创建，等待对方加入...','connected');
-      // 等待对手
       waitForOpponent();
+    },500);
+  }else{
+    // 加入者：轮询等待房间数据同步
+    tryJoin(0);
+  }
+}
+
+function tryJoin(tryCount){
+  if(tryCount>20){ // 最多试20次，约10秒
+    st('❌ 房间不存在或已满','error');
+    document.getElementById('room-created-box').classList.add('hidden');
+    return;
+  }
+  roomRef.once(data => {
+    if(data && data.state==='waiting'){
+      clearTimeout(connTimer);
+      roomRef.put({state:'playing', joiner:Date.now(), ts:Date.now()});
+      myColor=BLACK;
+      startOnline();
     }else{
-      // 加入者：检查房间是否存在
-      if(data && data.state==='waiting'){
-        roomRef.put({state:'playing', joiner:Date.now()});
-        myColor=BLACK;
-        startOnline();
-      }else{
-        st('❌ 房间不存在或已满','error');
-        document.getElementById('room-created-box').classList.add('hidden');
-      }
+      // 没读到数据，等500ms再试
+      setTimeout(()=>tryJoin(tryCount+1), 500);
     }
   });
 }
