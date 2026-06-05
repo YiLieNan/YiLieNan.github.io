@@ -105,11 +105,11 @@ comment:
   default: giscus
 
 giscus:
-  enable: false  # 后面可以开启，需要配置 repo
-  repo: 你的用户名/你的用户名.github.io
-  repoId: ''
+  enable: true
+  repo: YiLieNan/YiLieNan.github.io
+  repoId: R_kgDOSw6vgQ
   category: Announcements
-  categoryId: ''
+  categoryId: DIC_kwDOSw6vgc4C-kPU
   mapping: pathname
   strict: 0
   reactionsEnabled: 1
