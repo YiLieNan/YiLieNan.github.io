@@ -109,19 +109,31 @@ giscus:
   reactionsEnabled: 1
   inputPosition: bottom
 
-# 音乐播放器 (独立播放器，不依赖主题系统)
+# 音乐播放器 (使用主题内置 MetingJS 引擎，可靠播放)
 player:
   disable_on_mobile: false
   position: before_sidebar
   aplayer:
-    enable: false
+    enable: true
     options:
       audio: []
-      fixed: false
+      fixed: true
+      autoplay: false
+      loop: all
+      order: random
+      preload: auto
+      volume: 0.7
+      mutex: true
+      listFolded: true
+      lrcType: 0
   meting:
-    enable: false
+    enable: true
+    options:
+      id: 6759056661
+      server: netease
+      type: playlist
 
-# 自定义播放器样式和拖拽（JS 接管定位和拖拽）
+# 播放器拖拽 + 重定位
 injector:
   body_end: '<script src="/js/player-drag.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/about"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
 
