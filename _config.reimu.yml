@@ -115,25 +115,29 @@ giscus:
   reactionsEnabled: 1
   inputPosition: bottom
 
-# 音乐播放器（关闭）
+# 背景音乐（右下角浮动播放器）
 player:
   disable_on_mobile: false
   position: before_sidebar
   aplayer:
-    enable: false
+    enable: true
     options:
       audio: []
-      fixed: false
+      fixed: true
       autoplay: false
       loop: all
-      order: list
+      order: random
       preload: auto
       volume: 0.7
       mutex: true
       listFolded: true
       lrcType: 0
   meting:
-    enable: false
+    enable: true
+    options:
+      id: 6759056661
+      server: netease
+      type: playlist
 
 # 播放器拖拽 + 重定位
 injector:
