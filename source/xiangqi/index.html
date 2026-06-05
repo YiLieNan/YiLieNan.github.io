@@ -179,7 +179,6 @@ body{
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.2/dist/peerjs.min.js"></script>
 <script>
 // ══════════════════════════════════════════
 //  中国象棋
@@ -190,7 +189,7 @@ const NAMES={red:{general:'帅',advisor:'仕',elephant:'相',horse:'马',rook:'�
              black:{general:'将',advisor:'士',elephant:'象',horse:'马',rook:'车',cannon:'炮',soldier:'卒'}};
 
 let board=[],selected=null,validMoves=[],turn=RED,gameOver=false;
-let mode='local',peer=null,conn=null,roomCode='',myColor=RED;
+let mode='local',ws=null,roomCode='',myColor=RED;
 
 const canvas=document.getElementById('boardCanvas');
 const ctx=canvas.getContext('2d');
@@ -443,7 +442,7 @@ function doMove(fr,fc,tr,tc){
     const winner=movingColor===RED?'红方':'黑方';
     const loser=movingColor===RED?'黑方':'红方';
     showGameOver(winner, '吃掉了对方'+NAMES[movingColor===RED?BLACK:RED]['general']);
-    if(mode==='online'&&conn)send({type:'gameover',winner});
+    if(mode==='online'&&ws)send({type:'gameover',winner});
     return;
   }
 
@@ -457,7 +456,7 @@ function doMove(fr,fc,tr,tc){
       const loser=movingColor===RED?'红方':'黑方';
       const winner=movingColor===RED?'黑方':'红方';
       showGameOver(winner, loser+'造成将帅对面');
-      if(mode==='online'&&conn)send({type:'gameover',winner});
+      if(mode==='online'&&ws)send({type:'gameover',winner});
       return;
     }
   }
@@ -472,7 +471,7 @@ function doMove(fr,fc,tr,tc){
     gameOver=true;
     const w=turn===RED?'黑方':'红方';
     showGameOver(w, '对方无棋可走');
-    if(mode==='online'&&conn)send({type:'gameover',winner:w});
+    if(mode==='online'&&ws)send({type:'gameover',winner:w});
     return;
   }
   if(chk)msg('⚠️ 将军！'+(turn===RED?'红方':'黑方')+'被将军');
@@ -480,7 +479,7 @@ function doMove(fr,fc,tr,tc){
   document.getElementById('turn-indicator').className=turn;
   document.getElementById('turn-indicator').textContent=turn===RED?'🔴 红方走':'⚫ 黑方走';
 
-  if(mode==='online'&&conn)send({type:'move',from:{row:fr,col:fc},to:{row:tr,col:tc}});
+  if(mode==='online'&&ws)send({type:'move',from:{row:fr,col:fc},to:{row:tr,col:tc}});
 }
 
 function doRemoteMove(fr,fc,tr,tc){
@@ -534,81 +533,111 @@ function closeGameOver(){
 
 // ── 模式 ──
 function startLocal(){mode='local';document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');document.getElementById('room-bar').classList.add('hidden');resetGame()}
-function backMenu(){if(peer){peer.destroy();peer=null}if(conn){conn.close();conn=null}document.getElementById('mode-select').classList.remove('hidden');document.getElementById('room-panel').classList.add('hidden');document.getElementById('game-area').classList.add('hidden');document.getElementById('room-created-box').classList.add('hidden');document.getElementById('room-status').textContent='';mode='local'}
+function backMenu(){
+  if(ws){ws.close();ws=null}
+  document.getElementById('mode-select').classList.remove('hidden');document.getElementById('room-panel').classList.add('hidden');
+  document.getElementById('game-area').classList.add('hidden');document.getElementById('room-created-box').classList.add('hidden');
+  document.getElementById('room-status').textContent='';mode='local';
+}
 function showRoom(){document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.remove('hidden')}
 
-// ── 联网 ──
+// ── 联网 (WebSocket) ──
+const WS_URL = 'wss://xiangqi-relay.onrender.com'; // ← 部署后替换为实际地址
+let ws = null;
 let connTimer = null;
 
 function createRoom(){
   roomCode=String(Math.floor(1000+Math.random()*9000));
   document.getElementById('room-code-text').textContent=roomCode;
   document.getElementById('room-created-box').classList.remove('hidden');
-  st('⏳ 连接信令服务器...','connecting');
-  try{
-    peer=new Peer('xiangqi-'+roomCode,{
-      config:{iceServers:[
-        {urls:'stun:stun.l.google.com:19302'},
-        {urls:'stun:stun1.l.google.com:19302'}
-      ]}
-    });
-    peer.on('open',()=>{st('✅ 已创建，等待对方加入...','connected')});
-    peer.on('connection',c=>{
-      conn=c;
-      conn.on('open',()=>{if(connTimer){clearTimeout(connTimer);connTimer=null}myColor=RED;startOnline()});
-      conn.on('data',hm);
-      conn.on('close',()=>{if(mode==='online'){msg('对手已断开');document.getElementById('opp-dot').className='opp-dot offline';document.getElementById('opp-status').textContent='已断开';st('已断开','error')}});
-    });
-    peer.on('error',e=>{
-      st('❌ 连接失败: '+e.type+' 可尝试刷新页面重试','error');
-      document.getElementById('room-created-box').classList.add('hidden');
-    });
-    // 30秒超时
-    setTimeout(()=>{
-      if(!conn&&!gameOver){
-        st('⏰ 超时：对方未连接，可刷新重试或换房间号','error');
-        document.getElementById('room-created-box').classList.add('hidden');
-        if(peer){peer.destroy();peer=null}
-      }
-    },30000);
-  }catch(e){st('❌ 创建失败: '+e.message,'error')}
+  st('⏳ 连接服务器...','connecting');
+  connectWS('create');
 }
 
 function joinRoom(){
   const code=document.getElementById('room-code-input').value.trim();
   if(!code||code.length!==4){st('⚠️ 输入4位房间号','error');return}
-  roomCode=code;st('⏳ 连接信令服务器...','connecting');
+  roomCode=code;
+  st('⏳ 连接服务器...','connecting');
+  connectWS('join');
+}
+
+function connectWS(action){
+  if(ws){ws.close();ws=null}
   try{
-    peer=new Peer(undefined,{
-      config:{iceServers:[
-        {urls:'stun:stun.l.google.com:19302'},
-        {urls:'stun:stun1.l.google.com:19302'}
-      ]}
-    });
-    peer.on('open',()=>{
-      st('⏳ 正在连接对方...','connecting');
-      conn=peer.connect('xiangqi-'+roomCode,{reliable:true});
-      connTimer=setTimeout(()=>{
-        st('⏰ 连接超时：对方不在线或房间号错误，请确认房间号','error');
-        if(conn){conn.close();conn=null}
-      },15000);
-      conn.on('open',()=>{
-        if(connTimer){clearTimeout(connTimer);connTimer=null}
-        document.getElementById('room-created-box').classList.add('hidden');
-        myColor=BLACK;startOnline()
-      });
-      conn.on('data',hm);
-      conn.on('close',()=>{if(mode==='online'){msg('对手已断开');document.getElementById('opp-dot').className='opp-dot offline';document.getElementById('opp-status').textContent='已断开'}});
-    });
-    peer.on('error',e=>{st('❌ 连接失败: '+e.type+' 可刷新重试','error')});
-    // 整体30秒超时
-    setTimeout(()=>{
-      if(!conn||!conn.open){
-        st('⏰ 连接超时，请确认房间号正确后重试','error');
-        if(conn){conn.close();conn=null}
-        if(peer){peer.destroy();peer=null}
+    ws=new WebSocket(WS_URL);
+    connTimer=setTimeout(()=>{
+      st('⏰ 服务器连接超时，可能被墙，稍后重试','error');
+      if(ws){ws.close();ws=null}
+    },10000);
+
+    ws.onopen=()=>{
+      clearTimeout(connTimer);
+      if(action==='create'){
+        ws.send(JSON.stringify({type:'create',room:roomCode}));
+        st('⏳ 创建房间中...','connecting');
+      }else{
+        ws.send(JSON.stringify({type:'join',room:roomCode}));
+        st('⏳ 加入房间中...','connecting');
       }
-    },30000);
+      // 等待响应超时
+      connTimer=setTimeout(()=>{
+        st('⏰ 操作超时，服务器无响应','error');
+        if(ws){ws.close();ws=null}
+      },15000);
+    };
+
+    ws.onmessage=(e)=>{
+      try{
+        const msg=JSON.parse(e.data);
+        clearTimeout(connTimer);
+        switch(msg.type){
+          case 'created':
+            st('✅ 房间已创建，等待对方加入','connected');
+            break;
+          case 'joined':
+            st('✅ 已加入房间','connected');
+            break;
+          case 'ready':
+            // 双方都就绪
+            myColor = action==='create'?RED:BLACK;
+            startOnline();
+            break;
+          case 'move':
+            doRemoteMove(msg.from.row,msg.from.col,msg.to.row,msg.to.col);
+            break;
+          case 'gameover':
+            gameOver=true;
+            document.getElementById('turn-indicator').className='over';
+            document.getElementById('turn-indicator').textContent='🏆 '+msg.winner+'胜！';
+            msg('🏆 '+msg.winner+'获胜！');draw();break;
+          case 'opponent_left':
+            msg('⚠️ 对手已离开');
+            document.getElementById('opp-dot').className='opp-dot offline';
+            document.getElementById('opp-status').textContent='已离开';
+            break;
+          case 'error':
+            st('❌ '+msg.message,'error');
+            document.getElementById('room-created-box').classList.add('hidden');
+            break;
+        }
+      }catch(err){}
+    };
+
+    ws.onerror=()=>{
+      clearTimeout(connTimer);
+      st('❌ 无法连接服务器，请检查网络','error');
+      document.getElementById('room-created-box').classList.add('hidden');
+    };
+
+    ws.onclose=()=>{
+      clearTimeout(connTimer);
+      if(mode==='online'){
+        msg('与服务器断开连接');
+        document.getElementById('opp-dot').className='opp-dot offline';
+        document.getElementById('opp-status').textContent='已断线';
+      }
+    };
   }catch(e){st('❌ 连接失败: '+e.message,'error')}
 }
 function startOnline(){
@@ -619,16 +648,12 @@ function startOnline(){
   document.getElementById('opp-status').textContent='已连接';document.getElementById('opp-dot').className='opp-dot online';
   resetGame();msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
 }
-function hm(data){try{const m=typeof data==='string'?JSON.parse(data):data;switch(m.type){
-  case'move':doRemoteMove(m.from.row,m.from.col,m.to.row,m.to.col);break;
-  case'gameover':gameOver=true;document.getElementById('turn-indicator').className='over';document.getElementById('turn-indicator').textContent='🏆 '+m.winner+'胜！';msg('🏆 '+m.winner+'获胜！');draw();break
-}}catch(e){}}
-function send(m){if(conn&&conn.open)conn.send(JSON.stringify(m))}
+function send(m){if(ws&&ws.readyState===WebSocket.OPEN)ws.send(JSON.stringify({...m,room:roomCode}))}
 function st(t,c){const el=document.getElementById('room-status');el.textContent=t;el.className=c||''}
 
 function doLeave(){document.getElementById('leave-modal-text').textContent=mode==='online'?'退出将断开与对手的连接':'确定退出对局吗？';document.getElementById('leave-modal').classList.add('active')}
 function closeModal(){document.getElementById('leave-modal').classList.remove('active')}
-function confirmLeave(){closeModal();if(conn){conn.close();conn=null}if(peer){peer.destroy();peer=null}backMenu()}
+function confirmLeave(){closeModal();if(ws){ws.close();ws=null}backMenu()}
 
 // ── 启动 ──
 initBoard();draw();
