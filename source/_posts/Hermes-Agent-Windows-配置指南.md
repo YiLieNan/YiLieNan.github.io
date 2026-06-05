@@ -3,7 +3,7 @@ title: 🧙 Hermes Agent Windows 配置指南 — 连接 DeepSeek 模型
 date: 2026-06-05 18:30:00
 tags: [Hermes Agent, AI, DeepSeek, 配置教程, Windows]
 categories: 技术
-cover: /images/covers/cover-2.webp
+cover: /images/covers/cover-4.webp
 ---
 
 > 本文面向 Windows 用户，一步一步教你安装 Hermes Agent 并接入 DeepSeek 模型。如果你用的也是 DeepSeek，跟着做就能在本地用上全功能的 AI 代理。
