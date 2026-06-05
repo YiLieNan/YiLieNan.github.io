@@ -280,7 +280,7 @@ function resizeCanvas() {
   ctx.setTransform(1,0,0,1,0,0);
   ctx.scale(dpr, dpr);
 
-  boardOriginX = 0;          // 棋盘左边缘 = canvas 左边缘
+  boardOriginX = PAD;          // 棋盘左边缘 = PAD
   boardOriginY = PAD;         // 棋盘上边缘（row 0）在 PAD 处
 
   drawBoard();
