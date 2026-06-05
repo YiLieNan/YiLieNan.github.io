@@ -179,7 +179,6 @@ body{
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/gun@0.9.99/gun.js"></script>
 <script>
 // ══════════════════════════════════════════
 //  中国象棋
@@ -535,150 +534,127 @@ function closeGameOver(){
 // ── 模式 ──
 function startLocal(){mode='local';document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');document.getElementById('room-bar').classList.add('hidden');resetGame()}
 function backMenu(){
-  if(gun){gun=null;roomRef=null}
+  if(pollTimer){clearInterval(pollTimer);pollTimer=null}
   document.getElementById('mode-select').classList.remove('hidden');document.getElementById('room-panel').classList.add('hidden');
   document.getElementById('game-area').classList.add('hidden');document.getElementById('room-created-box').classList.add('hidden');
   document.getElementById('room-status').textContent='';mode='local';
 }
 function showRoom(){document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.remove('hidden')}
 
-// ── 联网 (Gun.js 去中心化) ──
-let gun = null;
-let roomRef = null;
-let connTimer = null;
+// ── 联网 (GitHub Gist 中继) ──
+let pollTimer = null;
+let lastMoveTime = 0;
+let gistId = null;
 let isCreator = false;
 
 function createRoom(){
-  roomCode=String(Math.floor(1000+Math.random()*9000));
-  document.getElementById('room-code-text').textContent=roomCode;
-  document.getElementById('room-created-box').classList.remove('hidden');
+  const token=getToken();
+  if(!token){st('❌ 请先设置 GitHub Token','error');return}
   st('⏳ 创建房间...','connecting');
-  isCreator=true;
-  initGun();
+  fetch('https://api.github.com/gists',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+    body:JSON.stringify({description:'象棋房间',public:true,files:{'state.json':{content:JSON.stringify({state:'waiting',moves:[],lastMove:0})}}})
+  }).then(r=>r.json()).then(data=>{
+    if(data.id){
+      gistId=data.id;
+      roomCode=data.id.slice(-4).toUpperCase();
+      document.getElementById('room-code-text').textContent=roomCode;
+      document.getElementById('room-created-box').classList.remove('hidden');
+      isCreator=true;
+      st('✅ 已创建，分享房间号给朋友','connected');
+      waitForOpponent();
+    }else st('❌ 创建失败: '+(data.message||''),'error');
+  }).catch(()=>st('❌ 网络错误','error'));
 }
 
 function joinRoom(){
-  const code=document.getElementById('room-code-input').value.trim();
+  const code=document.getElementById('room-code-input').value.trim().toUpperCase();
   if(!code||code.length!==4){st('⚠️ 输入4位房间号','error');return}
-  roomCode=code;
-  isCreator=false;
-  st('⏳ 连接中...','connecting');
-  initGun();
-}
-
-function initGun(){
-  if(!gun) gun = Gun(['https://gunpeer.herokuapp.com/gun']);
-  roomRef = gun.get('xiangqi_'+roomCode);
-
-  connTimer = setTimeout(()=>{
-    st('⏰ 连接超时，请确认房间号后重试','error');
-    document.getElementById('room-created-box').classList.add('hidden');
-    roomRef=null;
-  },30000);
-
-  if(isCreator){
-    // 创建者：先等一会确保 Gun 就绪，再设置房间
-    setTimeout(()=>{
-      roomRef.put({state:'waiting', creator:Date.now(), ts:Date.now()});
-      st('✅ 房间已创建，等待对方加入...','connected');
-      waitForOpponent();
-    },500);
-  }else{
-    // 加入者：轮询等待房间数据同步
-    tryJoin(0);
-  }
-}
-
-function tryJoin(tryCount){
-  if(tryCount>20){ // 最多试20次，约10秒
-    st('❌ 房间不存在或已满','error');
-    document.getElementById('room-created-box').classList.add('hidden');
-    return;
-  }
-  roomRef.once(data => {
-    if(data && data.state==='waiting'){
-      clearTimeout(connTimer);
-      roomRef.put({state:'playing', joiner:Date.now(), ts:Date.now()});
-      myColor=BLACK;
-      startOnline();
-    }else{
-      // 没读到数据，等500ms再试
-      setTimeout(()=>tryJoin(tryCount+1), 500);
-    }
-  });
+  const token=getToken();
+  if(!token){st('❌ 请先设置 GitHub Token','error');return}
+  st('⏳ 查找房间...','connecting');
+  fetch('https://api.github.com/gists?per_page=50',{headers:{'Authorization':'Bearer '+token}})
+  .then(r=>r.json()).then(gists=>{
+    const found=gists.find(g=>g.id.slice(-4).toUpperCase()===code&&g.files&&g.files['state.json']);
+    if(!found){st('❌ 房间不存在','error');return}
+    gistId=found.id;roomCode=code;
+    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
+    .then(r=>r.json()).then(gist=>{
+      const state=JSON.parse(gist.files['state.json'].content);
+      if(state.state!=='waiting'){st('❌ 房间已满','error');return}
+      state.state='playing';state.joiner=Date.now();
+      fetch('https://api.github.com/gists/'+gistId,{
+        method:'PATCH',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+        body:JSON.stringify({files:{'state.json':{content:JSON.stringify(state)}}})
+      }).then(r=>r.json()).then(()=>{myColor=BLACK;startOnline(token)})
+      .catch(()=>st('❌ 加入失败','error'));
+    });
+  }).catch(()=>st('❌ 读取失败','error'));
 }
 
 function waitForOpponent(){
-  // 监听对手加入
-  const watcher = roomRef.on(data => {
-    if(data && data.state==='playing'){
-      roomRef.off(watcher);
-      myColor=RED;
-      startOnline();
-    }
-  });
-  // 超时
-  setTimeout(()=>{
-    roomRef.once(data => {
-      if(!data || data.state!=='playing'){
-        st('⏰ 等待超时，对方未加入','error');
-        document.getElementById('room-created-box').classList.add('hidden');
-        roomRef=null;
-      }
-    });
-  },60000);
+  const token=getToken();if(!token)return;
+  const poll=()=>{
+    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
+    .then(r=>r.json()).then(gist=>{
+      if(!gist.files||!gist.files['state.json'])return;
+      const state=JSON.parse(gist.files['state.json'].content);
+      if(state.state==='playing'){myColor=RED;startOnline(token);return}
+      setTimeout(poll,2000);
+    }).catch(()=>setTimeout(poll,2000));
+  };
+  setTimeout(poll,2000);
+  setTimeout(()=>{if(mode!=='online'){st('⏰ 等待超时','error');document.getElementById('room-created-box').classList.add('hidden')}},60000);
 }
 
-function startOnline(){
+function startOnline(token){
   mode='online';
-  document.getElementById('mode-select').classList.add('hidden');
-  document.getElementById('room-panel').classList.add('hidden');
-  document.getElementById('room-created-box').classList.add('hidden');
-  document.getElementById('game-area').classList.remove('hidden');
-  document.getElementById('room-bar').classList.remove('hidden');
-  document.getElementById('room-info-code').textContent=roomCode;
-  document.getElementById('opp-status').textContent='已连接';
-  document.getElementById('opp-dot').className='opp-dot online';
-  resetGame();
-  msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
-
-  // 监听对方走棋
-  listenMoves();
-}
-
-function listenMoves(){
-  if(!roomRef) return;
-  roomRef.get('move').on((data, key)=>{
-    if(!data||data.by===myColor) return;
-    if(data.type==='move'){
-      doRemoteMove(data.from.row,data.from.col,data.to.row,data.to.col);
-    }else if(data.type==='gameover'){
-      gameOver=true;
-      document.getElementById('turn-indicator').className='over';
-      document.getElementById('turn-indicator').textContent='🏆 '+data.winner+'胜！';
-      msg('🏆 '+data.winner+'获胜！');draw();
-    }
-  });
-  // 监听对手离开
-  roomRef.get('leave').on((data)=>{
-    if(data){
-      msg('⚠️ 对手已离开');
-      document.getElementById('opp-dot').className='opp-dot offline';
-      document.getElementById('opp-status').textContent='已离开';
-    }
-  });
+  document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');
+  document.getElementById('room-created-box').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');
+  document.getElementById('room-bar').classList.remove('hidden');document.getElementById('room-info-code').textContent=roomCode;
+  document.getElementById('opp-status').textContent='已连接';document.getElementById('opp-dot').className='opp-dot online';
+  resetGame();msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
+  if(pollTimer)clearInterval(pollTimer);
+  pollTimer=setInterval(()=>{
+    fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
+    .then(r=>r.json()).then(gist=>{
+      if(!gist.files||!gist.files['state.json'])return;
+      const state=JSON.parse(gist.files['state.json'].content);
+      if(state.lastMove&&state.lastMove!==lastMoveTime){
+        const newMoves=state.moves.filter(m=>m.time>lastMoveTime);
+        lastMoveTime=state.lastMove;
+        for(const mv of newMoves){
+          if(mv.by!==myColor&&mv.type==='move')doRemoteMove(mv.from.row,mv.from.col,mv.to.row,mv.to.col);
+          else if(mv.type==='gameover'){gameOver=true;document.getElementById('turn-indicator').className='over';document.getElementById('turn-indicator').textContent='🏆 '+mv.winner+'胜！';msg('🏆 '+mv.winner+'获胜！');draw();}
+        }
+      }
+    }).catch(()=>{});
+  },2000);
 }
 
 function send(m){
-  if(!roomRef) return;
-  // 走棋
-  roomRef.get('move').put({...m, by:myColor, time:Date.now()});
+  if(mode!=='online'||!gistId)return;
+  const token=getToken();if(!token)return;
+  fetch('https://api.github.com/gists/'+gistId,{headers:{'Authorization':'Bearer '+token}})
+  .then(r=>r.json()).then(gist=>{
+    if(!gist.files||!gist.files['state.json'])return;
+    const state=JSON.parse(gist.files['state.json'].content);
+    state.moves.push({...m,time:Date.now(),by:myColor});
+    state.lastMove=Date.now();
+    return fetch('https://api.github.com/gists/'+gistId,{
+      method:'PATCH',headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'},
+      body:JSON.stringify({files:{'state.json':{content:JSON.stringify(state)}}})
+    });
+  }).catch(()=>{});
 }
+
+function getToken(){try{return localStorage.getItem('gh_token')||''}catch(e){return ''}}
 function st(t,c){const el=document.getElementById('room-status');el.textContent=t;el.className=c||''}
 
 function doLeave(){document.getElementById('leave-modal-text').textContent=mode==='online'?'退出将断开与对手的连接':'确定退出对局吗？';document.getElementById('leave-modal').classList.add('active')}
 function closeModal(){document.getElementById('leave-modal').classList.remove('active')}
-function confirmLeave(){closeModal();if(gun){gun=null;roomRef=null}backMenu()}
+function confirmLeave(){closeModal();if(pollTimer){clearInterval(pollTimer);pollTimer=null}backMenu()}
 
 // ── 启动 ──
 initBoard();draw();
