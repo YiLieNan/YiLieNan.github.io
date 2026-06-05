@@ -234,7 +234,49 @@ body {
 
     <div class="post-meta">
       <input type="text" id="post-title" placeholder="📄 文章标题" autocomplete="off">
-      <input type="text" id="post-tags" placeholder="🏷️ 标签，逗号分隔" autocomplete="off">
+    </div>
+
+    <!-- 分区 + 标签 + 封面 -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+      <select id="post-category" style="padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;min-width:110px;background:#fff">
+        <option value="学习">📚 学习</option>
+        <option value="日常">☀️ 日常</option>
+      </select>
+      <input type="text" id="post-tags" placeholder="🏷️ 标签，逗号分隔" style="flex:1;min-width:150px;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none" autocomplete="off">
+      <button class="btn btn-sm btn-secondary" onclick="autoFillTags()" title="根据内容自动生成标签">🏷️ 自动标签</button>
+    </div>
+
+    <!-- 封面选择 -->
+    <div style="background:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 2px 12px rgba(124,58,237,0.06);margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:600;color:#666">🖼️ 封面图</span>
+        <select id="cover-select" onchange="updateCoverPreview()" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;outline:none;min-width:160px;background:#fff">
+          <option value="">— 随机自动分配 —</option>
+          <option value="1">cover-1</option>
+          <option value="2">cover-2</option>
+          <option value="3">cover-3</option>
+          <option value="4">cover-4</option>
+          <option value="5">cover-5</option>
+          <option value="6">cover-6</option>
+          <option value="7">cover-7</option>
+          <option value="8">cover-8</option>
+        </select>
+        <span style="font-size:13px;font-weight:600;color:#666">🖼️ 头图(banner)</span>
+        <select id="banner-select" onchange="updateBannerPreview()" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;outline:none;min-width:160px;background:#fff">
+          <option value="">— 默认横幅 —</option>
+          <option value="elaina-banner">伊蕾娜横幅</option>
+          <option value="elaina-avatar">伊蕾娜头像</option>
+        </select>
+      </div>
+      <!-- 封面/头图 预览 -->
+      <div style="display:flex;gap:12px;margin-top:8px">
+        <div id="cover-preview" style="width:120px;height:72px;border-radius:6px;overflow:hidden;background:#f0ecff;display:flex;align-items:center;justify-content:center;font-size:11px;color:#999;border:1px solid #eee;flex-shrink:0">
+          封面预览
+        </div>
+        <div id="banner-preview" style="flex:1;height:72px;border-radius:6px;overflow:hidden;background:#f0ecff;display:flex;align-items:center;justify-content:center;font-size:11px;color:#999;border:1px solid #eee">
+          头图预览
+        </div>
+      </div>
     </div>
 
     <div class="draft-bar">
@@ -544,18 +586,95 @@ function uploadImage(file) {
   reader.readAsDataURL(file);
 }
 
-// ═══════════════════ 编辑器内容 ═══════════════════
+// ═══════════════════ 封面/头图预览 ═══════════════════
+function updateCoverPreview() {
+  var val = document.getElementById('cover-select').value;
+  var el = document.getElementById('cover-preview');
+  if (val) {
+    el.innerHTML = '<img src="/images/covers/cover-' + val + '.webp" style="width:100%;height:100%;object-fit:cover">';
+  } else {
+    el.innerHTML = '随机分配';
+  }
+}
+function updateBannerPreview() {
+  var val = document.getElementById('banner-select').value;
+  var el = document.getElementById('banner-preview');
+  if (val === 'elaina-banner') {
+    el.innerHTML = '<img src="/images/elaina-banner.webp" style="width:100%;height:100%;object-fit:cover">';
+  } else if (val === 'elaina-avatar') {
+    el.innerHTML = '<img src="/images/elaina-avatar.webp" style="width:100%;height:100%;object-fit:cover">';
+  } else {
+    el.innerHTML = '默认横幅';
+  }
+}
+
+// ═══════════════════ 自动标签 ═══════════════════
+function autoFillTags() {
+  var content = document.getElementById('post-title').value.trim() + ' ' + (quill ? quill.getText() : '');
+  if (!content.trim()) { setStatus('⚠️ 请先写点内容', 'error'); return; }
+
+  var rules = [
+    { kws: ['python','django','flask','pip'], tag: 'Python' },
+    { kws: ['javascript','react','vue','node','typescript'], tag: 'JavaScript' },
+    { kws: ['html','css','web','前端'], tag: '前端' },
+    { kws: ['c语言','c++','指针'], tag: 'C语言' },
+    { kws: ['电路','eda','pcb','嘉立创'], tag: '电路' },
+    { kws: ['嵌入式','单片机','stm32','esp32','arduino'], tag: '嵌入式' },
+    { kws: ['linux','ubuntu','wsl','bash','shell'], tag: 'Linux' },
+    { kws: ['git','github'], tag: 'Git' },
+    { kws: ['docker','容器','k8s'], tag: 'Docker' },
+    { kws: ['hexo','博客','reimu'], tag: 'Hexo' },
+    { kws: ['ai','人工智能','大模型','gpt','chatgpt','deepseek','agent','llm'], tag: 'AI' },
+    { kws: ['windows','win','系统'], tag: 'Windows' },
+    { kws: ['教程','指南','配置','安装','入门'], tag: '教程' },
+    { kws: ['数据库','mysql','sqlite','mongodb'], tag: '数据库' },
+    { kws: ['电路','硬件','焊','万用表','示波器'], tag: '硬件' },
+    { kws: ['vim','vscode','neovim','ide'], tag: '编辑器' },
+    { kws: ['工具','软件','推荐','效率'], tag: '工具' },
+    { kws: ['笔记','obsidian','notion'], tag: '笔记' },
+    { kws: ['动漫','二次元','番剧'], tag: '动漫' },
+    { kws: ['游戏','switch','steam'], tag: '游戏' },
+    { kws: ['音乐','歌','网易云'], tag: '音乐' },
+    { kws: ['美食','做饭','菜谱'], tag: '美食' },
+    { kws: ['旅行','旅游','游记'], tag: '旅行' },
+    { kws: ['摄影','照片','相机'], tag: '摄影' },
+    { kws: ['读书','书单','阅读'], tag: '读书' },
+  ];
+
+  var lower = content.toLowerCase();
+  var found = [];
+  rules.forEach(function(r) {
+    if (r.kws.some(function(kw) { return lower.includes(kw); })) {
+      if (found.indexOf(r.tag) === -1) found.push(r.tag);
+    }
+  });
+
+  // 合并现有标签
+  var existing = document.getElementById('post-tags').value.split(/[,，]/).map(function(t){return t.trim()}).filter(Boolean);
+  existing.forEach(function(t) { if (found.indexOf(t) === -1) found.push(t); });
+
+  document.getElementById('post-tags').value = found.join(', ');
+  setStatus('🏷️ 已生成 ' + found.length + ' 个标签: ' + found.join(', '), 'success');
+}
+
+// ═══════════════════ 编辑器内容（含分区/封面） ═══════════════════
 function getEditorContent() {
   return {
     title: document.getElementById('post-title').value.trim(),
+    category: document.getElementById('post-category').value,
     tags: document.getElementById('post-tags').value.trim(),
+    cover: document.getElementById('cover-select').value,
+    banner: document.getElementById('banner-select').value,
     html: quill ? quill.root.innerHTML : '',
     markdown: quill ? td.turndown(quill.root.innerHTML) : ''
   };
 }
 function setEditorContent(data) {
   document.getElementById('post-title').value = data.title || '';
+  if (data.category) document.getElementById('post-category').value = data.category;
   document.getElementById('post-tags').value = data.tags || '';
+  if (data.cover) { document.getElementById('cover-select').value = data.cover; updateCoverPreview(); }
+  if (data.banner) { document.getElementById('banner-select').value = data.banner; updateBannerPreview(); }
   if (quill && data.html) quill.root.innerHTML = data.html;
 }
 
@@ -672,8 +791,19 @@ function publishPost() {
   var timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':00';
 
   var fm = '---\ntitle: ' + title + '\ndate: ' + dateStr + ' ' + timeStr + '\n';
+  var cat = document.getElementById('post-category').value;
+  if (cat) fm += 'categories: ' + cat + '\n';
   if (tags) { fm += 'tags: [' + tags.split(/[,，]/).map(function(t){return t.trim()}).filter(Boolean).join(', ') + ']\n'; }
-  fm += 'cover: /images/covers/cover-' + (Math.floor(Math.random()*8)+1) + '.webp\n---\n\n' + content;
+  var coverVal = document.getElementById('cover-select').value;
+  if (coverVal) {
+    fm += 'cover: /images/covers/cover-' + coverVal + '.webp\n';
+  } else {
+    fm += 'cover: /images/covers/cover-' + (Math.floor(Math.random()*8)+1) + '.webp\n';
+  }
+  var bannerVal = document.getElementById('banner-select').value;
+  if (bannerVal === 'elaina-banner') fm += 'banner: /images/elaina-banner.webp\n';
+  else if (bannerVal === 'elaina-avatar') fm += 'banner: /images/elaina-avatar.webp\n';
+  fm += '---\n\n' + content;
 
   var encoded = btoa(unescape(encodeURIComponent(fm)));
   var btn = document.getElementById('publish-btn');
@@ -776,15 +906,21 @@ function editPost(filename) {
       var decoded = decodeURIComponent(escape(raw));
 
       // 解析 front-matter
-      var title = '', tags = '', body = decoded;
+      var title = '', tags = '', category = '', cover = '', banner = '', body = decoded;
       var fmMatch = decoded.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
       if (fmMatch) {
         var fm = fmMatch[1];
         body = fmMatch[2].trim();
         var titleMatch = fm.match(/title:\s*(.+)/);
         if (titleMatch) title = titleMatch[1].trim();
+        var catMatch = fm.match(/categories:\s*(.+)/);
+        if (catMatch) category = catMatch[1].trim();
         var tagsMatch = fm.match(/tags:\s*\[([^\]]*)\]/);
         if (tagsMatch) tags = tagsMatch[1];
+        var coverMatch = fm.match(/cover:\s*.+\/cover-(\d+)\.webp/);
+        if (coverMatch) cover = coverMatch[1];
+        var bannerMatch = fm.match(/banner:\s*\S+\/([\w-]+)\.\w+/);
+        if (bannerMatch) banner = bannerMatch[1];
       }
 
       // Markdown → HTML
@@ -793,7 +929,13 @@ function editPost(filename) {
 
       // 填入编辑器
       document.getElementById('post-title').value = title;
+      if (category) document.getElementById('post-category').value = category;
       document.getElementById('post-tags').value = tags;
+      if (cover) { document.getElementById('cover-select').value = cover; updateCoverPreview(); }
+      if (banner) {
+        var bannerId = banner === 'elaina-banner' ? 'elaina-banner' : banner === 'elaina-avatar' ? 'elaina-avatar' : '';
+        if (bannerId) { document.getElementById('banner-select').value = bannerId; updateBannerPreview(); }
+      }
       if (quill) quill.root.innerHTML = html;
 
       // 记录编辑状态
