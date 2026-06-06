@@ -678,6 +678,7 @@ var td = new TurndownService({
   headingStyle: 'atx', codeBlockStyle: 'fenced', bulletListMarker: '-', emDelimiter: '*'
 });
 var editingSha = null;  // 编辑已有文章时的文件 SHA
+var editingPath = '';   // 编辑已有文章时的原文件路径
 
 function initEditor() {
   if (quill) return;
@@ -965,7 +966,7 @@ function publishPost() {
   var dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
   var slug = title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5\w]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'post';
   var filename = dateStr + '-' + slug + '.md';
-  var path = 'source/_posts/' + filename;
+  var path = editingPath || 'source/_posts/' + filename;
   var timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0') + ':00';
 
   var fm = '---\ntitle: ' + title + '\ndate: ' + dateStr + ' ' + timeStr + '\n';
@@ -1001,6 +1002,7 @@ function publishPost() {
   .then(function(data) {
     if (data.content) {
       editingSha = null;
+      editingPath = '';
       var draftId = getCurrentDraftId();
       if (draftId) { var d = getDrafts(); delete d[draftId]; saveDrafts(d); setCurrentDraftId(''); loadDraftList(); }
       setStatus('✅ 发布成功！<a href="/' + dateStr.replace(/-/g,'/') + '/' + slug + '/" target="_blank">查看 →</a>', 'success');
@@ -1118,6 +1120,7 @@ function editPost(filename) {
 
       // 记录编辑状态
       editingSha = data.sha;
+      editingPath = 'source/_posts/' + data.name;
       setStatus('📂 正在编辑：「' + title + '」—— 修改后点发布将更新文章', 'success');
       document.getElementById('publish-btn').textContent = '🔄 更新文章';
       document.getElementById('publish-btn').className = 'btn btn-warning';
