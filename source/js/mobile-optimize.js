@@ -6,13 +6,23 @@
 ;(function() {
   'use strict';
 
-  // ======== 底部 Tab Bar ========
-  var TAB_ITEMS = [
-    { label: '首页',   icon: '🏠', url: '/' },
-    { label: '文章',   icon: '📝', url: '/archives/' },
-    { label: '标签',   icon: '🏷️', url: '/tags/' },
-    { label: '关于',   icon: '👤', url: '/about/' }
-  ];
+  // ======== 底部 Tab Bar（从顶栏导航自动读取） ========
+  function getNavItems() {
+    var items = [];
+    var links = document.querySelectorAll('#main-nav .main-nav-link-wrap');
+    links.forEach(function(link) {
+      var labelEl = link.querySelector('.main-nav-link');
+      if (!labelEl) return;
+      var label = labelEl.textContent.trim();
+      var url = link.getAttribute('href');
+      if (!url) return;
+      // 图标映射
+      var iconMap = {'首页':'🏠','学习':'📚','日常':'📝','关于':'👤','介绍':'ℹ️','搜索':'🔍','标签':'🏷️','friend':'🔗'};
+      var icon = iconMap[label] || '📌';
+      items.push({ label: label, url: url, icon: icon });
+    });
+    return items;
+  }
 
   function isMobile() {
     return window.innerWidth <= 767;
@@ -35,7 +45,9 @@
 
     var currentPath = getCurrentPath();
 
-    TAB_ITEMS.forEach(function(item) {
+    var items = getNavItems();
+
+    items.forEach(function(item) {
       var a = document.createElement('a');
       a.className = 'tab-item';
       a.href = item.url;

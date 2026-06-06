@@ -32,23 +32,28 @@
     align-items: center;
     justify-content: center;
     flex: 1;
-    padding: 4px 0;
+    min-width: 0;
+    padding: 4px 2px;
     text-decoration: none;
     color: var(--grey-9, #888);
-    font-size: 10px;
+    font-size: 9px;
     transition: color 0.2s;
     -webkit-tap-highlight-color: transparent;
     cursor: var(--cursor-pointer, pointer);
   }
 
   #mobile-tab-bar .tab-item .tab-icon {
-    font-size: 18px;
-    margin-bottom: 2px;
+    font-size: 16px;
+    margin-bottom: 1px;
     line-height: 1;
   }
 
   #mobile-tab-bar .tab-item .tab-label {
     line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
   }
 
   #mobile-tab-bar .tab-item.active,
