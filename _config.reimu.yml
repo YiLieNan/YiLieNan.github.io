@@ -261,7 +261,7 @@ player:
 
 # Injector
 injector:
-  body_begin: '<link rel="stylesheet" href="/css/mobile-optimize.css">'
+  body_begin: '<link rel="stylesheet" href="/css/mobile-optimize.css"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"YiLieNan の 小屋","description":"YiLieNan 的个人博客，记录学习与生活","url":"https://yilienan.github.io"}</script>'
   body_end: '<script src="/js/player-drag.js"></script><script src="/js/mobile-optimize.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/intro"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
 
 # Google Analytics
