@@ -2,27 +2,28 @@
    Mobile Optimization — 手机端专项优化
    ======================== */
 
-/* ---- 1. 顶部固定导航栏 (Tab Bar) ---- */
+/* ---- 1. 底部固定导航栏 (Tab Bar，与桌面菜单同步) ---- */
 @media screen and (max-width: 767px) {
   #mobile-tab-bar {
     position: fixed;
+    bottom: 0;
     left: 0;
     right: 0;
     z-index: 999;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 50px;
-    background: var(--color-header-background, rgba(255,255,255,0.96));
+    height: 54px;
+    background: var(--color-header-background, rgba(255,255,255,0.95));
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    border-bottom: 1px solid var(--color-border, rgba(0,0,0,0.05));
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    border-top: 1px solid var(--color-border, rgba(0,0,0,0.05));
   }
 
   [data-theme='dark'] #mobile-tab-bar {
-    background: rgba(33,37,43,0.96);
-    border-bottom-color: rgba(255,255,255,0.05);
+    background: rgba(33,37,43,0.95);
+    border-top-color: rgba(255,255,255,0.05);
   }
 
   #mobile-tab-bar .tab-item {
@@ -32,7 +33,7 @@
     justify-content: center;
     flex: 1;
     min-width: 0;
-    padding: 2px 2px;
+    padding: 4px 2px;
     text-decoration: none;
     color: var(--grey-9, #888);
     font-size: 9px;
@@ -42,7 +43,7 @@
   }
 
   #mobile-tab-bar .tab-item .tab-icon {
-    font-size: 18px;
+    font-size: 16px;
     margin-bottom: 1px;
     line-height: 1;
   }
@@ -60,19 +61,25 @@
     color: var(--red-1, #e74c3c);
   }
 
-  /* 顶部留出空间（由 JS 动态设置 body padding-top） */
+  /* body 留出底部空间 */
+  body {
+    padding-bottom: 60px;
+  }
 
-  /* APlayer 位置（由 JS 动态设置） */
+  #footer {
+    margin-bottom: 60px;
+  }
+
+  /* APlayer 避开底部 Tab Bar */
   .aplayer.aplayer-fixed,
   .aplayer-fixed {
-    top: 50px !important;
-    bottom: auto !important;
+    bottom: 60px !important;
   }
 
   /* 返回顶部按钮 */
   #back-to-top {
     position: fixed;
-    bottom: 20px;
+    bottom: 68px;
     right: 16px;
     z-index: 998;
     width: 40px;
