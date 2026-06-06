@@ -1,7 +1,6 @@
 ---
 title: 标签
 date: 2026-06-06 16:00:00
-type: tags
 ---
 
 <div id="tag-app" style="min-height:200px;text-align:center;padding:40px 0;color:var(--grey-9,#999)">加载中...</div>
@@ -15,7 +14,8 @@ fetch('/tags/tags-data.json')
       app.innerHTML = '<p>暂无标签</p>';
       return;
     }
-    var maxCount = Math.max.apply(null, tags.map(function(t){ return t.count }));
+    var maxCount = 0;
+    tags.forEach(function(t){ if(t.count>maxCount)maxCount=t.count; });
     if (maxCount === 0) maxCount = 1;
 
     var html = '';
@@ -27,14 +27,13 @@ fetch('/tags/tags-data.json')
     tags.forEach(function(tag){
       var size = 14 + (tag.count / maxCount) * 14;
       var fs = Math.round(size * 10) / 10;
-      html += '<a href="' + tag.path + '" style="display:inline-block;font-size:' + fs + 'px;padding:8px 16px;border-radius:10px;background:var(--red-5,#fce8e8);color:var(--red-1,#d63031);text-decoration:none;transition:all 0.2s;white-space:nowrap" onmouseover="this.style.background=\'var(--red-1,#d63031)\';this.style.color=\'#fff\'" onmouseout="this.style.background=\'var(--red-5,#fce8e8)\';this.style.color=\'var(--red-1,#d63031)\'">';
+      html += '<a href="' + tag.path + '" style="display:inline-block;font-size:' + fs + 'px;padding:8px 16px;border-radius:10px;background:var(--red-5,#fce8e8);color:var(--red-1,#d63031);text-decoration:none;transition:all 0.2s;white-space:nowrap">';
       html += tag.name + ' <small style="font-size:0.65em;opacity:0.6">(' + tag.count + ')</small>';
       html += '</a>';
     });
 
     html += '</div>';
 
-    // Search
     setTimeout(function(){
       var inp = document.getElementById('tag-search');
       var lst = document.getElementById('tag-list');
