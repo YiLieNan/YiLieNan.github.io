@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * 导航同步脚本
  * 从 _config.reimu.yml 读取菜单配置，自动生成 mobile-optimize.js 的底部 Tab Bar

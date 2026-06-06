@@ -7,8 +7,8 @@
   'use strict';
 
   // ======== 底部 Tab Bar（由 scripts/sync-nav.js 生成） ========
-  var TAB_ITEMS = [
-    { label: '首页', url: '/', icon: '🏠' },
+                      var TAB_ITEMS = [
+    { label: 'home', url: '/', icon: '🏠' },
     { label: '搜索', url: '/tags', icon: '🔍' },
     { label: '学习', url: '/categories/学习/', icon: '📚' },
     { label: '日常', url: '/categories/日常/', icon: '📝' },

@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /**
  * 图片同步脚本
  * 扫描 source/images/covers/ 和 source/images/backgrounds/ 目录，
