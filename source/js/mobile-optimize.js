@@ -132,11 +132,30 @@
     }, 100);
   }
 
+  // ======== 手机返回键处理（先回首页，不直接退出） ========
+  function setupBackButton() {
+    if (!isMobile()) return;
+
+    // 从外部直接进入时，push 首页状态让返回键先回首页
+    var fromOutside = !document.referrer || document.referrer.indexOf(location.host) < 0;
+    if (fromOutside) {
+      history.pushState({ from: 'entry' }, '', '/');
+    }
+
+    // 拦截返回：如果触发的是我们的 entry 状态，跳首页
+    window.addEventListener('popstate', function(e) {
+      if (e.state && e.state.from === 'entry') {
+        location.href = '/';
+      }
+    });
+  }
+
   // ======== 初始化 & PJAX 兼容 ========
   function init() {
     buildTabBar();
     buildBackToTop();
     fixAPlayerPosition();
+    setupBackButton();
   }
 
   // DOM 就绪
