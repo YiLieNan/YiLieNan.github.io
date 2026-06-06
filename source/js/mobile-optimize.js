@@ -154,7 +154,6 @@
   function init() {
     buildTabBar();
     buildBackToTop();
-    fixAPlayerPosition();
     setupBackButton();
   }
 
@@ -175,7 +174,6 @@
 
     buildTabBar();
     buildBackToTop();
-    fixAPlayerPosition();
   });
 
   // 窗口大小变化时重新判断（桌面↔手机切换）
