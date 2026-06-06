@@ -7,8 +7,8 @@
 ;(function() {
   'use strict';
 
-  // ======== 底部 Tab Bar（由 scripts/sync-nav.js 生成） ========
-                                                var TAB_ITEMS = [
+  // ======== 顶部导航栏（与桌面菜单同步，放在顶栏下方）========
+                                                  var TAB_ITEMS = [
     { label: 'home', url: '/', icon: '🏠' },
     { label: '搜索', url: '/tags/', icon: '🔍' },
     { label: '学习', url: '/categories/学习/', icon: '📚' },
@@ -62,7 +62,24 @@
       bar.appendChild(a);
     });
 
-    document.body.appendChild(bar);
+    // 插入到顶栏下方
+    var header = document.getElementById('header-outer') || document.getElementById('header');
+    if (header) {
+      document.body.insertBefore(bar, header.nextSibling);
+    } else {
+      document.body.appendChild(bar);
+    }
+
+    // 计算位置：顶栏底部 + 一点点间距
+    function positionBar() {
+      var h = document.getElementById('header-outer') || document.getElementById('header');
+      if (!h) return;
+      var headerBottom = h.offsetTop + h.offsetHeight;
+      bar.style.top = (headerBottom + 4) + 'px';
+      document.body.style.paddingTop = (headerBottom + bar.offsetHeight + 8) + 'px';
+    }
+    positionBar();
+    window.addEventListener('resize', positionBar);
   }
 
   // ======== 返回顶部按钮 ========
