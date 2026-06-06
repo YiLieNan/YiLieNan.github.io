@@ -1,0 +1,11 @@
+{
+  "name": "YiLieNan",
+  "avatar": "/images/elaina-avatar.webp",
+  "bio": "一个热爱技术与动漫的开发者。",
+  "description": "电子/电气工程专业学生，伊蕾娜（魔女之旅）重度粉丝。喜欢捣鼓各种有趣的项目，记录学习与生活。",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/YiLieNan", "icon": "github" },
+    { "label": "B站", "url": "https://space.bilibili.com/3546923170532238", "icon": "bilibili" },
+    { "label": "博客", "url": "https://yilienan.github.io", "icon": "blog" }
+  ]
+}

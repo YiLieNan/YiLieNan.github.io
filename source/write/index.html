@@ -271,6 +271,7 @@ body {
   <div class="tab-bar">
     <div class="tab active" data-tab="write" onclick="switchTab('write')">✏️ 写文章</div>
     <div class="tab" data-tab="manage" onclick="switchTab('manage')">📂 文章管理</div>
+    <div class="tab" data-tab="intro" onclick="switchTab('intro')">👤 自我介绍</div>
     <div class="tab" data-tab="settings" onclick="switchTab('settings')">⚙️ 设置</div>
   </div>
 
@@ -411,6 +412,48 @@ body {
       </div>
       <div id="post-list">
         <div class="post-list-loading">⏳ 加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ 自我介绍编辑 ═══════════════ -->
+  <div class="tab-page" id="page-intro">
+    <div class="post-list-wrap">
+      <div class="post-list-header">
+        <h2>👤 编辑自我介绍</h2>
+        <span style="font-size:13px;color:#999">修改后自动保存到 /intro/data.json</span>
+      </div>
+      <div style="padding:20px">
+        <div style="display:grid;gap:16px;max-width:600px;margin:0 auto">
+          <div>
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">昵称</label>
+            <input type="text" id="intro-name" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">头像 URL</label>
+            <input type="text" id="intro-avatar" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">简介（一行）</label>
+            <input type="text" id="intro-bio" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">
+          </div>
+          <div>
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">详细介绍</label>
+            <textarea id="intro-desc" rows="3" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;resize:vertical"></textarea>
+          </div>
+          <div>
+            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">链接（每行一条：名称|URL）</label>
+            <textarea id="intro-links" rows="4" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;resize:vertical" placeholder="GitHub|https://github.com/YiLieNan"></textarea>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-primary" onclick="saveIntro()" style="flex:1">💾 保存</button>
+            <button class="btn btn-ghost" onclick="loadIntro()" style="flex:0.5">🔄 刷新</button>
+          </div>
+          <div id="intro-status" style="text-align:center;font-size:13px;color:#059669"></div>
+          <div style="margin-top:10px;padding:16px;background:#f5f0ff;border-radius:10px;font-size:13px;color:#666;line-height:1.6">
+            <strong>💡 预览：</strong>保存后访问 <a href="/intro/" target="_blank" style="color:#7c3aed">/intro/</a> 查看效果
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -556,6 +599,7 @@ function switchTab(name) {
   document.getElementById('page-' + name).classList.add('active');
   // 切换到文章管理时自动刷新
   if (name === 'manage') refreshPostList();
+  if (name === 'intro') loadIntro();
   if (name === 'settings') loadSettings();
 }
 
@@ -1142,6 +1186,86 @@ function setStatus(msg, type) {
   var el = document.getElementById('action-status');
   el.innerHTML = msg;
   el.className = 'status' + (type ? ' ' + type : '');
+}
+
+// ═══════════════════ 自我介绍编辑 ═══════════════════
+function loadIntro() {
+  var token = getToken();
+  if (!token) { document.getElementById('intro-status').innerHTML = '❌ 请先配置 Token'; return; }
+  document.getElementById('intro-status').innerHTML = '⏳ 加载中...';
+
+  fetch('https://api.github.com/repos/' + CONFIG.repo + '/contents/source/intro/data.json', {
+    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
+  })
+  .then(function(r) {
+    if (r.status === 404) { document.getElementById('intro-status').innerHTML = 'ℹ️ 暂无数据，填写后保存即可创建'; return null; }
+    return r.json();
+  })
+  .then(function(data) {
+    if (!data) return;
+    window._introSha = data.sha;
+    var content = atob(data.content.replace(/\\n/g, ''));
+    var json = JSON.parse(content);
+    document.getElementById('intro-name').value = json.name || '';
+    document.getElementById('intro-avatar').value = json.avatar || '';
+    document.getElementById('intro-bio').value = json.bio || '';
+    document.getElementById('intro-desc').value = json.description || '';
+    if (json.links) {
+      document.getElementById('intro-links').value = json.links.map(function(l) { return l.label + '|' + l.url; }).join('\\n');
+    }
+    document.getElementById('intro-status').innerHTML = '✅ 已加载';
+  })
+  .catch(function(err) {
+    document.getElementById('intro-status').innerHTML = '❌ 加载失败: ' + err.message;
+  });
+}
+
+function saveIntro() {
+  var token = getToken();
+  if (!token) { document.getElementById('intro-status').innerHTML = '❌ 请先配置 Token'; return; }
+
+  var name = document.getElementById('intro-name').value.trim();
+  var avatar = document.getElementById('intro-avatar').value.trim();
+  var bio = document.getElementById('intro-bio').value.trim();
+  var desc = document.getElementById('intro-desc').value.trim();
+  var linksRaw = document.getElementById('intro-links').value.trim();
+
+  var links = [];
+  if (linksRaw) {
+    linksRaw.split('\\n').forEach(function(line) {
+      var parts = line.split('|');
+      if (parts.length >= 2) {
+        links.push({ label: parts[0].trim(), url: parts[1].trim(), icon: '' });
+      }
+    });
+  }
+
+  var json = { name: name, avatar: avatar, bio: bio, description: desc, links: links };
+  var content = btoa(unescape(encodeURIComponent(JSON.stringify(json, null, 2))));
+
+  document.getElementById('intro-status').innerHTML = '⏳ 保存中...';
+
+  var url = 'https://api.github.com/repos/' + CONFIG.repo + '/contents/source/intro/data.json';
+  var body = { message: 'chore: update intro', content: content, branch: CONFIG.branch };
+  if (window._introSha) body.sha = window._introSha;
+
+  fetch(url, {
+    method: 'PUT',
+    headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.content) {
+      window._introSha = data.content.sha;
+      document.getElementById('intro-status').innerHTML = '✅ 保存成功！1-2分钟后刷新 /intro/ 查看效果';
+    } else {
+      document.getElementById('intro-status').innerHTML = '❌ 保存失败: ' + (data.message || '未知错误');
+    }
+  })
+  .catch(function(err) {
+    document.getElementById('intro-status').innerHTML = '❌ 保存失败: ' + err.message;
+  });
 }
 
 function openModal(id) { document.getElementById(id).classList.add('active'); }

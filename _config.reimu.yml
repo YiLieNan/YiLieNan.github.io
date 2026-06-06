@@ -16,9 +16,12 @@ menu:
   - name: 日常
     url: /categories/日常/
     icon: f0e7
-  - name: about
+  - name: 关于
     url: /about
     icon: f007
+  - name: 介绍
+    url: /intro
+    icon: f2b9
   - name: friend
     url: /friend
     icon: f2b5
@@ -259,7 +262,7 @@ player:
 # Injector
 injector:
   body_begin: '<link rel="stylesheet" href="/css/mobile-optimize.css">'
-  body_end: '<script src="/js/player-drag.js"></script><script src="/js/mobile-optimize.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/about"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
+  body_end: '<script src="/js/player-drag.js"></script><script src="/js/mobile-optimize.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/intro"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
 
 # Google Analytics
 google_analytics: false
