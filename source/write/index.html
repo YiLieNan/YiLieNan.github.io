@@ -416,44 +416,58 @@ body {
     </div>
   </div>
 
-  <!-- ═══════════════ 自我介绍编辑 ═══════════════ -->
+  <!-- ═══════════════ 自我介绍编辑（可视化） ═══════════════ -->
   <div class="tab-page" id="page-intro">
     <div class="post-list-wrap">
       <div class="post-list-header">
-        <h2>👤 编辑自我介绍</h2>
-        <span style="font-size:13px;color:#999">修改后自动保存到 /intro/data.json</span>
+        <h2>👤 自我介绍</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="intro-save-status" style="font-size:12px;color:#059669"></span>
+          <button class="btn btn-primary" onclick="saveIntro()" style="padding:6px 16px;font-size:13px">💾 保存</button>
+        </div>
       </div>
-      <div style="padding:20px">
-        <div style="display:grid;gap:16px;max-width:600px;margin:0 auto">
-          <div>
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">昵称</label>
-            <input type="text" id="intro-name" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">
-          </div>
-          <div>
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">头像 URL</label>
-            <input type="text" id="intro-avatar" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">
-          </div>
-          <div>
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">简介（一行）</label>
-            <input type="text" id="intro-bio" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">
-          </div>
-          <div>
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">详细介绍</label>
-            <textarea id="intro-desc" rows="3" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;resize:vertical"></textarea>
-          </div>
-          <div>
-            <label style="font-size:13px;color:#666;display:block;margin-bottom:4px">链接（每行一条：名称|URL）</label>
-            <textarea id="intro-links" rows="4" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;resize:vertical" placeholder="GitHub|https://github.com/YiLieNan"></textarea>
-          </div>
-          <div style="display:flex;gap:10px">
-            <button class="btn btn-primary" onclick="saveIntro()" style="flex:1">💾 保存</button>
-            <button class="btn btn-ghost" onclick="loadIntro()" style="flex:0.5">🔄 刷新</button>
-          </div>
-          <div id="intro-status" style="text-align:center;font-size:13px;color:#059669"></div>
-          <div style="margin-top:10px;padding:16px;background:#f5f0ff;border-radius:10px;font-size:13px;color:#666;line-height:1.6">
-            <strong>💡 预览：</strong>保存后访问 <a href="/intro/" target="_blank" style="color:#7c3aed">/intro/</a> 查看效果
+      <div style="padding:30px;max-width:600px;margin:0 auto;text-align:center">
+
+        <!-- 头像 -->
+        <div style="position:relative;display:inline-block;margin-bottom:10px" id="intro-edit-avatar">
+          <img id="intro-preview-avatar" src="/images/elaina-avatar.webp" style="width:120px;height:120px;border-radius:50%;object-fit:cover;box-shadow:0 4px 20px rgba(0,0,0,0.1);border:3px solid var(--red-2,#fff);cursor:pointer">
+          <div style="position:absolute;bottom:0;right:0;background:#7c3aed;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.2)" onclick="editIntroField('avatar')">✏️</div>
+        </div>
+
+        <!-- 昵称 -->
+        <div style="position:relative;display:inline-block">
+          <h1 id="intro-preview-name" style="font-size:26px;color:#d63031;margin:16px 0 8px;cursor:pointer" onclick="editIntroField('name')">YiLieNan</h1>
+          <span style="position:absolute;top:0;right:-28px;font-size:12px;cursor:pointer;color:#7c3aed;opacity:0.5" onclick="editIntroField('name')">✏️</span>
+        </div>
+
+        <!-- 简介 -->
+        <div style="position:relative;margin:0 20px">
+          <p id="intro-preview-bio" style="font-size:15px;color:#555;line-height:1.6;cursor:pointer;min-height:24px" onclick="editIntroField('bio')">一个热爱技术与动漫的开发者。</p>
+          <span style="position:absolute;top:0;right:-20px;font-size:12px;cursor:pointer;color:#7c3aed;opacity:0.5" onclick="editIntroField('bio')">✏️</span>
+        </div>
+
+        <!-- 详细介绍 -->
+        <div style="position:relative;margin:0 20px 20px">
+          <p id="intro-preview-desc" style="font-size:14px;color:#888;line-height:1.6;cursor:pointer;min-height:20px" onclick="editIntroField('desc')">电子/电气工程专业学生，伊蕾娜（魔女之旅）重度粉丝。</p>
+          <span style="position:absolute;top:0;right:-20px;font-size:12px;cursor:pointer;color:#7c3aed;opacity:0.5" onclick="editIntroField('desc')">✏️</span>
+        </div>
+
+        <!-- 链接 -->
+        <div id="intro-preview-links" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:0 20px 10px;cursor:pointer" onclick="editIntroField('links')"></div>
+
+        <!-- 编辑弹窗 -->
+        <div class="modal-overlay" id="intro-field-modal">
+          <div class="modal-box" style="max-width:500px">
+            <h3 id="intro-field-title" style="margin-bottom:12px">编辑</h3>
+            <div id="intro-field-body"></div>
+            <div class="btn-row">
+              <button class="btn btn-ghost" onclick="closeModal('intro-field-modal')">取消</button>
+              <button class="btn btn-primary" onclick="applyIntroField()">确定</button>
+            </div>
           </div>
         </div>
+
+        <div id="intro-status" style="font-size:12px;color:#888;margin-top:8px"></div>
       </div>
     </div>
   </div>
@@ -1188,62 +1202,111 @@ function setStatus(msg, type) {
   el.className = 'status' + (type ? ' ' + type : '');
 }
 
-// ═══════════════════ 自我介绍编辑 ═══════════════════
+// ═══════════════════ 自我介绍编辑（可视化） ═══════════════════
+var _introData = { name: 'YiLieNan', avatar: '/images/elaina-avatar.webp', bio: '一个热爱技术与动漫的开发者。', description: '', links: [] };
+var _editField = '';
+
+function updateIntroPreview() {
+  var d = _introData;
+  document.getElementById('intro-preview-avatar').src = d.avatar || '/images/elaina-avatar.webp';
+  document.getElementById('intro-preview-name').textContent = d.name || '昵称';
+  document.getElementById('intro-preview-bio').textContent = d.bio || '点击编辑简介';
+  document.getElementById('intro-preview-desc').textContent = d.description || '点击编辑详细介绍';
+
+  var linksHtml = '';
+  if (d.links && d.links.length) {
+    d.links.forEach(function(link) {
+      linksHtml += '<a href="' + link.url + '" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:#fce8e8;color:#d63031;text-decoration:none;font-size:14px">' + link.label + '</a>';
+    });
+  } else {
+    linksHtml = '<span style="font-size:13px;color:#ccc">点击添加链接</span>';
+  }
+  document.getElementById('intro-preview-links').innerHTML = linksHtml;
+}
+
 function loadIntro() {
   var token = getToken();
-  if (!token) { document.getElementById('intro-status').innerHTML = '❌ 请先配置 Token'; return; }
-  document.getElementById('intro-status').innerHTML = '⏳ 加载中...';
+  if (!token) { document.getElementById('intro-status').textContent = '❌ 请先配置 Token'; return; }
+  document.getElementById('intro-status').textContent = '⏳ 加载中...';
 
   fetch('https://api.github.com/repos/' + CONFIG.repo + '/contents/source/intro/data.json', {
     headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json' }
   })
   .then(function(r) {
-    if (r.status === 404) { document.getElementById('intro-status').innerHTML = 'ℹ️ 暂无数据，填写后保存即可创建'; return null; }
+    if (r.status === 404) { updateIntroPreview(); document.getElementById('intro-status').textContent = 'ℹ️ 暂无数据，编辑后保存即可'; return null; }
     return r.json();
   })
   .then(function(data) {
     if (!data) return;
     window._introSha = data.sha;
-    var content = atob(data.content.replace(/\\n/g, ''));
-    var json = JSON.parse(content);
-    document.getElementById('intro-name').value = json.name || '';
-    document.getElementById('intro-avatar').value = json.avatar || '';
-    document.getElementById('intro-bio').value = json.bio || '';
-    document.getElementById('intro-desc').value = json.description || '';
-    if (json.links) {
-      document.getElementById('intro-links').value = json.links.map(function(l) { return l.label + '|' + l.url; }).join('\\n');
-    }
-    document.getElementById('intro-status').innerHTML = '✅ 已加载';
+    var content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+    _introData = JSON.parse(content);
+    updateIntroPreview();
+    document.getElementById('intro-status').textContent = '✅ 已加载';
   })
   .catch(function(err) {
-    document.getElementById('intro-status').innerHTML = '❌ 加载失败: ' + err.message;
+    document.getElementById('intro-status').textContent = '❌ 加载失败: ' + err.message;
   });
+}
+
+function editIntroField(field) {
+  _editField = field;
+  var title = { name: '编辑昵称', bio: '编辑简介', desc: '编辑详细介绍', avatar: '编辑头像链接', links: '编辑社交链接' };
+  document.getElementById('intro-field-title').textContent = title[field] || '编辑';
+
+  var body = '';
+  if (field === 'name') {
+    body = '<input type="text" id="intro-field-input" value="' + escapeHtml(_introData.name) + '" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">';
+  } else if (field === 'bio') {
+    body = '<input type="text" id="intro-field-input" value="' + escapeHtml(_introData.bio) + '" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box">';
+  } else if (field === 'desc') {
+    body = '<textarea id="intro-field-input" rows="4" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;resize:vertical">' + escapeHtml(_introData.description) + '</textarea>';
+  } else if (field === 'avatar') {
+    body = '<input type="text" id="intro-field-input" value="' + escapeHtml(_introData.avatar) + '" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box" placeholder="/images/xxx.webp">';
+  } else if (field === 'links') {
+    var val = '';
+    if (_introData.links && _introData.links.length) {
+      val = _introData.links.map(function(l) { return l.label + '|' + l.url; }).join('\n');
+    }
+    body = '<textarea id="intro-field-input" rows="5" style="width:100%;padding:10px 14px;border:1px solid #ddd;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box;resize:vertical" placeholder="GitHub|https://github.com/YiLieNan">' + escapeHtml(val) + '</textarea>';
+  }
+  document.getElementById('intro-field-body').innerHTML = body;
+  openModal('intro-field-modal');
+
+  // 聚焦
+  setTimeout(function() {
+    var inp = document.getElementById('intro-field-input');
+    if (inp) inp.focus();
+  }, 100);
+}
+
+function applyIntroField() {
+  var val = document.getElementById('intro-field-input').value.trim();
+  if (_editField === 'name') _introData.name = val;
+  else if (_editField === 'bio') _introData.bio = val;
+  else if (_editField === 'desc') _introData.description = val;
+  else if (_editField === 'avatar') _introData.avatar = val;
+  else if (_editField === 'links') {
+    var links = [];
+    val.split('\n').forEach(function(line) {
+      var parts = line.split('|');
+      if (parts.length >= 2) links.push({ label: parts[0].trim(), url: parts[1].trim(), icon: '' });
+    });
+    _introData.links = links;
+  }
+  updateIntroPreview();
+  closeModal('intro-field-modal');
+  document.getElementById('intro-status').textContent = '✏️ 已编辑（未保存）';
 }
 
 function saveIntro() {
   var token = getToken();
-  if (!token) { document.getElementById('intro-status').innerHTML = '❌ 请先配置 Token'; return; }
+  if (!token) { document.getElementById('intro-status').textContent = '❌ 请先配置 Token'; return; }
 
-  var name = document.getElementById('intro-name').value.trim();
-  var avatar = document.getElementById('intro-avatar').value.trim();
-  var bio = document.getElementById('intro-bio').value.trim();
-  var desc = document.getElementById('intro-desc').value.trim();
-  var linksRaw = document.getElementById('intro-links').value.trim();
-
-  var links = [];
-  if (linksRaw) {
-    linksRaw.split('\\n').forEach(function(line) {
-      var parts = line.split('|');
-      if (parts.length >= 2) {
-        links.push({ label: parts[0].trim(), url: parts[1].trim(), icon: '' });
-      }
-    });
-  }
-
-  var json = { name: name, avatar: avatar, bio: bio, description: desc, links: links };
+  var json = _introData;
   var content = btoa(unescape(encodeURIComponent(JSON.stringify(json, null, 2))));
 
-  document.getElementById('intro-status').innerHTML = '⏳ 保存中...';
+  document.getElementById('intro-status').textContent = '⏳ 保存中...';
 
   var url = 'https://api.github.com/repos/' + CONFIG.repo + '/contents/source/intro/data.json';
   var body = { message: 'chore: update intro', content: content, branch: CONFIG.branch };
@@ -1258,13 +1321,13 @@ function saveIntro() {
   .then(function(data) {
     if (data.content) {
       window._introSha = data.content.sha;
-      document.getElementById('intro-status').innerHTML = '✅ 保存成功！1-2分钟后刷新 /intro/ 查看效果';
+      document.getElementById('intro-status').textContent = '✅ 已保存！1-2分钟后 /intro/ 生效';
     } else {
-      document.getElementById('intro-status').innerHTML = '❌ 保存失败: ' + (data.message || '未知错误');
+      document.getElementById('intro-status').textContent = '❌ 保存失败: ' + (data.message || '未知错误');
     }
   })
   .catch(function(err) {
-    document.getElementById('intro-status').innerHTML = '❌ 保存失败: ' + err.message;
+    document.getElementById('intro-status').textContent = '❌ 保存失败: ' + err.message;
   });
 }
 
