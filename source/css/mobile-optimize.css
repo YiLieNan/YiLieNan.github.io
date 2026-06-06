@@ -6,7 +6,6 @@
 @media screen and (max-width: 767px) {
   #mobile-tab-bar {
     position: fixed;
-    top: 0;
     left: 0;
     right: 0;
     z-index: 999;
@@ -61,17 +60,9 @@
     color: var(--red-1, #e74c3c);
   }
 
-  /* 顶部留出 Tab Bar 空间 */
-  body {
-    padding-top: 50px;
-  }
+  /* 顶部留出空间（由 JS 动态设置 body padding-top） */
 
-  /* 顶栏覆盖 */
-  #header {
-    display: none !important;
-  }
-
-  /* APlayer 在顶部 Tab Bar 下方 */
+  /* APlayer 位置（由 JS 动态设置） */
   .aplayer.aplayer-fixed,
   .aplayer-fixed {
     top: 50px !important;

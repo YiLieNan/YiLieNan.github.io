@@ -7,7 +7,7 @@
   'use strict';
 
   // ======== 顶部 Tab Bar（由 scripts/sync-nav.js 生成） ========
-                                          var TAB_ITEMS = [
+                                            var TAB_ITEMS = [
     { label: 'home', url: '/', icon: '🏠' },
     { label: '搜索', url: '/tags/', icon: '🔍' },
     { label: '学习', url: '/categories/学习/', icon: '📚' },
@@ -69,7 +69,27 @@
       bar.appendChild(a);
     });
 
-    document.body.insertBefore(bar, document.body.firstChild);
+    // 插入到顶栏下方
+    var header = document.getElementById('header') || document.querySelector('#header-outer');
+    if (header) {
+      document.body.insertBefore(bar, header.nextSibling);
+    } else {
+      document.body.appendChild(bar);
+    }
+
+    // 根据顶栏实际高度设置 Tab Bar 位置
+    function positionBar() {
+      if (!isMobile()) return;
+      var h = document.getElementById('header') || document.querySelector('#header-outer');
+      if (h) {
+        var headerBottom = h.offsetTop + h.offsetHeight;
+        bar.style.top = headerBottom + 'px';
+        // body padding = 顶栏高度 + Tab Bar 高度
+        document.body.style.paddingTop = (headerBottom + bar.offsetHeight) + 'px';
+      }
+    }
+    positionBar();
+    window.addEventListener('resize', positionBar);
   }
 
   // ======== 返回顶部按钮 ========
