@@ -3,7 +3,8 @@
   'use strict'
 
   var bgList=[]
-  for(var i=1;i<=6;i++) bgList.push('/images/backgrounds/bg-'+i+'.webp')
+  // 使用原始6张 + 桌面壁纸合集（风格统一）
+  for(var i=1;i<=46;i++) bgList.push('/images/backgrounds/bg-'+i+'.webp')
 
   var idx=0,interval=8000,fade=800
 
