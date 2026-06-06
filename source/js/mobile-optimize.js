@@ -6,23 +6,16 @@
 ;(function() {
   'use strict';
 
-  // ======== 底部 Tab Bar（从顶栏导航自动读取） ========
-  function getNavItems() {
-    var items = [];
-    var links = document.querySelectorAll('#main-nav .main-nav-link-wrap');
-    links.forEach(function(link) {
-      var labelEl = link.querySelector('.main-nav-link');
-      if (!labelEl) return;
-      var label = labelEl.textContent.trim();
-      var url = link.getAttribute('href');
-      if (!url) return;
-      // 图标映射
-      var iconMap = {'首页':'🏠','学习':'📚','日常':'📝','关于':'👤','介绍':'ℹ️','搜索':'🔍','标签':'🏷️','friend':'🔗'};
-      var icon = iconMap[label] || '📌';
-      items.push({ label: label, url: url, icon: icon });
-    });
-    return items;
-  }
+  // ======== 底部 Tab Bar（由 scripts/sync-nav.js 生成） ========
+  var TAB_ITEMS = [
+    { label: '首页', url: '/', icon: '🏠' },
+    { label: '搜索', url: '/tags', icon: '🔍' },
+    { label: '学习', url: '/categories/学习/', icon: '📚' },
+    { label: '日常', url: '/categories/日常/', icon: '📝' },
+    { label: '关于', url: '/about', icon: '👤' },
+    { label: '介绍', url: '/intro', icon: 'ℹ️' },
+    { label: 'friend', url: '/friend', icon: '🔗' }
+  ];
 
   function isMobile() {
     return window.innerWidth <= 767;
@@ -45,9 +38,7 @@
 
     var currentPath = getCurrentPath();
 
-    var items = getNavItems();
-
-    items.forEach(function(item) {
+    TAB_ITEMS.forEach(function(item) {
       var a = document.createElement('a');
       a.className = 'tab-item';
       a.href = item.url;
@@ -120,26 +111,25 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  // ======== APlayer 位置修正 ========
+  // ======== APlayer 位置修正（暴力模式） ========
   function fixAPlayerPosition() {
     if (!isMobile()) return;
 
-    // 方法1: 直接修正
-    function adjust() {
+    // 注入高优先级 CSS
+    var style = document.createElement('style');
+    style.textContent = '.aplayer-fixed, .aplayer.aplayer-fixed { bottom: 60px !important; }';
+    document.head.appendChild(style);
+
+    // 每秒检查+修正，持续20秒
+    var count = 0;
+    var timer = setInterval(function() {
       var el = document.querySelector('.aplayer.aplayer-fixed') || document.querySelector('.aplayer-fixed');
       if (el) {
         el.style.setProperty('bottom', '60px', 'important');
-        el.style.setProperty('position', 'fixed', 'important');
       }
-    }
-
-    // 方法2: MutationObserver 实时监听
-    var observer = new MutationObserver(function() { adjust(); });
-    observer.observe(document.body, { childList: true, subtree: true, attributes: false });
-
-    // 方法3: 轮询兜底
-    var timer = setInterval(adjust, 500);
-    setTimeout(function() { clearInterval(timer); }, 30000);
+      count++;
+      if (count > 20) clearInterval(timer);
+    }, 100);
   }
 
   // ======== 初始化 & PJAX 兼容 ========
