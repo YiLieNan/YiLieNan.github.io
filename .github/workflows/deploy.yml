@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages + Upyun
 
 on:
   push:
@@ -26,6 +26,15 @@ jobs:
       - run: npm ci
       - run: npx hexo generate
       - run: touch ./public/.nojekyll
+
+      # 同步到又拍云
+      - name: Sync to Upyun
+        env:
+          UPYUN_PASSWORD: ${{ secrets.UPYUN_PASSWORD }}
+        run: |
+          sudo apt-get install -y lftp
+          lftp -c "set ftp:ssl-allow no; set net:timeout 30; set net:max-retries 3; open -u yileina/yilienan-blog,$UPYUN_PASSWORD v0.ftp.upyun.com; mirror -R -v ./public / --ignore-time --delete --parallel=4"
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
