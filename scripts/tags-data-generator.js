@@ -9,7 +9,7 @@ hexo.extend.generator.register("tags-data", function () {
   tags.forEach(function (t) {
     data.push({
       name: t.name,
-      path: t.path,
+      path: "/" + t.path,
       count: t.length,
     });
   });

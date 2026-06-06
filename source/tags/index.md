@@ -27,7 +27,7 @@ fetch('/tags/tags-data.json')
     tags.forEach(function(tag){
       var size = 14 + (tag.count / maxCount) * 14;
       var fs = Math.round(size * 10) / 10;
-      html += '<a href="' + tag.path + '" style="display:inline-block;font-size:' + fs + 'px;padding:8px 16px;border-radius:10px;background:var(--red-5,#fce8e8);color:var(--red-1,#d63031);text-decoration:none;transition:all 0.2s;white-space:nowrap">';
+      html += '<a href="/' + tag.path + '" style="display:inline-block;font-size:' + fs + 'px;padding:8px 16px;border-radius:10px;background:var(--red-5,#fce8e8);color:var(--red-1,#d63031);text-decoration:none;transition:all 0.2s;white-space:nowrap">';
       html += tag.name + ' <small style="font-size:0.65em;opacity:0.6">(' + tag.count + ')</small>';
       html += '</a>';
     });
