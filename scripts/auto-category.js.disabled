@@ -1,0 +1,42 @@
+/**
+ * 自动分类脚本
+ * 在生成前，将没有分类的文章按标签自动分配分类。
+ * 通过 hexo.model API 正确处理 Category 对象。
+ */
+const TAG_CATEGORY_MAP = {
+  '日常': '日常', '杂谈': '日常',
+  '学习': '学习', '教程': '学习', '配置教程': '学习',
+  '工具': '学习', '电路': '学习', 'AI': '学习',
+  'DeepSeek': '学习', 'Hermes-Agent': '学习',
+  'Windows': '学习', 'Hexo': '学习',
+};
+
+hexo.extend.filter.register('before_generate', function () {
+  const posts = hexo.locals.get('posts');
+  if (!posts || !posts.length) return;
+
+  posts.forEach(function (post) {
+    // 已有分类不覆盖
+    if (post.categories && post.categories.length > 0) return;
+    if (!post.tags || !post.tags.length) return;
+
+    for (let i = 0; i < post.tags.length; i++) {
+      const tagName = post.tags.data[i].name;
+      const catName = TAG_CATEGORY_MAP[tagName];
+      if (catName) {
+        // 通过 Hexo model 查找或创建 category
+        var Cat = hexo.model('Category');
+        if (Cat) {
+          var cat = Cat.findOne({name: catName});
+          if (!cat) {
+            cat = Cat.insert({name: catName});
+          }
+          if (cat && post.categories) {
+            post.categories.add(cat);
+          }
+        }
+        break;
+      }
+    }
+  });
+});

@@ -1,0 +1,29 @@
+/**
+ * 分类页面生成器
+ * 替代主题默认的分类页面，确保只显示对应该分类的文章。
+ */
+hexo.extend.generator.register('auto_categories', function (locals) {
+  var categories = locals.categories;
+  if (!categories || !categories.length) return [];
+
+  var result = [];
+
+  categories.each(function (cat) {
+    if (!cat.posts || !cat.posts.length) return;
+
+    var posts = cat.posts.sort('-date');
+    var path = cat.path;  // 例如 categories/学习/
+
+    result.push({
+      path: path,
+      layout: ['category', 'archive', 'index'],
+      data: {
+        category: cat.name,
+        posts: posts,
+        __categories: true
+      }
+    });
+  });
+
+  return result;
+});
