@@ -44,11 +44,9 @@ date: 2026-06-06 16:00:00
     // 标签列表
     html += '<div id="tag-list" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:20px 16px">';
     tags.forEach(function(tag){
-      var size = 14 + (tag.count / maxCount) * 14;
-      var fs = Math.round(size * 10) / 10;
-      html += '<a href="' + tag.path + '" style="display:inline-block;font-size:' + fs + 'px;padding:8px 16px;border-radius:8px;background:var(--red-5,#fce8e8);color:var(--red-1,#d63031);text-decoration:none;transition:all 0.2s;white-space:nowrap">';
+      html += '<a href="' + tag.path + '" class="article-tag-list-link" style="display:inline-block;padding:8px 16px;border-radius:8px;background:var(--red-5);color:var(--red-1);text-decoration:none;transition:all 0.2s;white-space:nowrap;font-size:14px;box-shadow:var(--shadow-meta)">';
       html += tag.name;
-      html += ' <span style="font-size:0.65em;opacity:0.6">' + tag.count + '</span>';
+      html += ' <span style="font-size:0.75em;opacity:0.6">' + tag.count + '</span>';
       html += '</a>';
     });
     html += '</div>';
