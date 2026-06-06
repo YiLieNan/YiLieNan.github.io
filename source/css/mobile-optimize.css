@@ -1,0 +1,272 @@
+/* ========================
+   Mobile Optimization — 手机端专项优化
+   ======================== */
+
+/* ---- 1. 底部固定导航栏 (Tab Bar) ---- */
+@media screen and (max-width: 767px) {
+  #mobile-tab-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 54px;
+    background: var(--color-header-background, rgba(255,255,255,0.95));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+    border-top: 1px solid var(--color-border, rgba(0,0,0,0.05));
+  }
+
+  [data-theme='dark'] #mobile-tab-bar {
+    background: rgba(33,37,43,0.95);
+    border-top-color: rgba(255,255,255,0.05);
+  }
+
+  #mobile-tab-bar .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 4px 0;
+    text-decoration: none;
+    color: var(--grey-9, #888);
+    font-size: 10px;
+    transition: color 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    cursor: var(--cursor-pointer, pointer);
+  }
+
+  #mobile-tab-bar .tab-item .tab-icon {
+    font-size: 18px;
+    margin-bottom: 2px;
+    line-height: 1;
+  }
+
+  #mobile-tab-bar .tab-item .tab-label {
+    line-height: 1;
+  }
+
+  #mobile-tab-bar .tab-item.active,
+  #mobile-tab-bar .tab-item:active {
+    color: var(--red-1, #e74c3c);
+  }
+
+  /* 给页面底部留出 Tab Bar 的空间 */
+  body {
+    padding-bottom: 60px;
+  }
+
+  #footer {
+    margin-bottom: 60px;
+  }
+
+  /* 确保 APlayer 不跟底部 Tab Bar 重叠 */
+  .aplayer-fixed {
+    bottom: 60px !important;
+  }
+
+  /* ---- 2. 阅读体验优化 ---- */
+  .article-entry {
+    line-height: 1.8 !important;
+  }
+
+  .article-entry p {
+    line-height: 1.8 !important;
+    margin: 18px 0 !important;
+  }
+
+  .article-entry li {
+    line-height: 1.8 !important;
+    margin: 6px 0 !important;
+  }
+
+  /* 段间距更大 */
+  .article-entry h2 {
+    margin-top: 32px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .article-entry h3 {
+    margin-top: 24px !important;
+    margin-bottom: 16px !important;
+  }
+
+  /* ---- 3. 代码块支持横向滑动（不换行） ---- */
+  .article-entry figure.highlight,
+  .article-entry pre {
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    white-space: pre !important;
+    word-break: normal !important;
+    word-wrap: normal !important;
+  }
+
+  .article-entry figure.highlight table,
+  .article-entry figure.highlight pre,
+  .article-entry figure.highlight .code pre {
+    white-space: pre !important;
+  }
+
+  .article-entry figure.highlight::-webkit-scrollbar,
+  .article-entry pre::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .article-entry figure.highlight::-webkit-scrollbar-thumb,
+  .article-entry pre::-webkit-scrollbar-thumb {
+    background: var(--red-3, #ccc);
+    border-radius: 2px;
+  }
+
+  /* ---- 4. 图片全宽，减少边距 ---- */
+  .article-entry img,
+  .article-entry video {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 12px 0 !important;
+  }
+
+  /* ---- 5. 返回顶部按钮 ---- */
+  #back-to-top {
+    position: fixed;
+    bottom: 68px;
+    right: 16px;
+    z-index: 998;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--red-1, #e74c3c);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+    transform: translateY(10px);
+    cursor: var(--cursor-pointer, pointer);
+    border: none;
+    touch-action: manipulation;
+  }
+
+  #back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  #back-to-top:active {
+    transform: scale(0.9);
+  }
+
+  /* ---- 6. 首页文章卡片单栏紧凑 ---- */
+  .post-wrap {
+    height: auto !important;
+    min-height: 320px;
+    margin-bottom: 16px !important;
+  }
+
+  .post-cover {
+    height: 180px !important;
+  }
+
+  .post-info {
+    padding: 14px 16px !important;
+  }
+
+  .post-title {
+    font-size: 18px !important;
+    padding: 10px 0 !important;
+    white-space: normal !important;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .post-article {
+    -webkit-line-clamp: 3 !important;
+    line-clamp: 3 !important;
+    line-height: 1.6 !important;
+    font-size: 14px !important;
+  }
+
+  .post-meta span {
+    font-size: 12px !important;
+    margin: 0 6px !important;
+  }
+
+  /* ---- 7. 打字机动效区域紧凑 ---- */
+  #subtitle-wrap {
+    font-size: 14px !important;
+  }
+
+  /* ---- 8. 侧边栏内容提示（手机端引导用户使用汉堡菜单） ---- */
+  .mobile-sidebar-hint {
+    display: none;
+  }
+
+  @media screen and (max-width: 767px) {
+    .mobile-sidebar-hint {
+      display: block;
+      text-align: center;
+      padding: 12px 16px;
+      margin: 8px 0;
+      background: var(--red-5, #fce4e4);
+      border-radius: 8px;
+      color: var(--red-1, #e74c3c);
+      font-size: 13px;
+    }
+  }
+}
+
+/* 桌面端隐藏移动端专属元素 */
+@media screen and (min-width: 768px) {
+  #mobile-tab-bar,
+  #back-to-top-mobile {
+    display: none !important;
+  }
+}
+
+/* ---- 9. 文章导航在手机上更紧凑 ---- */
+@media screen and (max-width: 767px) {
+  .article-nav-link-wrap {
+    height: 100px !important;
+    min-height: 100px !important;
+  }
+
+  .article-nav-caption {
+    font-size: 12px !important;
+  }
+
+  .article-nav-title {
+    font-size: 14px !important;
+  }
+
+  /* 文章页头部 */
+  .article-meta {
+    padding: 14px 12px 0 !important;
+  }
+
+  .article-date-link {
+    font-size: 12px !important;
+    padding: 6px 12px !important;
+  }
+
+  /* 标签/分类胶囊 */
+  .article-category-link,
+  .article-tag-list-item {
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+    margin-top: 12px !important;
+    margin-right: 8px !important;
+  }
+}

@@ -247,9 +247,10 @@ player:
   meting:
     enable: false
 
-# 播放器拖拽 + 重定位
+# Injector
 injector:
-  body_end: '<script src="/js/player-drag.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/about"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
+  head: '<link rel="stylesheet" href="/css/mobile-optimize.css">'
+  body_end: '<script src="/js/player-drag.js"></script><script src="/js/mobile-optimize.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/about"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
 
 # Google Analytics
 google_analytics: false
