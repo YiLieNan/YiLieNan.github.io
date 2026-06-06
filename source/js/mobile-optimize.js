@@ -108,10 +108,26 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
+  // ======== APlayer 位置修正 ========
+  function fixAPlayerPosition() {
+    if (!isMobile()) return;
+    // APlayer 初始化后设 bottom 避开 Tab Bar
+    var checkExist = setInterval(function() {
+      var aplayer = document.querySelector('.aplayer-fixed');
+      if (aplayer) {
+        aplayer.style.bottom = '60px';
+        clearInterval(checkExist);
+      }
+    }, 200);
+    // 30秒后停止检查
+    setTimeout(function() { clearInterval(checkExist); }, 30000);
+  }
+
   // ======== 初始化 & PJAX 兼容 ========
   function init() {
     buildTabBar();
     buildBackToTop();
+    fixAPlayerPosition();
   }
 
   // DOM 就绪
@@ -131,6 +147,7 @@
 
     buildTabBar();
     buildBackToTop();
+    fixAPlayerPosition();
   });
 
   // 窗口大小变化时重新判断（桌面↔手机切换）
