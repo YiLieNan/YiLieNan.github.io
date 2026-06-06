@@ -249,7 +249,7 @@ player:
 
 # Injector
 injector:
-  head: '<link rel="stylesheet" href="/css/mobile-optimize.css">'
+  body_begin: '<link rel="stylesheet" href="/css/mobile-optimize.css">'
   body_end: '<script src="/js/player-drag.js"></script><script src="/js/mobile-optimize.js"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author img");if(a){a.style.cursor="pointer";a.onclick=function(){location.href="/about"}}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script>'
 
 # Google Analytics
