@@ -7,7 +7,7 @@
   'use strict';
 
   // ======== 顶部 Tab Bar（由 scripts/sync-nav.js 生成） ========
-                                            var TAB_ITEMS = [
+                                              var TAB_ITEMS = [
     { label: 'home', url: '/', icon: '🏠' },
     { label: '搜索', url: '/tags/', icon: '🔍' },
     { label: '学习', url: '/categories/学习/', icon: '📚' },
@@ -179,11 +179,20 @@
     }, 100);
   }
 
+  // ======== 又拍云禁用 giscus 评论 ========
+  function disableGiscusOnUpyun() {
+    if (!location.hostname.includes('upcdn')) return;
+    var s = document.createElement('style');
+    s.textContent = '.giscus-comment,.giscus-frame{display:none!important}';
+    document.head.appendChild(s);
+  }
+
   // ======== 初始化 & PJAX 兼容 ========
   function init() {
     buildTabBar();
     buildBackToTop();
     setupSwipeBack();
+    disableGiscusOnUpyun();
   }
 
   // DOM 就绪
