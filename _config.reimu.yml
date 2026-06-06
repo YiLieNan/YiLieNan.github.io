@@ -39,8 +39,13 @@ subtitle:
     showCursor: true
     cursorChar: "|"
 
-# 头图（背景切换覆盖，用背景图做头图）
-banner: "/images/elaina-banner.webp"
+# 头图（响应式：桌面用8K壁纸，手机用原图）
+banner: "/images/elaina-banner-desktop.webp"
+banner_srcset:
+  enable: true
+  srcset:
+    - media: "(max-width: 767px)"
+      src: "/images/elaina-banner-mobile.webp"
 
 # 头像（伊蕾娜）
 avatar: "elaina-avatar.webp"
