@@ -1,13 +1,13 @@
 /**
- * 移动端优化 — 底部导航栏 + 返回顶部按钮
+ * 移动端优化 — 顶部导航栏 + 返回顶部按钮 + 右滑返回
  * 兼容 PJAX 无刷新跳转
  */
 
 ;(function() {
   'use strict';
 
-  // ======== 底部 Tab Bar（由 scripts/sync-nav.js 生成） ========
-                                    var TAB_ITEMS = [
+  // ======== 顶部 Tab Bar（由 scripts/sync-nav.js 生成） ========
+                                      var TAB_ITEMS = [
     { label: 'home', url: '/', icon: '🏠' },
     { label: '搜索', url: '/tags/', icon: '🔍' },
     { label: '学习', url: '/categories/学习/', icon: '📚' },
@@ -57,9 +57,6 @@
       // 图标
       var icon = document.createElement('span');
       icon.className = 'tab-icon';
-
-      // 尝试使用主题的icon-font，否则用emoji fallback
-      // 使用unicode箭头字体图标更美观，但简单起见用emoji
       icon.textContent = item.icon;
 
       // 标签
@@ -72,7 +69,7 @@
       bar.appendChild(a);
     });
 
-    document.body.appendChild(bar);
+    document.body.insertBefore(bar, document.body.firstChild);
   }
 
   // ======== 返回顶部按钮 ========
@@ -111,21 +108,51 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  // ======== APlayer 位置修正（暴力模式） ========
+  // ======== 右滑返回上一页 ========
+  function setupSwipeBack() {
+    if (!isMobile()) return;
+
+    var startX = 0, startY = 0;
+    var isSwiping = false;
+
+    document.addEventListener('touchstart', function(e) {
+      // 只处理单指滑动
+      if (e.touches.length !== 1) return;
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isSwiping = true;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+      if (!isSwiping || e.touches.length !== 1) return;
+      var dx = e.touches[0].clientX - startX;
+      var dy = e.touches[0].clientY - startY;
+
+      // 右滑超过 80px，且水平距离 > 垂直距离（防止误触上下滑动）
+      if (dx > 80 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        isSwiping = false;
+        window.history.back();
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', function() {
+      isSwiping = false;
+    }, { passive: true });
+  }
+
+  // ======== APlayer 位置修正 ========
   function fixAPlayerPosition() {
     if (!isMobile()) return;
 
-    // 注入高优先级 CSS
     var style = document.createElement('style');
-    style.textContent = '.aplayer-fixed, .aplayer.aplayer-fixed { bottom: 60px !important; }';
+    style.textContent = '.aplayer-fixed, .aplayer.aplayer-fixed { bottom: 10px !important; }';
     document.head.appendChild(style);
 
-    // 每秒检查+修正，持续20秒
     var count = 0;
     var timer = setInterval(function() {
       var el = document.querySelector('.aplayer.aplayer-fixed') || document.querySelector('.aplayer-fixed');
       if (el) {
-        el.style.setProperty('bottom', '60px', 'important');
+        el.style.setProperty('bottom', '10px', 'important');
       }
       count++;
       if (count > 20) clearInterval(timer);
@@ -136,6 +163,7 @@
   function init() {
     buildTabBar();
     buildBackToTop();
+    setupSwipeBack();
   }
 
   // DOM 就绪
@@ -147,7 +175,6 @@
 
   // PJAX 页面切换后重新初始化
   document.addEventListener('pjax:complete', function() {
-    // 移除旧 tab bar（如果有 PJAX 重建了 body）
     var oldBar = document.getElementById('mobile-tab-bar');
     if (oldBar) oldBar.remove();
     var oldBtn = document.getElementById('back-to-top');
@@ -155,6 +182,7 @@
 
     buildTabBar();
     buildBackToTop();
+    // 右滑不需要重建，事件绑定在 document 上持续有效
   });
 
   // 窗口大小变化时重新判断（桌面↔手机切换）
