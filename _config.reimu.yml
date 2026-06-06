@@ -39,13 +39,17 @@ subtitle:
     showCursor: true
     cursorChar: "|"
 
-# 头图（响应式：桌面用8K壁纸，手机用原图）
+# 头图（响应式：桌面8K壁纸001，手机壁纸004）
 banner: "/images/elaina-banner-desktop.webp"
 banner_srcset:
   enable: true
   srcset:
-    - media: "(max-width: 767px)"
-      src: "/images/elaina-banner-mobile.webp"
+    - media: "(max-width: 479px)"
+      src: "/images/banner-600w.webp"
+    - media: "(max-width: 799px)"
+      src: "/images/banner-800w.webp"
+    - media: "(min-width: 800px)"
+      src: "/images/banner.webp"
 
 # 头像（伊蕾娜）
 avatar: "elaina-avatar.webp"
