@@ -6,6 +6,17 @@
   // 使用原始6张 + 桌面壁纸合集（风格统一）
   for(var i=1;i<=46;i++) bgList.push('/images/backgrounds/bg-'+i+'.webp')
 
+  // Fisher-Yates 洗牌
+  function shuffle(arr){
+    var a=arr.slice()
+    for(var i=a.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1))
+      ;[a[i],a[j]]=[a[j],a[i]]
+    }
+    return a
+  }
+
+  var playOrder=shuffle(bgList)  // 乱序播放顺序
   var idx=0,interval=8000,fade=800
 
   // 预加载图片
@@ -22,8 +33,8 @@
     // 两层背景交替 - 避免白闪
     var bg1=document.createElement('div')
     var bg2=document.createElement('div')
-    bg1.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;pointer-events:none;background:url('+bgList[0]+') center/cover no-repeat;opacity:1;transition:opacity '+fade+'ms ease'
-    bg2.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;background:url('+bgList[1]+') center/cover no-repeat;opacity:0;transition:opacity '+fade+'ms ease'
+    bg1.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;pointer-events:none;background:url('+playOrder[0]+') center/cover no-repeat;opacity:1;transition:opacity '+fade+'ms ease'
+    bg2.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;background:url('+playOrder[1]+') center/cover no-repeat;opacity:0;transition:opacity '+fade+'ms ease'
     document.body.insertBefore(bg2,document.body.firstChild)
     document.body.insertBefore(bg1,document.body.firstChild)
 
@@ -47,12 +58,16 @@
       '}'
     document.head.appendChild(s)
 
-    // 双图层交替
+    // 双图层交替 - 乱序完整放完一组后重新打乱
     var active=bg1,inactive=bg2,curIdx=0
     setInterval(function(){
-      curIdx=(curIdx+1)%bgList.length
+      curIdx++
+      if(curIdx>=playOrder.length){
+        playOrder=shuffle(bgList)
+        curIdx=0
+      }
       // 非活跃层换图然后淡入
-      inactive.style.backgroundImage='url('+bgList[curIdx]+')'
+      inactive.style.backgroundImage='url('+playOrder[curIdx]+')'
       inactive.style.opacity='1'
       active.style.opacity='0'
       // 交换引用
