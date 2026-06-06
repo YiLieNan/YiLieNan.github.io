@@ -8,7 +8,7 @@ menu:
     url: /
     icon: f015
   - name: 搜索
-    url: /tags
+    url: /tags/
     icon: f002
   - name: 学习
     url: /categories/学习/
@@ -17,13 +17,13 @@ menu:
     url: /categories/日常/
     icon: f0e7
   - name: 关于
-    url: /about
+    url: /about/
     icon: f007
   - name: 介绍
-    url: /intro
+    url: /intro/
     icon: f2b9
   - name: friend
-    url: /friend
+    url: /friend/
     icon: f2b5
 
 # 打字机副标题
