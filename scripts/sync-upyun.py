@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-又拍云同步脚本
+又拍云同步脚本（HTTP API 版）
 用法：cd blog && python3 scripts/sync-upyun.py
-
 密码从环境变量 UPYUN_PASSWORD 读取，或从 .env 文件读取。
 """
-from ftplib import FTP
-import os, sys, hashlib, json, time
+import os, sys, hashlib, json, time, base64
+from urllib.parse import quote
+import urllib.request
 
 BUCKET = 'yilienan-blog'
 OPERATOR = 'yileina'
+API_HOST = 'v0.api.upyun.com'
 
-# 优先从环境变量读，否则从 .env 文件读
 PASSWORD = os.environ.get('UPYUN_PASSWORD')
 if not PASSWORD:
     env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
@@ -33,6 +33,25 @@ def md5(path):
     with open(path, 'rb') as f:
         for chunk in iter(lambda: f.read(65536), b''): h.update(chunk)
     return h.hexdigest()
+
+def upyun_put(remote_path, local_path):
+    """用 HTTP PUT 上传文件到又拍云"""
+    url = f'http://{API_HOST}/{BUCKET}{quote(remote_path)}'
+    auth = base64.b64encode(f'{OPERATOR}:{PASSWORD}'.encode()).decode()
+    
+    with open(local_path, 'rb') as f:
+        data = f.read()
+    
+    req = urllib.request.Request(url, data=data, method='PUT')
+    req.add_header('Authorization', f'Basic {auth}')
+    req.add_header('Content-Length', str(len(data)))
+    
+    try:
+        resp = urllib.request.urlopen(req, timeout=30)
+        return True
+    except urllib.error.HTTPError as e:
+        print(f'\n❌ 上传失败 {remote_path}: HTTP {e.code} {e.read()[:100]}')
+        return False
 
 def main():
     if not os.path.exists(PUBLIC):
@@ -59,31 +78,18 @@ def main():
     print(f'📤 需上传 {len(to_upload)} 个文件...')
     sys.stdout.flush()
 
-    ftp = FTP('v0.ftp.upyun.com')
-    ftp.login(OPERATOR + '/' + BUCKET, PASSWORD)
-
-    dirs_made = set()
+    success = 0
     for i, (local, rel, m) in enumerate(to_upload):
         remote = '/' + rel.replace(os.sep, '/')
-        d = os.path.dirname(remote)
-        if d and d not in dirs_made:
-            ftp.cwd('/')
-            for part in d.strip('/').split('/'):
-                p = '/' + part
-                try: ftp.cwd(p)
-                except: ftp.mkd(p)
-            dirs_made.add(d)
-        ftp.cwd('/')
-        with open(local, 'rb') as fh:
-            ftp.storbinary('STOR ' + remote, fh)
-        cache[rel] = m
+        if upyun_put(remote, local):
+            cache[rel] = m
+            success += 1
         if (i+1) % 20 == 0:
-            print(f'  {i+1}/{len(to_upload)}')
+            print(f'  {i+1}/{len(to_upload)} ({success} 成功)')
             sys.stdout.flush()
 
-    ftp.quit()
     with open(CACHE, 'w') as f: json.dump(cache, f)
-    print(f'✅ 完成！上传 {len(to_upload)} 个文件')
+    print(f'✅ 完成！上传 {success}/{len(to_upload)} 个文件')
 
 if __name__ == '__main__':
     t0 = time.time()
