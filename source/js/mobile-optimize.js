@@ -111,16 +111,23 @@
   // ======== APlayer 位置修正 ========
   function fixAPlayerPosition() {
     if (!isMobile()) return;
-    // APlayer 初始化后设 bottom 避开 Tab Bar
-    var checkExist = setInterval(function() {
-      var aplayer = document.querySelector('.aplayer-fixed');
-      if (aplayer) {
-        aplayer.style.bottom = '60px';
-        clearInterval(checkExist);
+
+    // 方法1: 直接修正
+    function adjust() {
+      var el = document.querySelector('.aplayer.aplayer-fixed') || document.querySelector('.aplayer-fixed');
+      if (el) {
+        el.style.setProperty('bottom', '60px', 'important');
+        el.style.setProperty('position', 'fixed', 'important');
       }
-    }, 200);
-    // 30秒后停止检查
-    setTimeout(function() { clearInterval(checkExist); }, 30000);
+    }
+
+    // 方法2: MutationObserver 实时监听
+    var observer = new MutationObserver(function() { adjust(); });
+    observer.observe(document.body, { childList: true, subtree: true, attributes: false });
+
+    // 方法3: 轮询兜底
+    var timer = setInterval(adjust, 500);
+    setTimeout(function() { clearInterval(timer); }, 30000);
   }
 
   // ======== 初始化 & PJAX 兼容 ========

@@ -66,6 +66,7 @@
   }
 
   /* 确保 APlayer 不跟底部 Tab Bar 重叠 */
+  .aplayer.aplayer-fixed,
   .aplayer-fixed {
     bottom: 60px !important;
   }
