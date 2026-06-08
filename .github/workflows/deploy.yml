@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages + Upyun
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -26,12 +26,6 @@ jobs:
       - run: npm ci
       - run: npx hexo generate
       - run: touch ./public/.nojekyll
-
-      - name: Sync to Upyun
-        continue-on-error: true
-        env:
-          UPYUN_PASSWORD: ${{ secrets.UPYUN_PASSWORD }}
-        run: python3 scripts/actions-upyun.py
 
       - uses: actions/upload-pages-artifact@v3
         with:

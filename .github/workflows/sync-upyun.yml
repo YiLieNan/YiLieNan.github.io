@@ -1,0 +1,26 @@
+name: Sync to Upyun (scheduled)
+
+on:
+  schedule:
+    - cron: '0 */2 * * *'   # 每2小时同步一次
+  workflow_dispatch:         # 也可以手动触发
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx hexo generate
+      - name: Sync to Upyun
+        continue-on-error: true
+        env:
+          UPYUN_PASSWORD: ${{ secrets.UPYUN_PASSWORD }}
+        run: python3 scripts/actions-upyun.py
