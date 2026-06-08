@@ -8,7 +8,7 @@
   'use strict';
 
   // ======== 顶部导航栏（与桌面菜单同步，放在顶栏下方）========
-                                                                                var TAB_ITEMS = [
+                                                                                    var TAB_ITEMS = [
     { label: 'home', url: '/', icon: '🏠' },
     { label: '搜索', url: '/tags/', icon: '🔍' },
     { label: '学习', url: '/categories/学习/', icon: '📚' },
