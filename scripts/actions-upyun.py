@@ -44,29 +44,43 @@ def purge_cache(paths):
     except Exception as e:
         print(f'  ⚠ Purge failed: {e}')
 
-# 上传所有文件（带总时间保护）
+# 文件优先级：内容文件先上传，大图片放最后
+def file_priority(filename):
+    ext = filename.rsplit('.', 1)[-1].lower() if '.' in filename else ''
+    prio = {'html': 0, 'htm': 0, 'css': 1, 'js': 2, 'json': 3, 'xml': 3, 'svg': 4,
+            'webp': 10, 'jpg': 10, 'jpeg': 10, 'png': 10, 'ico': 11,
+            'mp3': 12, 'woff2': 12, 'woff': 12, 'ttf': 12}
+    return prio.get(ext, 99)
+
+# 上传所有文件（内容优先，带总时间保护）
 uploaded = []
 start_time = time.monotonic()
-total_files = sum(len(files) for _, _, files in os.walk('public'))
-
-print(f'📤 Uploading {total_files} files to Upyun...')
-time_limit_hit = False
+all_files = []
 for root, dirs, files in os.walk('public'):
-    if time_limit_hit:
-        break
     for f in files:
-        if time.monotonic() - start_time >= TOTAL_TIME_LIMIT:
-            print(f'\n⏰ Time limit ({TOTAL_TIME_LIMIT}s) reached, skipping remaining files')
-            time_limit_hit = True
-            break
         local = os.path.join(root, f)
         rel = os.path.relpath(local, 'public')
         remote = '/' + rel.replace(os.sep, '/')
-        with open(local, 'rb') as fh:
-            data = fh.read()
-        if upyun_request('PUT', remote, data):
-            uploaded.append(remote)
-        sys.stdout.write('.'); sys.stdout.flush()
+        all_files.append((file_priority(f), local, remote))
+
+# 按优先级排序，内容文件先上传
+all_files.sort(key=lambda x: x[0])
+
+total_files = len(all_files)
+print(f'📤 Uploading {total_files} files to Upyun (content first)...')
+time_limit_hit = False
+for prio, local, remote in all_files:
+    if time_limit_hit:
+        break
+    if time.monotonic() - start_time >= TOTAL_TIME_LIMIT:
+        print(f'\n⏰ Time limit ({TOTAL_TIME_LIMIT}s) reached, skipping remaining files')
+        time_limit_hit = True
+        break
+    with open(local, 'rb') as fh:
+        data = fh.read()
+    if upyun_request('PUT', remote, data):
+        uploaded.append(remote)
+    sys.stdout.write('.'); sys.stdout.flush()
 
 elapsed = time.monotonic() - start_time
 print(f'\n✅ {len(uploaded)} / {total_files} files uploaded ({elapsed:.0f}s)')

@@ -1,8 +1,10 @@
 name: Sync to Upyun (scheduled)
 
 on:
+  push:
+    branches: [main]         # 推送时立即同步
   schedule:
-    - cron: '0 */2 * * *'   # 每2小时同步一次
+    - cron: '0 */2 * * *'   # 每2小时同步一次（兜底）
   workflow_dispatch:         # 也可以手动触发
 
 permissions:
