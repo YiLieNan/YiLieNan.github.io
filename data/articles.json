@@ -1,0 +1,170 @@
+{
+  "updated": "2026-07-20T12:30:21.538Z",
+  "total": 8,
+  "categories": [
+    "学习",
+    "日常"
+  ],
+  "tags": [
+    "AI",
+    "DeepSeek",
+    "Hermes Agent",
+    "Hexo",
+    "Windows",
+    "分享",
+    "前端",
+    "学习",
+    "工具",
+    "教程",
+    "机械设计",
+    "杂谈",
+    "电路",
+    "编程",
+    "配置教程"
+  ],
+  "articles": [
+    {
+      "title": "发现了几个好的学习视频",
+      "slug": "2026-06-20-发现了几个好的学习视频",
+      "path": "2026/06/20/2026-06-20-发现了几个好的学习视频/",
+      "date": "2026-06-20",
+      "updated": "2026-06-20",
+      "categories": [
+        "日常"
+      ],
+      "tags": [
+        "教程",
+        "AI",
+        "前端",
+        "分享",
+        "学习",
+        "编程"
+      ],
+      "excerpt": "",
+      "wordCount": 774,
+      "cover": "/images/covers/cover-1.webp"
+    },
+    {
+      "title": "帮朋友写了个齿轮参数计算器",
+      "slug": "帮朋友写了个齿轮参数计算器",
+      "path": "2026/06/08/帮朋友写了个齿轮参数计算器/",
+      "date": "2026-06-08",
+      "updated": "2026-06-08",
+      "categories": [
+        "日常"
+      ],
+      "tags": [
+        "工具",
+        "前端",
+        "机械设计"
+      ],
+      "excerpt": "朋友学机械的，需要一个齿轮参数计算工具。花了一个周末帮他撸了一个，放在 GitHub Pages 上直接用。",
+      "wordCount": 393,
+      "cover": ""
+    },
+    {
+      "title": "静态博客国内加速部署的几种姿势",
+      "slug": "2026-06-07-博客国内部署教程",
+      "path": "2026/06/07/2026-06-07-博客国内部署教程/",
+      "date": "2026-06-07",
+      "updated": "2026-06-07",
+      "categories": [
+        "学习"
+      ],
+      "tags": [
+        "Hexo",
+        "教程",
+        "配置教程"
+      ],
+      "excerpt": "",
+      "wordCount": 3290,
+      "cover": "/images/covers/cover-8.webp"
+    },
+    {
+      "title": "今天被AI狠狠教学了一整天",
+      "slug": "2026-06-06-被AI教学的一天",
+      "path": "2026/06/06/2026-06-06-被AI教学的一天/",
+      "date": "2026-06-06",
+      "updated": "2026-06-07",
+      "categories": [
+        "日常"
+      ],
+      "tags": [
+        "杂谈"
+      ],
+      "excerpt": "",
+      "wordCount": 1419,
+      "cover": "/images/covers/cover-5.webp"
+    },
+    {
+      "title": "🧙 Hermes Agent Windows 配置指南 — 连接 DeepSeek 模型",
+      "slug": "Hermes-Agent-Windows-配置指南",
+      "path": "2026/06/05/Hermes-Agent-Windows-配置指南/",
+      "date": "2026-06-05",
+      "updated": "2026-06-06",
+      "categories": [
+        "学习"
+      ],
+      "tags": [
+        "Hermes Agent",
+        "AI",
+        "DeepSeek",
+        "配置教程",
+        "Windows"
+      ],
+      "excerpt": "",
+      "wordCount": 4980,
+      "cover": "/images/covers/cover-11.webp"
+    },
+    {
+      "title": "⚡ 电路分析工具箱",
+      "slug": "电路分析工具箱",
+      "path": "2026/06/04/电路分析工具箱/",
+      "date": "2026-06-04",
+      "updated": "2026-06-06",
+      "categories": [
+        "学习"
+      ],
+      "tags": [
+        "工具",
+        "电路"
+      ],
+      "excerpt": "做电路题的时候经常要算欧姆定律、串联并联、分压之类的，写了个小工具方便自己用。\n\n直接在下面对应模块输入已知参数，自动算出未知量，还会列出用到的知识点。",
+      "wordCount": 7506,
+      "cover": "/images/covers/cover-9.webp"
+    },
+    {
+      "title": "Hexo 博客搭建指南",
+      "slug": "Hexo-博客搭建指南",
+      "path": "2026/06/04/Hexo-博客搭建指南/",
+      "date": "2026-06-04",
+      "updated": "2026-06-06",
+      "categories": [
+        "学习"
+      ],
+      "tags": [
+        "Hexo",
+        "教程"
+      ],
+      "excerpt": "",
+      "wordCount": 841,
+      "cover": "/images/covers/cover-15.webp"
+    },
+    {
+      "title": "Hello World",
+      "slug": "Hello-World",
+      "path": "2026/06/04/Hello-World/",
+      "date": "2026-06-04",
+      "updated": "2026-06-05",
+      "categories": [
+        "日常"
+      ],
+      "tags": [
+        "杂谈"
+      ],
+      "excerpt": "",
+      "wordCount": 537,
+      "cover": "/images/covers/cover-1.webp"
+    }
+  ]
+}
