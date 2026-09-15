@@ -1,0 +1,688 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>中国象棋</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  min-height:100vh;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);
+  display:flex;justify-content:center;align-items:center;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;padding:12px
+}
+.hidden{display:none!important}
+.container{
+  background:rgba(255,255,255,.05);backdrop-filter:blur(10px);
+  border-radius:20px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.4);
+  max-width:560px;width:100%
+}
+.header{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px
+}
+.header .title{color:#fff;font-size:18px;font-weight:700}
+.header .title span{color:#e74c3c}
+#turn-indicator{
+  padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;transition:.3s
+}
+#turn-indicator.red{background:rgba(231,76,60,.2);color:#e74c3c}
+#turn-indicator.black{background:rgba(100,100,120,.3);color:#a0a0c0}
+#turn-indicator.over{background:rgba(255,193,7,.2);color:#ffc107}
+
+.mode-select{text-align:center;padding:50px 0}
+.mode-select h2{color:#fff;font-size:22px}
+.mode-select p{color:#888;font-size:13px;margin:6px 0 28px}
+.mode-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.mode-btn{
+  padding:18px 36px;border-radius:14px;border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;font-size:16px;font-weight:600;transition:.2s;min-width:160px
+}
+.mode-btn.local{background:rgba(46,204,113,.15);color:#2ecc71}
+.mode-btn.local:hover{background:rgba(46,204,113,.25)}
+.mode-btn.online{background:rgba(52,152,219,.15);color:#3498db}
+.mode-btn.online:hover{background:rgba(52,152,219,.25)}
+
+.room-panel{text-align:center;padding:30px 0;color:#fff}
+.room-panel h3{font-size:18px;margin-bottom:20px}
+.btn{padding:10px 22px;border-radius:10px;border:none;cursor:pointer;font-size:14px;font-weight:600;transition:.2s}
+.btn-primary{background:#3498db;color:#fff}
+.btn-primary:hover{background:#2980b9}
+.btn-back{background:transparent;color:#888;border:1px solid rgba(255,255,255,.15)}
+.btn-back:hover{color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px}
+.room-input{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.room-input input{
+  padding:12px 18px;border-radius:10px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);color:#fff;font-size:22px;text-align:center;
+  outline:none;width:150px;letter-spacing:8px;font-weight:700
+}
+.room-input input:focus{border-color:#3498db}
+.room-input input::placeholder{letter-spacing:0;color:#555;font-size:14px;font-weight:400}
+.room-created-box{
+  background:rgba(52,152,219,.1);border:1px dashed rgba(52,152,219,.3);
+  border-radius:14px;padding:24px;margin:16px auto;max-width:300px
+}
+.room-created-box .label{color:#888;font-size:13px}
+.room-created-box .code{font-size:52px;font-weight:800;color:#3498db;letter-spacing:8px;font-family:monospace}
+.room-created-box .hint{color:#888;font-size:13px;margin-top:8px}
+#room-status{font-size:13px;margin-top:8px;min-height:20px}
+#room-status.connecting{color:#f39c12}
+#room-status.connected{color:#2ecc71}
+#room-status.error{color:#e74c3c}
+.or-div{color:#555;font-size:13px;margin:14px 0}
+
+.board-holder{background:rgba(255,255,255,.03);border-radius:12px;padding:8px;text-align:center}
+#boardCanvas{display:block;margin:0 auto;border-radius:8px;cursor:pointer;touch-action:none}
+
+.footer{
+  margin-top:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px
+}
+#message{font-size:13px;color:#aaa;min-height:20px;line-height:1.4;flex:1}
+.footer-actions{display:flex;gap:6px}
+
+.room-bar{display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px;color:#888}
+.opp-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px}
+.opp-dot.online{background:#2ecc71}
+.opp-dot.offline{background:#e74c3c}
+
+.modal-overlay{
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center
+}
+.modal-overlay.active{display:flex}
+.modal-box{background:#1e1e3a;border-radius:16px;padding:28px;max-width:380px;width:90%}
+.modal-box h3{color:#fff;margin-bottom:8px}
+.modal-box p{color:#aaa;font-size:14px;margin-bottom:16px}
+.modal-box .btn-row{display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<div class="container" id="app">
+  <div class="header">
+    <div class="title">♟️ <span>中国象棋</span></div>
+    <div id="turn-indicator" class="red">🔴 红方走</div>
+  </div>
+
+  <div id="mode-select" class="mode-select">
+    <h2>选择模式</h2>
+    <p>两人轮流或联网对战</p>
+    <div class="mode-btns">
+      <button class="mode-btn local" onclick="startLocal()">🏠 本地对战</button>
+      <button class="mode-btn online" onclick="showRoom()">🌐 联网对战</button>
+    </div>
+  </div>
+
+  <div id="room-panel" class="room-panel hidden">
+    <h3>🌐 联网对战</h3>
+    <button class="btn btn-primary" onclick="createRoom()">创建房间</button>
+    <div class="or-div">— 或 —</div>
+    <div class="room-input">
+      <input type="text" id="room-code-input" placeholder="0000" maxlength="4">
+      <button class="btn btn-primary" onclick="joinRoom()">加入</button>
+    </div>
+    <div id="room-created-box" class="room-created-box hidden">
+      <div class="label">🎯 把房间号发给对方</div>
+      <div class="code" id="room-code-text">0000</div>
+      <div class="hint">等待对方加入中...</div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn btn-back btn-sm" onclick="document.getElementById('settings-modal').classList.add('active');initSettings()">⚙️ 设置</button>
+      <button class="btn btn-back btn-sm" onclick="backMenu()" style="margin-left:8px">← 返回</button>
+    </div>
+    <div id="room-status"></div>
+  </div>
+
+  <div id="game-area" class="hidden">
+    <div id="room-bar" class="room-bar hidden">
+      <span>房间 <strong id="room-info-code"></strong></span>
+      <span><span class="opp-dot" id="opp-dot"></span><span id="opp-status">等待...</span></span>
+    </div>
+    <div class="board-holder">
+      <canvas id="boardCanvas" width="472" height="520"></canvas>
+    </div>
+    <div class="footer">
+      <div id="message">点击棋子选中，再点击目标移动</div>
+      <div class="footer-actions">
+        <button class="btn btn-sm btn-back" onclick="doLeave()">🚪 退出</button>
+        <button class="btn btn-sm btn-back" onclick="resetGame()">🔄 新局</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 设置弹窗 -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal-box" style="max-width:480px">
+    <h3>⚙️ 设置</h3>
+    <div style="margin:16px 0">
+      <label style="color:#aaa;font-size:13px;display:block;margin-bottom:6px">WebSocket 服务器地址</label>
+      <input type="text" id="settings-ws-url" style="width:100%;padding:10px 14px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:rgba(255,255,255,.06);color:#fff;font-size:14px;outline:none;font-family:monospace" placeholder="wss://your-server.com">
+      <div style="font-size:12px;color:#666;margin-top:6px">部署服务器后填入地址。不填则默认使用公共服务器。</div>
+    </div>
+    <div class="btn-row">
+      <span id="settings-status" style="font-size:13px;color:#2ecc71;flex:1"></span>
+      <button class="btn btn-back btn-sm" onclick="closeModal('settings-modal')">关闭</button>
+      <button class="btn btn-primary btn-sm" onclick="saveSettings()">保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="leave-modal">
+  <div class="modal-box">
+    <h3>🚪 退出</h3>
+    <p id="leave-modal-text">确定退出对局吗？</p>
+    <div class="btn-row">
+      <button class="btn btn-back btn-sm" onclick="closeModal()">取消</button>
+      <button class="btn btn-sm btn-back" onclick="confirmLeave()" style="color:#e74c3c">退出</button>
+    </div>
+  </div>
+</div>
+
+<!-- 结算弹窗 -->
+<div class="modal-overlay" id="gameover-modal">
+  <div class="modal-box" style="text-align:center;padding:36px 28px">
+    <div id="go-icon" style="font-size:56px;margin-bottom:8px">🏆</div>
+    <h3 id="go-title" style="color:#fff;font-size:22px;margin-bottom:4px">红方胜！</h3>
+    <p id="go-desc" style="color:#aaa;font-size:14px;margin-bottom:20px">吃掉了对方将</p>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-primary" onclick="closeGameOver();resetGame()">🔄 再来一局</button>
+      <button class="btn btn-back btn-sm" onclick="closeGameOver();doLeave()">🚪 退出</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  中国象棋
+// ══════════════════════════════════════════
+
+const ROWS=10,COLS=9,RED='red',BLACK='black';
+const NAMES={red:{general:'帅',advisor:'仕',elephant:'相',horse:'马',rook:'车',cannon:'炮',soldier:'兵'},
+             black:{general:'将',advisor:'士',elephant:'象',horse:'马',rook:'车',cannon:'炮',soldier:'卒'}};
+
+let board=[],selected=null,validMoves=[],turn=RED,gameOver=false;
+let mode='local',ws=null,roomCode='',myColor=RED;
+
+const canvas=document.getElementById('boardCanvas');
+const ctx=canvas.getContext('2d');
+const PAD=40, CELL=(520-PAD*2)/9; // 48.888...
+const CX=canvas.width, CY=canvas.height;
+
+// ── 棋盘 ──
+function initBoard(){
+  board=Array.from({length:ROWS},()=>Array(COLS).fill(null));
+  const p=(r,c,t,cl)=>{board[r][c]={type:t,color:cl,row:r,col:c}};
+  p(0,0,'rook',BLACK);p(0,1,'horse',BLACK);p(0,2,'elephant',BLACK);
+  p(0,3,'advisor',BLACK);p(0,4,'general',BLACK);
+  p(0,5,'advisor',BLACK);p(0,6,'elephant',BLACK);
+  p(0,7,'horse',BLACK);p(0,8,'rook',BLACK);
+  p(2,1,'cannon',BLACK);p(2,7,'cannon',BLACK);
+  for(let c=0;c<9;c+=2)p(3,c,'soldier',BLACK);
+  p(9,0,'rook',RED);p(9,1,'horse',RED);p(9,2,'elephant',RED);
+  p(9,3,'advisor',RED);p(9,4,'general',RED);
+  p(9,5,'advisor',RED);p(9,6,'elephant',RED);
+  p(9,7,'horse',RED);p(9,8,'rook',RED);
+  p(7,1,'cannon',RED);p(7,7,'cannon',RED);
+  for(let c=0;c<9;c+=2)p(6,c,'soldier',RED);
+}
+
+// ── 绘图 ──
+function draw(){
+  ctx.clearRect(0,0,CX,CY);
+  const s=CELL,ox=PAD,oy=PAD;
+
+  // 背景
+  const bg=ctx.createLinearGradient(0,0,CX,CY);
+  bg.addColorStop(0,'#f5e6c8');bg.addColorStop(1,'#e8d5a3');
+  ctx.fillStyle=bg;rnd(0,0,CX,CY,12);ctx.fill();
+
+  ctx.strokeStyle='#5a4a3a';ctx.lineWidth=1;
+  // 横线
+  for(let r=0;r<ROWS;r++){ctx.beginPath();ctx.moveTo(ox,oy+r*s);ctx.lineTo(ox+8*s,oy+r*s);ctx.stroke()}
+  // 竖线
+  for(let c=0;c<COLS;c++){
+    if(c===0||c===8){ctx.beginPath();ctx.moveTo(ox+c*s,oy);ctx.lineTo(ox+c*s,oy+9*s);ctx.stroke()}
+    else{ctx.beginPath();ctx.moveTo(ox+c*s,oy);ctx.lineTo(ox+c*s,oy+4*s);ctx.stroke();ctx.beginPath();ctx.moveTo(ox+c*s,oy+5*s);ctx.lineTo(ox+c*s,oy+9*s);ctx.stroke()}
+  }
+  // 九宫
+  ctx.beginPath();ctx.moveTo(ox+3*s,oy);ctx.lineTo(ox+5*s,oy+2*s);
+  ctx.moveTo(ox+5*s,oy);ctx.lineTo(ox+3*s,oy+2*s);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ox+3*s,oy+7*s);ctx.lineTo(ox+5*s,oy+9*s);
+  ctx.moveTo(ox+5*s,oy+7*s);ctx.lineTo(ox+3*s,oy+9*s);ctx.stroke();
+
+  ctx.fillStyle='#5a4a3a';ctx.font=s*0.45+'px "KaiTi","STKaiti",serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('楚  河',ox+2*s,oy+4.5*s);
+  ctx.fillText('汉  界',ox+6*s,oy+4.5*s);
+
+  // 十字花
+  for(const[r,c]of[[2,1],[2,7],[7,1],[7,7],[3,0],[3,2],[3,4],[3,6],[3,8],[6,0],[6,2],[6,4],[6,6],[6,8]])
+    crs(ox+c*s,oy+r*s,s);
+
+  // 棋子
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    const p=board[r][c];if(!p)continue;
+    const sel=selected&&selected.row===r&&selected.col===c;
+    pc(ox+c*s,oy+r*s,s,p,sel);
+  }
+
+  // 走法提示
+  for(const m of validMoves){
+    const x=ox+m.col*s,y=oy+m.row*s,has=!!board[m.row][m.col];
+    ctx.beginPath();ctx.arc(x,y,s*0.15,0,Math.PI*2);
+    ctx.fillStyle=has?'rgba(231,76,60,.5)':'rgba(46,204,113,.6)';ctx.fill();
+    if(has){
+      ctx.beginPath();ctx.arc(x,y,s*0.40,0,Math.PI*2);
+      ctx.strokeStyle='rgba(231,76,60,.6)';ctx.lineWidth=3;ctx.stroke();
+    }
+  }
+}
+function rnd(x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function crs(x,y,s){
+  const g=s*0.1,len=s*0.13;
+  for(const[dx,dy]of[[-1,-1],[1,-1],[-1,1],[1,1]]){
+    ctx.beginPath();ctx.moveTo(x+dx*g,y+dy*(g+len));
+    ctx.lineTo(x+dx*(g+len),y+dy*g);ctx.lineTo(x+dx*(g+len*0.3),y+dy*(g+len*0.3));ctx.stroke();
+  }
+}
+function pc(x,y,s,p,sel){
+  const r=s*0.42,name=NAMES[p.color][p.type];
+  ctx.save();ctx.shadowColor='rgba(0,0,0,.2)';ctx.shadowBlur=8;ctx.shadowOffsetX=2;ctx.shadowOffsetY=2;
+  const g=ctx.createRadialGradient(x-r*0.3,y-r*0.3,r*0.1,x,y,r);
+  if(p.color===RED){g.addColorStop(0,'#fff5f0');g.addColorStop(.7,'#fce4d6');g.addColorStop(1,'#f5c6b0')}
+  else{g.addColorStop(0,'#f0f0f5');g.addColorStop(.7,'#e0e0e8');g.addColorStop(1,'#c8c8d5')}
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+  ctx.shadowColor='transparent';
+  ctx.strokeStyle=p.color===RED?'#c0392b':'#3a3a5a';ctx.lineWidth=2;ctx.stroke();
+  ctx.beginPath();ctx.arc(x,y,r*0.85,0,Math.PI*2);
+  ctx.strokeStyle=p.color===RED?'#c0392b':'#3a3a5a';ctx.lineWidth=1;ctx.stroke();
+  ctx.restore();
+  // 选中高亮 — 加粗的蓝色虚线
+  if(sel){
+    ctx.beginPath();ctx.arc(x,y,r+5,0,Math.PI*2);
+    ctx.strokeStyle='#3498db';ctx.lineWidth=4;ctx.setLineDash([6,5]);
+    ctx.stroke();ctx.setLineDash([]);
+    // 发光效果
+    ctx.beginPath();ctx.arc(x,y,r+8,0,Math.PI*2);
+    ctx.strokeStyle='rgba(52,152,219,.2)';ctx.lineWidth=6;ctx.stroke();
+  }
+  ctx.fillStyle=p.color===RED?'#c0392b':'#2d2d4a';
+  ctx.font='bold '+s*0.38+'px "KaiTi","STKaiti","SimSun",serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(name,x,y+1);
+}
+
+// ── 坐标 ──
+function clickPos(ev){
+  const rect=canvas.getBoundingClientRect();
+  const cx=ev.clientX-rect.left,cy=ev.clientY-rect.top;
+  const col=Math.round((cx-PAD)/CELL),row=Math.round((cy-PAD)/CELL);
+  if(row<0||row>=ROWS||col<0||col>=COLS)return null;
+  if(Math.abs(cx-(PAD+col*CELL))>CELL*0.44)return null;
+  if(Math.abs(cy-(PAD+row*CELL))>CELL*0.44)return null;
+  return{row,col};
+}
+
+// ── 走法规则（完全自由：只限制基本走子规则，不限制将军）──
+function ib(r,c){return r>=0&&r<ROWS&&c>=0&&c<COLS}
+function ip(r,c,cl){return c>=3&&c<=5&&(cl===RED?(r>=7&&r<=9):(r>=0&&r<=2))}
+function os(r,cl){return cl===RED?(r>=5):(r<=4)}
+
+function getMoves(r,c){
+  const p=board[r][c];if(!p)return[];
+  const cl=p.color,res=[];
+  switch(p.type){
+    case'general':
+      for(const[dr,dc]of[[0,1],[0,-1],[1,0],[-1,0]]){const nr=r+dr,nc=c+dc;if(ip(nr,nc,cl))res.push({row:nr,col:nc})}break;
+    case'advisor':
+      for(const[dr,dc]of[[1,1],[1,-1],[-1,1],[-1,-1]]){const nr=r+dr,nc=c+dc;if(ip(nr,nc,cl))res.push({row:nr,col:nc})}break;
+    case'elephant':{
+      const dirs=[[2,2],[2,-2],[-2,2],[-2,-2]],eyes=[[1,1],[1,-1],[-1,1],[-1,-1]];
+      for(let i=0;i<4;i++){const nr=r+dirs[i][0],nc=c+dirs[i][1],er=r+eyes[i][0],ec=c+eyes[i][1];
+        if(cl===RED&&nr<5)continue;if(cl===BLACK&&nr>4)continue;
+        if(ib(nr,nc)&&!board[er][ec])res.push({row:nr,col:nc})}break;
+    }
+    case'horse':{
+      for(const[mv,bl]of[[[-2,-1],[-1,0]],[[-2,1],[-1,0]],[[-1,-2],[0,-1]],[[-1,2],[0,1]],[[1,-2],[0,-1]],[[1,2],[0,1]],[[2,-1],[1,0]],[[2,1],[1,0]]]){
+        const nr=r+mv[0],nc=c+mv[1],br=r+bl[0],bc=c+bl[1];
+        if(ib(nr,nc)&&ib(br,bc)&&!board[br][bc])res.push({row:nr,col:nc})}break;
+    }
+    case'rook':
+      for(const[dr,dc]of[[0,1],[0,-1],[1,0],[-1,0]]){
+        let nr=r+dr,nc=c+dc;
+        while(ib(nr,nc)){if(board[nr][nc]){res.push({row:nr,col:nc});break;}res.push({row:nr,col:nc});nr+=dr;nc+=dc;}
+      }break;
+    case'cannon':
+      for(const[dr,dc]of[[0,1],[0,-1],[1,0],[-1,0]]){
+        let nr=r+dr,nc=c+dc,jmp=false;
+        while(ib(nr,nc)){if(!jmp){if(board[nr][nc])jmp=true;else res.push({row:nr,col:nc});}else{if(board[nr][nc]){res.push({row:nr,col:nc});break;}}nr+=dr;nc+=dc;}
+      }break;
+    case'soldier':{
+      const fwd=cl===RED?-1:1,crs=!os(r,cl);
+      if(ib(r+fwd,c))res.push({row:r+fwd,col:c});
+      if(crs){if(ib(r,c-1))res.push({row:r,col:c-1});if(ib(r,c+1))res.push({row:r,col:c+1})}break;
+    }
+  }
+  // 过滤：不能吃自己
+  return res.filter(m=>{
+    const t=board[m.row][m.col];
+    return !(t&&t.color===cl);
+  });
+}
+
+function findGen(cl){
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)
+    if(board[r][c]&&board[r][c].type==='general'&&board[r][c].color===cl)return{row:r,col:c};
+  return null;
+}
+
+function flyingGenAfter(fr,fc,tr,tc,color){
+  // 模拟走一步，检查是否将帅对面
+  const p=board[fr][fc],cap=board[tr][tc];
+  board[tr][tc]=p;board[fr][fc]=null;p.row=tr;p.col=tc;
+
+  const rg=findGen(RED),bg=findGen(BLACK);
+  let fg=false;
+  if(rg&&bg&&rg.col===bg.col){
+    let blocked=false;
+    for(let r=Math.min(rg.row,bg.row)+1;r<Math.max(rg.row,bg.row);r++){if(board[r][rg.col]){blocked=true;break;}}
+    fg=!blocked;
+  }
+
+  board[fr][fc]=p;board[tr][tc]=cap;p.row=fr;p.col=fc;
+  return fg;
+}
+
+// ── 将军/将杀检测（仅用于显示提示，不限制走棋）──
+function inCheck(cl){
+  const gen=findGen(cl);if(!gen)return true;
+  const enemy=cl===RED?BLACK:RED;
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    const p=board[r][c];if(!p||p.color!==enemy)continue;
+    for(const m of getMoves(r,c))if(m.row===gen.row&&m.col===gen.col)return true;
+  }
+  return false;
+}
+
+function hasLegalMoves(cl){
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    const p=board[r][c];if(!p||p.color!==cl)continue;
+    if(getMoves(r,c).length>0)return true;
+  }
+  return false;
+}
+
+// ── 交互 ──
+function handleClick(ev){
+  if(gameOver){msg('对局已结束，点「新局」');return}
+  if(mode==='online'&&turn!==myColor){msg('等待对方走棋...');return}
+
+  const pos=clickPos(ev);if(!pos)return;
+  const{row,col}=pos,clicked=board[row][col];
+
+  if(selected){
+    if(clicked&&clicked.color===turn){
+      selected={row,col};validMoves=getMoves(row,col);draw();
+      msg(NAMES[turn][clicked.type]+' 选中');return;
+    }
+    if(validMoves.some(m=>m.row===row&&m.col===col)){
+      doMove(selected.row,selected.col,row,col);
+      selected=null;validMoves=[];return;
+    }
+    selected=null;validMoves=[];draw();msg('取消选择');return;
+  }
+
+  if(clicked&&clicked.color===turn){
+    selected={row,col};validMoves=getMoves(row,col);draw();
+    msg(NAMES[turn][clicked.type]+' 选中');
+  }else msg('轮到 '+(turn===RED?'红方':'黑方'));
+}
+
+function doMove(fr,fc,tr,tc){
+  const movingColor=turn; // 谁走这步棋
+  const p=board[fr][fc],cap=board[tr][tc];
+  board[tr][tc]=p;board[fr][fc]=null;p.row=tr;p.col=tc;
+
+  // 吃将直接获胜
+  if(cap&&cap.type==='general'){
+    gameOver=true;
+    const winner=movingColor===RED?'红方':'黑方';
+    const loser=movingColor===RED?'黑方':'红方';
+    showGameOver(winner, '吃掉了对方'+NAMES[movingColor===RED?BLACK:RED]['general']);
+    if(mode==='online'&&roomRef)send({type:'gameover',winner});
+    return;
+  }
+
+  // 将帅对面检测：谁造成的谁输
+  const rg=findGen(RED),bg=findGen(BLACK);
+  if(rg&&bg&&rg.col===bg.col){
+    let blocked=false;
+    for(let r=Math.min(rg.row,bg.row)+1;r<Math.max(rg.row,bg.row);r++){if(board[r][rg.col]){blocked=true;break;}}
+    if(!blocked){
+      gameOver=true;
+      const loser=movingColor===RED?'红方':'黑方';
+      const winner=movingColor===RED?'黑方':'红方';
+      showGameOver(winner, loser+'造成将帅对面');
+      if(mode==='online'&&roomRef)send({type:'gameover',winner});
+      return;
+    }
+  }
+
+  turn=turn===RED?BLACK:RED;
+
+  // 检测将军和将杀（仅用于显示，不限制）
+  const chk=inCheck(turn),legal=hasLegalMoves(turn);
+
+  draw();
+  if(!legal){
+    gameOver=true;
+    const w=turn===RED?'黑方':'红方';
+    showGameOver(w, '对方无棋可走');
+    if(mode==='online'&&roomRef)send({type:'gameover',winner:w});
+    return;
+  }
+  if(chk)msg('⚠️ 将军！'+(turn===RED?'红方':'黑方')+'被将军');
+  else msg('轮到 '+(turn===RED?'红方':'黑方'));
+  document.getElementById('turn-indicator').className=turn;
+  document.getElementById('turn-indicator').textContent=turn===RED?'🔴 红方走':'⚫ 黑方走';
+
+  if(mode==='online'&&roomRef)send({type:'move',from:{row:fr,col:fc},to:{row:tr,col:tc}});
+}
+
+function doRemoteMove(fr,fc,tr,tc){
+  const p=board[fr][fc];
+  board[tr][tc]=p;board[fr][fc]=null;p.row=tr;p.col=tc;
+
+  // 远程走棋也检查将帅对面
+  const rg=findGen(RED),bg=findGen(BLACK);
+  if(rg&&bg&&rg.col===bg.col){
+    let blocked=false;
+    for(let r=Math.min(rg.row,bg.row)+1;r<Math.max(rg.row,bg.row);r++){if(board[r][rg.col]){blocked=true;break;}}
+    if(!blocked){
+      gameOver=true;
+      const winner=turn===RED?'黑方':'红方';
+      showGameOver(winner, '对方造成将帅对面');return;
+    }
+  }
+
+  turn=turn===RED?BLACK:RED;
+  const chk=inCheck(turn),legal=hasLegalMoves(turn);
+  draw();
+  if(!legal){
+    gameOver=true;const w=turn===RED?'黑方':'红方';
+    showGameOver(w, '对方无棋可走');return;
+  }
+  if(chk)msg('⚠️ 将军！');else msg('轮到 '+(turn===RED?'红方':'黑方'));
+  document.getElementById('turn-indicator').className=turn;
+  document.getElementById('turn-indicator').textContent=turn===RED?'🔴 红方走':'⚫ 黑方走';
+}
+
+function resetGame(){
+  initBoard();selected=null;validMoves=[];gameOver=false;
+  if(mode!=='online')turn=RED;
+  document.getElementById('turn-indicator').className=turn;
+  document.getElementById('turn-indicator').textContent=turn===RED?'🔴 红方走':'⚫ 黑方走';
+  msg('点击棋子选中，再点击目标移动');draw();
+}
+function msg(t){document.getElementById('message').textContent=t}
+
+function showGameOver(winner, reason){
+  document.getElementById('turn-indicator').className='over';
+  document.getElementById('turn-indicator').textContent='🏆 '+winner+'胜！';
+  document.getElementById('go-title').textContent=winner+'胜！';
+  document.getElementById('go-desc').textContent=reason;
+  document.getElementById('gameover-modal').classList.add('active');
+  draw();
+}
+function closeGameOver(){
+  document.getElementById('gameover-modal').classList.remove('active');
+}
+
+// ── 模式 ──
+function startLocal(){mode='local';document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.add('hidden');document.getElementById('game-area').classList.remove('hidden');document.getElementById('room-bar').classList.add('hidden');resetGame()}
+function backMenu(){
+  if(ws){ws.close();ws=null}
+  document.getElementById('mode-select').classList.remove('hidden');document.getElementById('room-panel').classList.add('hidden');
+  document.getElementById('game-area').classList.add('hidden');document.getElementById('room-created-box').classList.add('hidden');
+  document.getElementById('room-status').textContent='';mode='local';
+}
+function showRoom(){document.getElementById('mode-select').classList.add('hidden');document.getElementById('room-panel').classList.remove('hidden')}
+
+// ── 联网 (WebSocket 中继，零配置) ──
+// 需要部署服务器到 Render，部署后所有人都能直接连
+// 部署指南：https://render.com/deploy?repo=你的仓库地址
+let ws = null;
+let wsTimer = null;
+
+function connectWS(action){
+  if(ws){ws.close();ws=null}
+  const url = getServerUrl();
+  if(!url){st('⚠️ 未配置服务器地址，请在⚙️设置页配置','error');return}
+  try{
+    ws=new WebSocket(url);
+    wsTimer=setTimeout(()=>{
+      if(ws&&ws.readyState!==1){st('⏰ 服务器连接超时','error');ws.close();}
+    },8000);
+    ws.onopen=()=>{
+      clearTimeout(wsTimer);
+      if(action==='create'){
+        ws.send(JSON.stringify({type:'create'}));
+        st('⏳ 创建房间中...','connecting');
+      }else{
+        const code=document.getElementById('room-code-input').value.trim();
+        if(!code||code.length!==4){st('⚠️ 输入4位房间号','error');return}
+        ws.send(JSON.stringify({type:'join',room:code}));
+        st('⏳ 加入中...','connecting');
+      }
+      wsTimer=setTimeout(()=>{
+        st('⏰ 操作超时，服务器无响应','error');
+        if(ws)ws.close();
+      },15000);
+    };
+    ws.onmessage=(e)=>{
+      try{
+        const msg=JSON.parse(e.data);
+        clearTimeout(wsTimer);
+        switch(msg.type){
+          case 'created':
+            roomCode=msg.room;
+            document.getElementById('room-code-text').textContent=roomCode;
+            document.getElementById('room-created-box').classList.remove('hidden');
+            document.getElementById('room-panel').classList.add('hidden');
+            myColor=RED;startOnline();break;
+          case 'joined':
+            myColor=BLACK;startOnline();break;
+          case 'start':
+            // 双方就绪，已经在 startOnline 里了
+            break;
+          case 'move':
+            doRemoteMove(msg.from.row,msg.from.col,msg.to.row,msg.to.col);break;
+          case 'gameover':
+            gameOver=true;
+            document.getElementById('turn-indicator').className='over';
+            document.getElementById('turn-indicator').textContent='🏆 '+msg.winner+'胜！';
+            msg('🏆 '+msg.winner+'获胜！');draw();break;
+          case 'opponent_left':
+            msg('⚠️ 对手已离开');
+            document.getElementById('opp-dot').className='opp-dot offline';
+            document.getElementById('opp-status').textContent='已离开';break;
+          case 'error':
+            st('❌ '+msg.message,'error');break;
+        }
+      }catch(e){}
+    };
+    ws.onerror=()=>{clearTimeout(wsTimer);st('❌ 无法连接服务器','error');document.getElementById('room-created-box').classList.add('hidden')};
+    ws.onclose=()=>{clearTimeout(wsTimer);if(mode==='online'){msg('与服务器断开');document.getElementById('opp-dot').className='opp-dot offline'}};
+  }catch(e){st('❌ 连接失败','error')}
+}
+
+function getServerUrl(){
+  try{
+    let url=localStorage.getItem('ws_url');
+    if(!url) url='wss://xiangqi-relay.onrender.com'; // 默认
+    return url;
+  }catch(e){return null}
+}
+
+function saveServerUrl(url){
+  localStorage.setItem('ws_url',url);
+}
+
+function createRoom(){connectWS('create')}
+function joinRoom(){connectWS('join')}
+
+function startOnline(){
+  mode='online';
+  document.getElementById('mode-select').classList.add('hidden');
+  document.getElementById('game-area').classList.remove('hidden');
+  document.getElementById('room-bar').classList.remove('hidden');
+  document.getElementById('room-info-code').textContent=roomCode;
+  document.getElementById('opp-status').textContent='已连接';
+  document.getElementById('opp-dot').className='opp-dot online';
+  resetGame();
+  msg('你是'+(myColor===RED?'红方（先手）':'黑方（后手）'));
+}
+
+function send(m){
+  if(ws&&ws.readyState===WebSocket.OPEN){
+    ws.send(JSON.stringify({...m,room:roomCode}));
+  }
+}
+
+// 设置页初始化
+function initSettings(){
+  const el=document.getElementById('settings-ws-url');
+  if(el) el.value=getServerUrl();
+}
+function saveSettings(){
+  const el=document.getElementById('settings-ws-url');
+  if(el) saveServerUrl(el.value.trim());
+  document.getElementById('settings-status').textContent='✅ 已保存';
+  setTimeout(()=>document.getElementById('settings-status').textContent='',2000);
+}
+
+function st(t,c){const el=document.getElementById('room-status');el.textContent=t;el.className=c||''}
+
+function doLeave(){document.getElementById('leave-modal-text').textContent=mode==='online'?'退出将断开与对手的连接':'确定退出对局吗？';document.getElementById('leave-modal').classList.add('active')}
+function closeModal(id){
+  if(id) document.getElementById(id).classList.remove('active');
+  else document.getElementById('leave-modal').classList.remove('active');
+}
+function confirmLeave(){closeModal();if(ws){ws.close();ws=null}backMenu()}
+
+// ── 启动 ──
+initBoard();draw();
+
+canvas.onclick=handleClick;
+canvas.ontouchstart=function(e){e.preventDefault();handleClick(e.touches[0])};
+</script>
+</body>
+</html>

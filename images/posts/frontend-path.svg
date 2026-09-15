@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 420"><rect width="500" height="420" fill="#f8f7ff"/><text x="250" y="28" font-size="15" fill="#7c3aed" font-weight="bold" text-anchor="middle" font-family="sans-serif">🌐 前端学习路线</text><rect x="170" y="43" width="160" height="34" rx="5" fill="#e0d4ff" stroke="#ddd" stroke-width="1"/>
+<text x="250" y="64" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">基础三件套</text>
+<line x1="250" y1="77" x2="125" y2="90" stroke="#c4b5fd" stroke-width="1.5"/>
+<line x1="250" y1="77" x2="250" y2="90" stroke="#c4b5fd" stroke-width="1.5"/>
+<line x1="250" y1="77" x2="375" y2="90" stroke="#c4b5fd" stroke-width="1.5"/>
+<rect x="65" y="85" width="120" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="125" y="104" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">HTML 结构</text>
+<rect x="190" y="85" width="120" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="250" y="104" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">CSS 样式</text>
+<rect x="310" y="85" width="130" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="375" y="104" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">JavaScript 交互</text>
+<line x1="125" y1="116" x2="166" y2="135" stroke="#c4b5fd" stroke-width="1.5"/>
+<line x1="375" y1="116" x2="333" y2="135" stroke="#c4b5fd" stroke-width="1.5"/>
+<rect x="96" y="130" width="140" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="166" y="149" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">框架 React/Vue</text>
+<rect x="263" y="130" width="140" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="333" y="149" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">工具 Vite/Git</text>
+<line x1="166" y1="161" x2="250" y2="180" stroke="#c4b5fd" stroke-width="1.5"/>
+<line x1="333" y1="161" x2="250" y2="180" stroke="#c4b5fd" stroke-width="1.5"/>
+<rect x="175" y="175" width="150" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="250" y="194" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">AI 辅助开发</text>
+<line x1="250" y1="206" x2="166" y2="225" stroke="#c4b5fd" stroke-width="1.5"/>
+<line x1="250" y1="206" x2="333" y2="225" stroke="#c4b5fd" stroke-width="1.5"/>
+<rect x="96" y="220" width="140" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="166" y="239" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">前后端联调</text>
+<rect x="263" y="220" width="140" height="30" rx="5" fill="#ffffff" stroke="#ddd" stroke-width="1"/>
+<text x="333" y="239" font-size="11" fill="#333" font-weight="normal" text-anchor="middle" font-family="sans-serif">部署上线</text>
+</svg>

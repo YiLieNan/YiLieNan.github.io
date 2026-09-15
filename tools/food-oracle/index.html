@@ -1,0 +1,2745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>食神签 · 百味审判</title>
+  <style>
+    :root {
+      --bg-deep: #0d0d14;
+      --bg-temple: #14141f;
+      --gold: #c9a96e;
+      --gold-light: #dfc28a;
+      --gold-dim: #8a7040;
+      --text-primary: #e8e0d0;
+      --text-secondary: #a09888;
+      --red-seal: #8b1a1a;
+      --red-bright: #c42b2b;
+      --ghost-green: #3a5a3a;
+      --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.5);
+      --shadow-gold: 0 0 40px rgba(201, 169, 110, 0.15);
+      --transition-slow: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      --transition-medium: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow-x: hidden
+    }
+
+    body {
+      font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+      background: var(--bg-deep);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background var(--transition-slow);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 30%, rgba(201, 169, 110, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 30% 70%, rgba(139, 26, 26, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(201, 169, 110, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201, 169, 110, 0.015) 2px, rgba(201, 169, 110, 0.015) 3px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body.night-mode {
+      background: #0a0a12
+    }
+
+    body.night-mode::before {
+      background: radial-gradient(ellipse at 50% 30%, rgba(58, 90, 58, 0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 30% 70%, rgba(58, 42, 74, 0.1) 0%, transparent 50%);
+    }
+
+    body.night-mode .temple-title {
+      color: #8ab88a
+    }
+
+    body.night-mode .god-name {
+      color: #8ab88a
+    }
+
+    .app-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 500px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 4px
+    }
+
+    .temple-title {
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', 'SimSun', serif;
+      font-size: 2rem;
+      color: var(--gold);
+      letter-spacing: .15em;
+      text-shadow: 0 0 30px rgba(201, 169, 110, .3);
+      user-select: none
+    }
+
+    .god-name {
+      font-size: .85rem;
+      color: var(--gold-dim);
+      letter-spacing: .2em;
+      margin-top: 4px;
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif
+    }
+
+    .mood-indicator {
+      display: inline-block;
+      font-size: .75rem;
+      padding: 3px 14px;
+      border: 1px solid var(--gold-dim);
+      border-radius: 20px;
+      color: var(--gold-dim);
+      margin-top: 8px;
+      opacity: .7;
+      letter-spacing: .1em
+    }
+
+    .tube-stage {
+      position: relative;
+      width: 200px;
+      height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 600px
+    }
+
+    .tube {
+      position: relative;
+      width: 100px;
+      height: 220px;
+      background: linear-gradient(180deg, #1a1a2e, #1f1f35 50%, #1a1a2e);
+      border: 2px solid var(--gold-dim);
+      border-radius: 12px 12px 20px 20px;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, .5), 0 4px 20px rgba(0, 0, 0, .5), 0 0 0 6px rgba(10, 10, 20, .8), 0 0 0 8px rgba(138, 112, 64, .3);
+      cursor: pointer;
+      transition: transform .1s ease, box-shadow var(--transition-medium);
+      user-select: none;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 12px;
+      overflow: hidden
+    }
+
+    .tube:hover {
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, .5), 0 4px 20px rgba(0, 0, 0, .5), 0 0 0 6px rgba(10, 10, 20, .8), 0 0 0 8px rgba(138, 112, 64, .5), 0 0 50px rgba(201, 169, 110, .15)
+    }
+
+    .tube.locked {
+      opacity: .45;
+      pointer-events: none;
+      filter: grayscale(.3);
+      transition: all .3s ease;
+    }
+
+    .anger-text {
+      position: absolute;
+      bottom: -36px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+      font-size: .8rem;
+      color: var(--red-bright);
+      opacity: 0;
+      transition: opacity .4s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      letter-spacing: .08em;
+    }
+
+    .anger-text.show {
+      opacity: 1;
+      animation: angerFloat 2s ease-out forwards;
+    }
+
+    @keyframes angerFloat {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(6px);
+      }
+
+      20% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      80% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-12px);
+      }
+    }
+
+
+    .tube::before {
+      content: '';
+      position: absolute;
+      top: 18px;
+      left: -4px;
+      right: -4px;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(201, 169, 110, .4);
+      z-index: 2
+    }
+
+    .tube::after {
+      content: '';
+      position: absolute;
+      bottom: 30px;
+      left: -4px;
+      right: -4px;
+      height: 3px;
+      background: var(--gold);
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(201, 169, 110, .4);
+      z-index: 2
+    }
+
+    .tube-base {
+      position: absolute;
+      bottom: -8px;
+      width: 120px;
+      height: 16px;
+      background: linear-gradient(180deg, #2a2a3a, #1a1a2a);
+      border: 2px solid var(--gold-dim);
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .5)
+    }
+
+    .stick-heads {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px 6px;
+      justify-content: center;
+      padding: 2px 8px;
+      z-index: 1
+    }
+
+    .stick-head {
+      width: 6px;
+      height: 22px;
+      background: linear-gradient(180deg, #e8d5b0, #c9a96e, #8a7040);
+      border-radius: 3px 3px 1px 1px;
+      box-shadow: 0 0 4px rgba(201, 169, 110, .3)
+    }
+
+    body.night-mode .stick-head {
+      box-shadow: 0 0 8px rgba(58, 180, 120, .5);
+      background: linear-gradient(180deg, #c8e8c8, #8ab88a, #4a7a4a)
+    }
+
+    .tube.shaking {
+      animation: tubeShake .6s ease-in-out
+    }
+
+    @keyframes tubeShake {
+
+      0%,
+      100% {
+        transform: translateX(0) rotate(0deg)
+      }
+
+      10% {
+        transform: translateX(-8px) rotate(-3deg)
+      }
+
+      20% {
+        transform: translateX(8px) rotate(3deg)
+      }
+
+      30% {
+        transform: translateX(-12px) rotate(-5deg)
+      }
+
+      40% {
+        transform: translateX(12px) rotate(5deg)
+      }
+
+      50% {
+        transform: translateX(-8px) rotate(-3deg)
+      }
+
+      60% {
+        transform: translateX(6px) rotate(2deg)
+      }
+
+      70% {
+        transform: translateX(-4px) rotate(-1deg)
+      }
+
+      80% {
+        transform: translateX(3px) rotate(1deg)
+      }
+
+      90% {
+        transform: translateX(-1px) rotate(0deg)
+      }
+    }
+
+    .flying-stick {
+      position: absolute;
+      width: 8px;
+      height: 80px;
+      background: linear-gradient(180deg, #f0d8a0, #c9a96e, #a08050);
+      border-radius: 4px;
+      box-shadow: 0 0 20px rgba(201, 169, 110, .6);
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0
+    }
+
+    .flying-stick.active {
+      animation: stickFlyOut 1.2s cubic-bezier(.25, .46, .45, .94) forwards
+    }
+
+    @keyframes stickFlyOut {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg) scale(1)
+      }
+
+      30% {
+        opacity: 1;
+        transform: translateY(-60px) rotate(180deg) scale(1.1)
+      }
+
+      60% {
+        opacity: 1;
+        transform: translateY(-100px) rotate(360deg) scale(.9)
+      }
+
+      80% {
+        opacity: 1;
+        transform: translateY(-40px) rotate(540deg) scale(1)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(20px) rotate(720deg) scale(.3)
+      }
+    }
+
+    .hint-text {
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+      font-size: .9rem;
+      color: var(--text-secondary);
+      letter-spacing: .1em;
+      text-align: center;
+      opacity: .7;
+      transition: opacity var(--transition-medium)
+    }
+
+    .diagnosis-card {
+      width: 100%;
+      max-width: 440px;
+      background: linear-gradient(180deg, #1f1f30, #181825);
+      border: 1px solid var(--gold-dim);
+      border-radius: 8px;
+      padding: 28px 24px;
+      position: relative;
+      box-shadow: var(--shadow-soft), var(--shadow-gold);
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all .5s cubic-bezier(.23, 1, .32, 1);
+      pointer-events: none
+    }
+
+    .diagnosis-card.revealed {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto
+    }
+
+    .diagnosis-card::after {
+      content: '食神御判';
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+      font-size: .85rem;
+      color: var(--red-seal);
+      border: 2px solid var(--red-seal);
+      padding: 4px 8px;
+      transform: rotate(12deg);
+      border-radius: 3px;
+      opacity: .8
+    }
+
+    body.night-mode .diagnosis-card::after {
+      color: #5a8a5a;
+      border-color: #5a8a5a
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(201, 169, 110, .2)
+    }
+
+    .card-food-icon {
+      font-size: 2rem
+    }
+
+    .card-food-name {
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+      font-size: 1.4rem;
+      color: var(--gold-light);
+      letter-spacing: .1em
+    }
+
+    .card-category {
+      font-size: .7rem;
+      color: var(--text-secondary);
+      opacity: .5;
+      margin-left: auto;
+      letter-spacing: .1em
+    }
+
+    .card-time-judgement {
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+      font-size: .95rem;
+      color: var(--red-bright);
+      line-height: 1.8;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: rgba(139, 26, 26, .06);
+      border-left: 3px solid rgba(139, 26, 26, .4);
+      border-radius: 0 4px 4px 0
+    }
+
+    body.night-mode .card-time-judgement {
+      color: #8ab88a;
+      background: rgba(58, 90, 58, .1);
+      border-left-color: rgba(58, 90, 58, .5)
+    }
+
+    .card-diagnosis {
+      font-size: .9rem;
+      color: var(--text-primary);
+      line-height: 1.9;
+      margin-bottom: 8px;
+      white-space: pre-wrap
+    }
+
+    .card-mood-tag {
+      display: inline-block;
+      font-size: .7rem;
+      padding: 2px 10px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      opacity: .6;
+      letter-spacing: .1em
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1px solid var(--gold-dim);
+      border-radius: 6px;
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+      font-size: .95rem;
+      cursor: pointer;
+      letter-spacing: .1em;
+      transition: all var(--transition-medium);
+      background: transparent;
+      color: var(--gold);
+      text-align: center
+    }
+
+    .btn:hover {
+      background: rgba(201, 169, 110, .08);
+      border-color: var(--gold)
+    }
+
+    .btn.primary {
+      background: rgba(201, 169, 110, .12);
+      border-color: var(--gold)
+    }
+
+    .btn.primary:hover {
+      background: rgba(201, 169, 110, .2)
+    }
+
+    .btn.danger {
+      border-color: rgba(139, 26, 26, .5);
+      color: var(--red-bright)
+    }
+
+    .btn.danger:hover {
+      background: rgba(139, 26, 26, .08);
+      border-color: var(--red-bright)
+    }
+
+    .btn.save {
+      flex: 0 1 auto;
+      min-width: 110px;
+      border-color: rgba(201, 169, 110, .35);
+      color: var(--gold-light);
+      white-space: nowrap;
+    }
+
+    .btn.save:hover {
+      background: rgba(201, 169, 110, .1);
+      border-color: var(--gold);
+    }
+
+    .btn.save:disabled {
+      opacity: .4;
+      pointer-events: none;
+    }
+
+    /* Food count badge */
+    .food-count-badge {
+      font-size: .65rem;
+      color: var(--text-secondary);
+      opacity: .4;
+      text-align: center;
+      letter-spacing: .1em;
+      margin-top: -8px
+    }
+
+    /* Sin Scroll */
+    .sin-scroll {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(30, 30, 40, .9);
+      border: 1px solid rgba(139, 26, 26, .4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 20;
+      opacity: 0;
+      transform: scale(0);
+      transition: all .5s cubic-bezier(.175, .885, .32, 1.275);
+      box-shadow: 0 0 20px rgba(139, 26, 26, .2)
+    }
+
+    .sin-scroll.visible {
+      opacity: 1;
+      transform: scale(1)
+    }
+
+    .sin-scroll:hover {
+      border-color: var(--red-bright);
+      box-shadow: 0 0 30px rgba(139, 26, 26, .4)
+    }
+
+    .sin-scroll-icon {
+      font-size: 1.2rem
+    }
+
+    .sin-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 20px;
+      height: 20px;
+      background: var(--red-bright);
+      border-radius: 50%;
+      font-size: .65rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold
+    }
+
+    .sin-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .8);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-medium)
+    }
+
+    .sin-modal.open {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .sin-modal-content {
+      background: #1a1a28;
+      border: 2px solid var(--red-seal);
+      border-radius: 8px;
+      padding: 32px 24px;
+      max-width: 400px;
+      width: 90%;
+      max-height: 70vh;
+      overflow-y: auto;
+      position: relative
+    }
+
+    .sin-modal-title {
+      font-family: 'STKaiti', 'KaiTi', serif;
+      font-size: 1.3rem;
+      color: var(--red-bright);
+      text-align: center;
+      margin-bottom: 20px;
+      letter-spacing: .15em
+    }
+
+    .sin-list {
+      list-style: none
+    }
+
+    .sin-item {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .06);
+      font-size: .85rem;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center
+    }
+
+    .sin-item-time {
+      font-size: .7rem;
+      opacity: .5
+    }
+
+    .sin-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      cursor: pointer
+    }
+
+    /* Letter */
+    .letter-trigger {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(30, 30, 40, .9);
+      border: 1px solid rgba(201, 169, 110, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 20;
+      transition: all var(--transition-medium)
+    }
+
+    .letter-trigger:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 30px rgba(201, 169, 110, .25)
+    }
+
+    .letter-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .8);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-medium)
+    }
+
+    .letter-modal.open {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .letter-content {
+      background: #1a1a28;
+      border: 1px solid var(--gold-dim);
+      border-radius: 8px;
+      padding: 32px 24px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center
+    }
+
+    .letter-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid var(--gold-dim);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: .95rem;
+      text-align: center;
+      margin: 16px 0;
+      outline: none
+    }
+
+    .letter-input:focus {
+      border-color: var(--gold)
+    }
+
+    /* Strike */
+    .strike-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .9);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-slow)
+    }
+
+    .strike-overlay.active {
+      opacity: 1;
+      pointer-events: auto
+    }
+
+    .strike-note {
+      text-align: center;
+      padding: 40px
+    }
+
+    .strike-note h2 {
+      font-family: 'STKaiti', 'KaiTi', serif;
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-bottom: 12px
+    }
+
+    .strike-note p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.8
+    }
+
+    .strike-note .emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 20px
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-120px);
+      background: #1a1a28;
+      border: 1px solid var(--gold-dim);
+      border-radius: 6px;
+      padding: 12px 24px;
+      z-index: 200;
+      pointer-events: none;
+      opacity: 0;
+      transition: all .4s cubic-bezier(.175, .885, .32, 1.275);
+      font-family: 'STKaiti', 'KaiTi', serif;
+      font-size: .9rem;
+      color: var(--gold-light);
+      box-shadow: var(--shadow-gold);
+      max-width: 90vw
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1
+    }
+
+    /* Ghost face */
+    .ghost-face {
+      position: fixed;
+      pointer-events: none;
+      z-index: 5;
+      font-size: 2rem;
+      opacity: 0;
+      animation: ghostFloat 3s ease-in-out forwards
+    }
+
+    @keyframes ghostFloat {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(.5)
+      }
+
+      15% {
+        opacity: .7;
+        transform: translateY(-20px) scale(1)
+      }
+
+      30% {
+        opacity: 1;
+        transform: translateY(-40px) scale(1.1)
+      }
+
+      70% {
+        opacity: .6;
+        transform: translateY(-80px) scale(.9)
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-120px) scale(.3)
+      }
+    }
+
+    /* iOS 摇签权限按钮 */
+    .shake-permission-btn {
+      display: inline-block;
+      padding: 14px 32px;
+      border: 1px solid var(--gold-dim);
+      border-radius: 8px;
+      background: rgba(30, 30, 40, 0.85);
+      color: var(--gold);
+      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      cursor: pointer;
+      text-align: center;
+      transition: all var(--transition-medium);
+      box-shadow: 0 0 24px rgba(201, 169, 110, 0.12);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .shake-permission-btn:hover,
+    .shake-permission-btn:active {
+      background: rgba(201, 169, 110, 0.1);
+      border-color: var(--gold);
+      box-shadow: 0 0 36px rgba(201, 169, 110, 0.25);
+    }
+
+    .shake-permission-btn.removing {
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+
+
+    /* Responsive */
+    @media(max-width:420px) {
+      .app-container {
+        padding: 16px 12px;
+        gap: 16px
+      }
+
+      .temple-title {
+        font-size: 1.6rem
+      }
+
+      .tube-stage {
+        width: 160px;
+        height: 240px
+      }
+
+      .tube {
+        width: 80px;
+        height: 180px
+      }
+
+      .tube-base {
+        width: 100px
+      }
+
+      .diagnosis-card {
+        padding: 20px 16px
+      }
+
+      .card-actions {
+        flex-direction: column
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(201, 169, 110, .2);
+      border-radius: 2px
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+</head>
+
+<body>
+
+  <div class="app-container" id="appContainer">
+    <div class="header">
+      <h1 class="temple-title" id="templeTitle">食 神 签</h1>
+      <p class="god-name" id="godName">—— 野生食神 · 百味审判 ——</p>
+      <div class="mood-indicator" id="moodIndicator">今日神谕：待启</div>
+    </div>
+    <div class="shake-permission-btn" id="shakePermissionBtn" style="display:none;">🙏 叩拜食神，开启签筒</div>
+
+
+    <p class="food-count-badge" id="foodCountBadge"></p>
+
+    <div class="tube-stage" id="tubeStage">
+      <div class="tube" id="tube">
+        <div class="stick-heads" id="stickHeads"></div>
+      </div>
+      <div class="tube-base"></div>
+      <div class="flying-stick" id="flyingStick"></div>
+      <span class="anger-text" id="angerText"></span>
+
+    </div>
+
+    <p class="hint-text" id="hintText">晃动签筒，求一支食签</p>
+
+    <div class="diagnosis-card" id="diagnosisCard">
+      <div class="card-header">
+        <span class="card-food-icon" id="cardFoodIcon"></span>
+        <span class="card-food-name" id="cardFoodName"></span>
+        <span class="card-category" id="cardCategory"></span>
+      </div>
+      <div class="card-time-judgement" id="cardTimeJudgement"></div>
+      <div class="card-diagnosis" id="cardDiagnosis"></div>
+      <span class="card-mood-tag" id="cardMoodTag"></span>
+      <div class="card-actions">
+        <button class="btn primary" onclick="acceptFortune()">🙏 从命</button>
+        <button class="btn danger" onclick="rejectFortune()">⚔️ 抗旨</button>
+        <button class="btn save" id="btnSave" onclick="saveFortuneAsImage()" disabled>📋 保存签文</button>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="sin-scroll" id="sinScroll" onclick="openSinScroll()">
+    <span class="sin-scroll-icon">📜</span><span class="sin-badge" id="sinBadge">0</span>
+  </div>
+  <div class="letter-trigger" id="letterTrigger" onclick="openLetterModal()">✉️</div>
+
+  <div class="sin-modal" id="sinModal" onclick="closeSinScroll(event)">
+    <div class="sin-modal-content" onclick="event.stopPropagation()">
+      <button class="sin-close" onclick="closeSinScrollDirect()">✕</button>
+      <h3 class="sin-modal-title">📜 记仇小本本 · 抗旨罪状录</h3>
+      <ul class="sin-list" id="sinList"></ul>
+    </div>
+  </div>
+
+  <div class="letter-modal" id="letterModal" onclick="closeLetterModal(event)">
+    <div class="letter-content" onclick="event.stopPropagation()">
+      <button class="sin-close" onclick="closeLetterModalDirect()">✕</button>
+      <h3 style="font-family:'STKaiti','KaiTi',serif;color:var(--gold);margin-bottom:8px">✉️ 食神的信</h3>
+      <p style="color:var(--text-secondary);font-size:.85rem" id="letterMessage"></p>
+      <input class="letter-input" id="letterInput" placeholder="留下你的名号…" maxlength="12">
+      <button class="btn primary" style="width:100%" onclick="submitLetter()">投递信笺</button>
+    </div>
+  </div>
+
+  <div class="strike-overlay" id="strikeOverlay">
+    <div class="strike-note">
+      <span class="emoji">🏳️</span>
+      <h2>食神今日罢工</h2>
+      <p>去天上跟人吵架了<br>你自己抛硬币吧<br><br><span style="font-size:.8rem;opacity:.5">明天再来，神或许就回来了</span></p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ═══════════════════════════════════════════
+    //  野生食神签 · 百味审判 (100+ 食物)
+    // ═══════════════════════════════════════════
+
+    const TIME_PERIODS = { MORNING: 'morning', NOON: 'noon', EVENING: 'evening', NIGHT: 'night' };
+
+    const MOODS = {
+      NORMAL: { name: 'normal', label: '今日神谕：平和' },
+      ANGRY: { name: 'angry', label: '今日神谕：暴躁日 ⚡' },
+      EMO: { name: 'emo', label: '今日神谕：emo日 🌧️' },
+      CHUUNIBYOU: { name: 'chuunibyou', label: '今日神谕：中二病发 🔥' },
+      STRIKE: { name: 'strike', label: '食神罢工' }
+    };
+
+    // ═══════════════════════════════════════════
+    //  签文库 — 100+ 种食物
+    //  结构: {id,name,icon,category,time_judgement:{morning,noon,evening,night},diagnosis,angry_bonus}
+    // ═══════════════════════════════════════════
+    const FOOD_DATABASE = [
+
+      // ── 早餐经典 (18) ──────────────────────
+      {
+        id: 'doujiang_youtiao', name: '豆浆油条', icon: '🥖', category: '早餐经典',
+        time_judgement: {
+          morning: '晨光熹微，油条蘸豆浆，这是属于早鸟的正统朝食。食神点头：你今日的作息，勉强及格。',
+          noon: '正午求此物？你的胃里住着一个不肯搬走的清晨。也罢，这顿神赐名【迟到的晨曦忏悔餐】。',
+          evening: '傍晚吃油条？你今天的生物钟是被搅拌机打过了吗？食神扶额：下次请尊重一下太阳的位置。',
+          night: '子夜求早膳，你体内的昼夜节律已是一团揉烂的废纸。赐你此签，但明日醒来你的胃会写一封血泪控诉信。'
+        },
+        diagnosis: '朴素之中见真章。豆浆油条者，华夏早餐之正统，庙堂之高与江湖之远皆可容之。食神判曰：你今日所求不在山珍海味，而在踏实的慰藉。去吧，趁油条尚脆，趁豆浆尚温。',
+        angry_bonus: '就吃这个？行吧，至少比那些花里胡哨的网红早餐强一百倍。'
+      },
+      {
+        id: 'jianbingguozi', name: '煎饼果子', icon: '🫓', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起煎饼果子，你是懂生活的人。加薄脆还是油条？这是你今天最重要的决定。食神点头：街头正统，气度不凡。',
+          noon: '中午吃煎饼？你是睡过头了还是单纯想念这个味道？煎饼果子不受时辰约束，它有自己的时区叫「任何时候都好吃」。',
+          evening: '晚来煎饼，你的饮食习惯已被标记为「随性派」。食神理解——一个好吃的煎饼果子确实不需要看时间。',
+          night: '深夜寻煎饼摊，你是个有追求的人。可惜这个时辰煎饼摊大多已收，你大概率只能找到便利店替代品。食神不忍告诉你那个残酷的真相。'
+        },
+        diagnosis: '煎饼果子是街头饮食的活化石。绿豆面摊开的一瞬，蛋液在热气中凝固，甜面酱画出的弧线——这是早晨最生动的仪式。食神判曰：你今日无需远方，答案就在楼下拐角。加两个蛋，这是你今天对自己最慷慨的许诺。',
+        angry_bonus: '煎饼果子！好品味！但你敢加生菜我就跟你急——传统煎饼不加生菜！那是异端！'
+      },
+      {
+        id: 'xiaolongbao', name: '小笼包', icon: '🫓', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起一笼小笼包，你是精致的早起者。轻轻提、慢慢移、先开窗、后喝汤——这十二字口诀是你今日的修行。',
+          noon: '午间小笼包？你是在用精致的面点对抗粗糙的工作日。食神赞许：烫破天花板的那一口汤汁，是你今日的小型胜利。',
+          evening: '晚来小笼包，你是把早餐的优雅搬到了晚餐的桌上。食神不反对——美食无时辰，蒸笼里的热气永远正确。',
+          night: '深夜求小笼包？这个点只有速冻的了。食神叹气：速冻小笼也是小笼，但请务必蒸而非微波——这是底线。'
+        },
+        diagnosis: '小笼包是面点界的禅宗。薄皮之下暗藏滚烫的宇宙，一口咬开，汤汁奔涌，那是猪肉与时间的密谋。食神观你面相：你今日需要一种被温柔烫到的体验。小心第一口，但不要因为害怕烫而错过那种鲜活。',
+        angry_bonus: '小笼包！！优雅！！但你敢一口吞我就托梦烫你舌头！先开窗后喝汤！听见没有！！'
+      },
+      {
+        id: 'shengjianbao', name: '生煎包', icon: '🥟', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起生煎包——油煎的焦脆底面是你今天硬气的起点。食神提醒：先咬一小口放出热气，否则你的天花板将被汤汁袭击。',
+          noon: '午间生煎？你今日需要扎实的满足感。猪肉与皮冻在铁锅中的交响，是你对抗无聊工作日的武器。',
+          evening: '晚来生煎——底部焦黄、顶部柔软、内里滚烫，像极了外刚内柔的你。食神准了，记得蘸醋。',
+          night: '深夜生煎？这个点只有回锅加热的了。食神不忍直视：生煎一旦凉过再热，灵魂就走了七成。但饥饿面前，七成灵魂也够用了。'
+        },
+        diagnosis: '生煎包是上海滩的晨钟。它不像小笼包那样精致到脆弱，生煎的底部有一层金黄的铠甲——那是它在铁锅上历练的勋章。食神判曰：你今日需要在柔软中保留一分焦脆。去吧，趁热，趁芝麻还香。',
+        angry_bonus: '生煎！懂行！但你但凡用筷子戳破底皮——当场逐出师门！'
+      },
+      {
+        id: 'roubaozi', name: '肉包子', icon: '🥟', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起一个大肉包，朴实无华但拳拳到肉。食神点头：这是劳动人民的正统早餐。配一碗小米粥，你今天脚下的地都是实的。',
+          noon: '午间吃肉包？你是图快还是图省事？食神看穿你了：你不是随便，你是务实。肉馅扎实，面皮暄软——这很中国。',
+          evening: '晚餐肉包？你是独居吧。食神嗅到了冰箱囤货的气息。不过没关系，蒸笼回温的包子，有二次生命的温柔。',
+          night: '深夜蒸包子？你饿到翻冰箱了。食神理解——凌晨的肉包有一种白日没有的抚慰力，那是碳水化合物对你的临终关怀。'
+        },
+        diagnosis: '肉包子是华夏面食的底色。它不花哨、不摆谱、不用蘸料就能独当一面。白面皮裹着酱香肉馅，那是中国人基因里最熟悉的温暖。食神判曰：你今日不需要惊艳，只需要一个扎实的拥抱。咬开的那一秒——肉香即故乡。',
+        angry_bonus: '肉包！正统！但你要是只吃皮把馅扔了——罪无可赦！那是包子之神的眼泪！'
+      },
+      {
+        id: 'doufunao', name: '豆腐脑', icon: '🥣', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起一碗豆腐脑——甜还是咸？这是你今天唯一的信仰抉择。食神不站队，但看你选甜党还是咸党，心里已经给你分了类。',
+          noon: '午间吃豆腐脑？你是早上没来得及还是单纯的念想？食神认可：豆腐脑是任何时辰都能温柔接纳你的存在。',
+          evening: '晚餐豆腐脑？你的胃今天在渴望轻盈。食神点头：在一堆油腻之间，豆腐脑是你今日饮食的良心。',
+          night: '深夜求豆腐脑？这个点只有24小时便利店的自热版了。食神掩面：那不是豆腐脑，那是豆腐的遗体。'
+        },
+        diagnosis: '豆腐脑是华夏早餐中最柔软的存在。一勺入口，颤颤巍巍的触感像清晨第一缕阳光落在舌尖。食神判曰：你今日需要被温柔对待。甜也好咸也好，那碗豆腐脑不评判你——它只是在那里，等你把自己安顿进去。',
+        angry_bonus: '豆腐脑！好！甜党咸党你选一个——但选完就别改了！墙头草在本神这里没地位！'
+      },
+      {
+        id: 'huntun', name: '馄饨', icon: '🥟', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起一碗馄饨，清汤之上漂着紫菜虾皮葱花——这是中国人的晨间禅修。食神点头：今日起点优雅，请保持。',
+          noon: '午间馄饨？你在快速进食中寻求一丝精致。馄饨比饺子轻盈、比面条温柔——你是今天不想太累的人。',
+          evening: '晚餐馄饨？你今日需要被汤水抚慰。食神看到你面带倦容——去吧，那碗清汤馄饨是你今天的句号。',
+          night: '深夜馄饨——速冻的也行。凌晨一碗热馄饨下肚，整个世界都柔软了。食神陪你默默地等水烧开。'
+        },
+        diagnosis: '馄饨是面皮的艺术。薄如蝉翼的皮包裹着一丁点肉馅，在清汤中浮沉如云。食神观你面相：你今日话语不多，心里有事。去吧，那碗馄饨不说教、不审判，它只是安静地陪你吃完这一程。',
+        angry_bonus: '馄饨！有品位！但你要是在汤里倒半瓶醋——你吃的不是馄饨，是醋泡面皮尸体！'
+      },
+      {
+        id: 'changfen', name: '肠粉', icon: '🫓', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起肠粉——你是岭南人还是单纯有品味？食神点头：那层米浆蒸出的晶莹，是南方早晨最美的光泽。加蛋加肉加虾，今天你是皇帝。',
+          noon: '午间肠粉？你是想念广东了还是想念那种滑入喉咙不用咀嚼的温柔？食神通感：工作日的午餐需要这种不费力的美好。',
+          evening: '晚餐肠粉有点轻了——但如果你中午吃太撑，这倒是一种优雅的赎罪。食神不反对清淡的晚餐。',
+          night: '深夜求肠粉？这个时辰只有茶餐厅还在拉肠粉了。你是港片看多了吧。食神叹气：去吧，那份深夜肠粉有一种熬夜的悲壮。'
+        },
+        diagnosis: '肠粉是广式早茶的灵魂。米浆在蒸盘上摊成薄薄一层，卷起时晶莹剔透，酱油浇下的瞬间——那是岭南清晨的剪彩仪式。食神判曰：你今日需要一种不费力的美好。肠粉入口即化，不需要咀嚼的人生难题也可以这样滑过去。',
+        angry_bonus: '肠粉！讲究！但你千万别把酱油倒成一盘黑汤——肠粉不是游泳健将！'
+      },
+      {
+        id: 'jidan_guanbing', name: '鸡蛋灌饼', icon: '🫓', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起鸡蛋灌饼——蛋液灌入面饼那一秒的魔术，是你今天的第一份惊喜。食神赞许：这是北方的街头智慧，朴素但精妙。',
+          noon: '午间灌饼？你是学校门口的情怀还是单纯想在办公室吃出路边摊的味道？食神理解——成年人的午间叛逆就藏在那张饼里。',
+          evening: '晚餐吃灌饼？你大概率今天没怎么正经吃饭。食神不审判饥饿的人——去吧，加根火腿肠，就当是对今天的交代。',
+          night: '深夜灌饼？这个点摊子早收了。食神只能说：你错过了。明早请早。但如果你执意自己烙——神敬你是条汉子。'
+        },
+        diagnosis: '鸡蛋灌饼是北方街头的魔法。擀开的面皮在热铁板上鼓成一个气球，筷子戳破的瞬间蛋液灌入——那是平凡早晨里最不平凡的三秒钟。食神判曰：你今天需要的不是高级料理，是那种带着街头烟火气的扎实温暖。加里脊，你今天值得。',
+        angry_bonus: '鸡蛋灌饼！好！但你灌蛋的时候手别抖！蛋液流到铁板外面是对灌饼之神的侮辱！'
+      },
+      {
+        id: 'cifantuan', name: '粢饭团', icon: '🍙', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起粢饭团——糯米裹着油条榨菜肉松，咬下去的那一刻你今天的所有力气都有了来处。食神点头：这是南方早餐的重量级选手。',
+          noon: '午间吃饭团？你是怀念学校门口的早饭摊了。食神叹气：成年人的午饭吃粢饭团，只有两种可能——太忙或太穷。无论如何，神不审判。',
+          evening: '晚餐粢饭团？你今天的饮食序列完全混乱。但粢饭团不在乎——糯米从不嫌你来得晚。',
+          night: '深夜粢饭团？这个点你只能自己捏了。食神提供远程指导：糯米提前泡四小时，你显然没泡。还是睡吧。'
+        },
+        diagnosis: '粢饭团是江南早餐的拳头产品。热腾腾的糯米摊在湿布上，铺一层肉松榨菜，裹进一根脆油条——双手一捏，那是南方清晨最扎实的拥抱。食神判曰：你今日需要一种被填满的感觉。粢饭团是固体化的温暖，每一口都在说「今天不会太糟」。',
+        angry_bonus: '粢饭团！硬核早餐！但你放开那个塑料袋——粢饭团不用裹保鲜膜！直接上手捏！那是手感！'
+      },
+      {
+        id: 'shaobing', name: '烧饼', icon: '🫓', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起烧饼——芝麻在表面铺了一层金色的香气，咬下去是层层酥脆。食神赞许：这是北方早晨最诚实的声音——「咔嚓」。',
+          noon: '午间烧饼？你是配了一碗羊汤还是夹了酱肉？食神眯眼：单吃烧饼的是苦行僧，夹肉的才是懂生活的。',
+          evening: '晚餐烧饼？你在追求一种质朴的收尾。食神理解：烧饼不华丽，但它有面粉经过烈火后的全部诚意。',
+          night: '深夜烧饼——凉了的话请回炉烤一下。冷烧饼是对烧饼师傅的一种辜负。食神提醒：微波炉不行，必须烤箱或平底锅。'
+        },
+        diagnosis: '烧饼是最古老的快餐。从西域的馕坑到中原的吊炉，人类用面粉和火焰写了几千年的史诗。食神判曰：你今日有一种返璞归真的冲动。去吧，趁热，芝麻还在往下掉——那是烧饼最骄傲的时刻。',
+        angry_bonus: '烧饼！好品味！但你敢拿微波炉热我就揍你！微波炉出来的烧饼是橡皮！烤箱或者死！'
+      },
+      {
+        id: 'congyoubing', name: '葱油饼', icon: '🫓', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起葱油饼——葱香在油煎中苏醒，那是今天的第一声号角。食神点头：愿意早起烙饼的人，对生活有一份不慌不忙的爱。',
+          noon: '午间葱油饼？你是自己烙的还是路边买的？食神不挑——无论出处，葱油饼的香气都是公平的。',
+          evening: '晚餐葱油饼配上小米粥——你今天走的是朴素养生路线。食神认可：越是简单，越是难出错。',
+          night: '深夜烙葱油饼？你的邻居会闻到香味然后恨你。食神不拦——让整栋楼陪你饿，这也是一种社交。'
+        },
+        diagnosis: '葱油饼是面粉和葱花的千年之恋。面团在油中煎到金黄，葱花在高温中释放全部的香气——那是中国厨房里最让人无法拒绝的召唤。食神判曰：你今日需要的是一种从嗅觉到味觉的完整满足。切一块，趁烫，那是幸福最朴素的形式。',
+        angry_bonus: '葱油饼！香！但你要是用不粘锅烙不出焦壳——技术不行别怪饼！多放油！听见没！'
+      },
+      {
+        id: 'chaye_dan', name: '茶叶蛋', icon: '🥚', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起一颗茶叶蛋——裂纹里渗出酱色的纹路，那是卤水用一夜时间写的诗。食神赞许：配粥或豆浆皆可，你今天从一颗有故事的蛋开始。',
+          noon: '午饭加一颗茶叶蛋？你是觉得盒饭的蛋白质不够。食神理解——茶叶蛋是中国人最便捷的营养插件。',
+          evening: '晚餐吃茶叶蛋？你是当零食吃还是正餐？食神不追究——茶叶蛋有它自己的时区，不在早中晚的框架里。',
+          night: '深夜剥一颗冷茶叶蛋——你是在冰箱前面站着吃的吧。食神什么都知道。那种冷卤香有一种不可言说的深夜魔力。'
+        },
+        diagnosis: '茶叶蛋是时间的朋友。鸡蛋在茶叶、八角、桂皮、酱油中慢慢煨煮，裂纹是它吸收世界的入口。食神观你面相：你今日像一颗茶叶蛋——外壳有些磕碰，但内里已然入味。去吧，剥开壳，你会发现自己比想象中有滋味。',
+        angry_bonus: '茶叶蛋！但你敢吃没裂开的那种——不入味的东西不配叫茶叶蛋！那是酱油水煮蛋！'
+      },
+      {
+        id: 'xiaomizhou', name: '小米粥', icon: '🥣', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起一碗小米粥——金黄浓稠，米油浮在表面。食神点头：这是养胃之人的明智选择。你今天从一份温和的清醒开始。',
+          noon: '午间喝粥？你是胃不舒服还是今天只想被温柔对待？食神心疼：小米粥是最懂人类的食物之一，它不问原因，只管抚慰。',
+          evening: '晚餐小米粥配小菜——你今天在养生或者养病。食神祝福：粥是世间最不具攻击性的食物，愿你被同样温柔地对待。',
+          night: '深夜熬粥？你是失眠了还是饿了？食神陪你等锅里的米粒开花——那是凌晨唯一的禅意时刻。'
+        },
+        diagnosis: '小米粥是谷物中最温驯的一种。它不争不抢，小火慢熬，米粒在时间里安心地把自己化成稠滑的温柔。食神判曰：你今天需要慢下来。世界太快，但小米粥有自己的节奏——咕嘟、咕嘟、咕嘟。喝完这一碗，你的胃会和你的心一起安静下来。',
+        angry_bonus: '小米粥！养生！但你敢大火猛煮我就骂你！粥是熬出来的不是催出来的！小火！耐心！'
+      },
+      {
+        id: 'sanmingzhi', name: '三明治', icon: '🥪', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起三明治——效率至上者的选择。食神点头：两片面包夹一切，这是工业文明对早餐的最优解。配咖啡，你今天走路都会快半拍。',
+          noon: '午间三明治——你是开会连午饭都没空吃的人。食神同情但不赞赏：至少选全麦面包，给自己一点虚假的健康感。',
+          evening: '晚餐三明治？你今天的饮食已经全面西化了。食神不反对——但冰箱里冷三明治是对三明治之神的亵渎。',
+          night: '深夜三明治——你站在冰箱前用冷面包和冷火腿组装了一个安慰剂。食神看到了你疲惫的灵魂。'
+        },
+        diagnosis: '三明治是现代人的时间管理。它不说教、不拖沓、不占用你的咀嚼时间。食神判曰：你今日行程很满，但两片面包之间可以夹住的不只是火腿——夹住你对今天的全部掌控感。加一片芝士，那是你应得的小型奢侈。',
+        angry_bonus: '三明治？效率！但你如果把面包边切掉——那是浪费！面包边是尊严的边界！'
+      },
+      {
+        id: 'niunai_maipian', name: '牛奶麦片', icon: '🥣', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起牛奶泡麦片——一分钟搞定，这是效率主义在早餐领域的极致表达。食神姑且认可：至少比不吃强。但选燕麦片而非那些花花绿绿的膨化球——后者是伪装成早餐的零食。',
+          noon: '午间吃麦片？？你是没空吃饭还是在节食？食神皱眉：麦片不是午饭。去吃正经饭。这是命令。',
+          evening: '晚餐麦片——健身人士的标配还是懒人的借口？食神看着你：你心里清楚。如果是前者，加一份蛋白粉；如果是后者，放下碗去厨房。',
+          night: '深夜麦片——你饿了但不想开火。食神理解：冷牛奶泡麦片是凌晨最安静的进食。但别加糖，你不需要额外的罪恶感。'
+        },
+        diagnosis: '牛奶麦片是西式早餐的入门级。它在营养和便捷之间找到了一个体面的平衡点。食神判曰：你今日需要简单但不潦草。别选那种五颜六色的儿童麦片——你是成年人，请用燕麦片和一把坚果来证明这一点。',
+        angry_bonus: '麦片？行。但你敢吃那种五颜六色像塑料一样的麦片我就鄙视你！那是儿童的早餐不是你的！'
+      },
+      {
+        id: 'shuizhu_dan', name: '水煮蛋', icon: '🥚', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起一颗水煮蛋——溏心还是全熟？这是你今天第一个美学选择。食神偏爱溏心——流动的蛋黄是早晨的液态太阳。',
+          noon: '午间加了一颗水煮蛋？你在默默补充蛋白质。食神看到你在健身或者正在开始健身的路上——加油，蛋白粉不如一颗真实的蛋。',
+          evening: '晚餐吃蛋？轻食日的标志。食神点头：水煮蛋是极简主义的蛋白质宣言。撒一点盐和黑胡椒，不丢人。',
+          night: '深夜煮蛋？你饿到不行但还有点理智。食神赞许：在深夜选择水煮蛋而非泡面，你是有自控力的人。'
+        },
+        diagnosis: '水煮蛋是最诚实的食物。它不加修饰，不加调料，蛋白是白的蛋黄是黄的——它不骗你。食神观你面相：你今日需要一种干净的确定性。一颗水煮蛋告诉你：世界很复杂，但蛋白质很简单。溏心七分钟，全熟十分钟。',
+        angry_bonus: '水煮蛋！但你要是煮到蛋黄发绿——那是煮过头了！那层灰绿色的硫化亚铁是你懒惰的罪证！'
+      },
+      {
+        id: 'mantou', name: '馒头', icon: '🍞', category: '早餐经典',
+        time_judgement: {
+          morning: '晨起馒头——白胖暄软，是中国人最朴素的早晨。食神点头：馒头不抢戏，它只是在那里，等你咬下第一口。配腐乳或老干妈，今天从踏实的碳水开始。',
+          noon: '午间吃馒头？你是配菜吃还是干啃？干啃馒头的你，食神看了心疼。至少夹点酱豆腐，给馒头一点尊严。',
+          evening: '晚餐馒头配菜——你是北方人吧。食神看到你身上有中原大地的影子。馒头是面食里最低调的长者，不争不抢，但能陪你走完任何一顿饭。',
+          night: '深夜啃冷馒头——食神的眼泪都要下来了。去蒸一下，哪怕十秒钟。冷馒头是对馒头师傅的一种辜负。'
+        },
+        diagnosis: '馒头是华夏面食的原点。面粉、水、酵母——三样东西在蒸汽中完成一次安静的蜕变。食神判曰：你今日不需要花哨。馒头教我们一个道理：最简单的原料，经过足够的耐心，可以变成最扎实的存在。你也是。',
+        angry_bonus: '馒头！朴素！但你敢干啃不配任何东西——你这是在自虐！至少涂点酱！腐乳也行！'
+      },
+
+      // ── 面食江湖 (20) ──────────────────────
+      {
+        id: 'lanzhou_lamian', name: '兰州拉面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起一碗兰州拉面？你是西北人还是今天有硬仗要打？食神抱拳：清早吃拉面的人，胃里住着一匹马。一清二白三红四绿五黄——你今天从一碗史诗开始。',
+          noon: '午间拉面——打工人的午间救赎。毛细、二细、韭叶、大宽——你今天选的面条宽度暴露了你此刻的心理状态。毛细是疲惫，二细是正常，大宽是「今天不管了」。',
+          evening: '晚餐拉面？你是加班到没力气选别的了。食神理解：一碗拉面从点单到上桌五分钟，这种效率是对加班狗的温柔。',
+          night: '深夜拉面——你是兰州人想家了，还是单纯被深夜的面香勾引？食神陪你吸溜：凌晨的面有一种白天没有的柔韧，那是面馆师傅深夜的坚守。'
+        },
+        diagnosis: '兰州拉面是面条界的功夫片。面团在师傅手中三拉两扯变成千百根银丝，那是对碳水化合物的最高礼赞。食神观你命盘：你今天需要一碗有功夫的面。看师傅拉面的三十秒，是你今天最接近禅修的时刻。毛细还是二细？选错了也没关系——面永远原谅你。',
+        angry_bonus: '拉面！！但你敢选「大宽」——你是来吃面还是来啃皮带？！二细是底线！'
+      },
+      {
+        id: 'chongqing_xiaomian', name: '重庆小面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '清晨即求重庆小面？你的味蕾是特种兵出身。食神敬礼：那碗红油翻腾的小面，是早晨最生猛的唤醒方式。但你的肠胃今天将经历一场烈火考验。',
+          noon: '午间小面——正当其时。红油花椒在你的舌头上跳舞，那是山城人民的日常狂欢。食神擦汗：够劲，你今天下午的工作效率会因为这碗面翻倍。',
+          evening: '晚餐小面，晚来一碗麻辣鲜香，是对平庸一天的最好报复。食神盖上御印：吃！但微辣起跳，中辣封顶，特辣是你对自己的不尊重。',
+          night: '深夜小面——你已经完全不在乎明天的自己了。食神敬告：凌晨的红油会在你的胃里燃烧到天明。但如果你执意如此，至少配一杯豆浆，给胃一点缓冲。'
+        },
+        diagnosis: '重庆小面是麻辣在碳水化合物上的完美着陆。红油是它的战旗，花椒是它的鼓点，每一根面条都在宣告：平庸不是我的选项。食神判曰：你今日心中有火。别压抑，让这碗小面替你把火发出去。微麻微辣是入门，中麻中辣是修行，但你今天——建议微辣。',
+        angry_bonus: '小面！！但你别吃完把汤喝了！！那碗红油汤底不是饮料！！你想明天在马桶上办公吗？！'
+      },
+      {
+        id: 'zhajiangmian', name: '炸酱面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起炸酱面？你是老北京还是今天准备把一天的热量在早上吃完？食神扶额：炸酱面作为早餐过于隆重，但这份隆重里有一种「今天不过了」的气魄。',
+          noon: '午间炸酱面——经典午餐。肉丁在甜面酱中煸出的香气，配上黄瓜丝豆芽——你今天在碳水、蛋白质和纤维之间找到了完美的平衡。',
+          evening: '晚餐炸酱面——北京人的家常。食神看到你拌面时手腕的力度，判断你是从小吃炸酱面长大的。面码齐全，是对这碗面最基本的尊重。',
+          night: '深夜炸酱面？你大概率是自己炸了酱。食神敬你这份深夜下厨的诚意——凌晨的炸酱面有一种独居者的庄严。'
+        },
+        diagnosis: '炸酱面是北京人的乡愁。五花肉丁在锅里慢慢煸出油，甜面酱和黄酱在高温中融合——那是胡同里飘了几代人的香气。食神判曰：你今天需要一种拌开的快感。面条、酱、菜码——把它们搅在一起的过程，是你今天最解压的时刻。多切一盘黄瓜丝。',
+        angry_bonus: '炸酱面！！但你面码不全就敢端上来？？黄瓜丝！豆芽！青豆！少一样都是对老北京的背叛！'
+      },
+      {
+        id: 'reganmian', name: '热干面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起热干面——武汉人的灵魂早餐。芝麻酱裹着碱水面，那是长江边的早晨最浓稠的表达。食神点头：端着纸碗边走边拌边吃，这是武汉人独有的城市武功。',
+          noon: '午间热干面？你是武汉人想家了还是被芝麻酱的香气远程绑架了？食神理解——热干面不挑时辰，芝麻酱的召唤是全天候的。',
+          evening: '晚餐热干面有点干——配一碗蛋酒，这是武汉人民的黄金组合。食神提醒：热干面要趁热拌开，凉了的面是芝麻酱的泥石流。',
+          night: '深夜热干面？蔡林记早关门了。你只能网购速食版——食神不评价速食热干面，那是技术伦理的灰色地带。'
+        },
+        diagnosis: '热干面是武汉的名片。碱水面在滚水中烫过，芝麻酱趁热裹上去，拌开的瞬间——那是武汉早晨最神圣的三分钟。食神观你面相：你今天需要一种浓稠的抚慰。芝麻酱的香是那种不跟你商量的香——它直接占据你的鼻腔，然后占领你的全部感知。加一勺萝卜丁，那是武汉人的暗号。',
+        angry_bonus: '热干面！！但你绝对不能慢！！面到手五秒内必须开始拌！！凉了拌不开是对热干面的终极亵渎！！'
+      },
+      {
+        id: 'daoxiaomian', name: '刀削面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起刀削面？你是山西人还是今天有体力活？食神敬仰：愿意早上吃刀削面的人，胃是一座钢铁厂。那一片片飞入锅中的面叶，是你今天的力量之源。',
+          noon: '午间刀削面——扎实！面叶边缘薄中间厚，入口有嚼劲，那是面团被刀锋削出的层次感。食神赞许：你今天中午的选择，有棱有角。',
+          evening: '晚餐刀削面，配一碟老陈醋——你是三晋大地派来的碳水使者。食神点头：刀削面是面条界的硬汉，它不屑于讨好，只用扎实的口感说话。',
+          night: '深夜刀削面？你大概率是在山西以外的地方——这个时辰还开着门的山西面馆，值得你跪谢。'
+        },
+        diagnosis: '刀削面是面食中的行为艺术。面团扛在肩上，刀光一闪，面叶飞入沸水——那是对小麦最豪放的致敬。食神判曰：你今天需要力度。刀削面不像拉面那样细柔，它有自己的棱角和筋骨。做人也一样——有时候你需要锋利一点。',
+        angry_bonus: '刀削面！！好！！但你敢用挂面冒充刀削面——本神当场显灵！机器削的勉强算，挂面绝对不行！'
+      },
+      {
+        id: 'dandanmian', name: '担担面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起担担面？你是川人还是今天准备用麻辣开局？食神揉眼睛：担担面作为早餐过于刺激，但你执意如此——神只能说，你的胃今天是上了战场。',
+          noon: '午间担担面——宜宾芽菜、肉末、花生碎、红油——一碗之中藏着一个四川。食神赞许：午间吃担担面的人，下午的工作效率来自麻辣的鞭策。',
+          evening: '晚餐担担面，配上四川泡菜——你今天的饮食已经全面川化。食神认可：担担面是面条界的川剧变脸，每一口都有不同的层次。',
+          night: '深夜担担面？红油在凌晨的胃里是一场慢动作爆炸。食神警告：明天唤醒你的不是闹钟，是胃部的灼烧感。但如果你不在乎——吃。'
+        },
+        diagnosis: '担担面是四川递给世界的一张麻辣名片。肉末煸得酥香，芽菜提供咸鲜，花生碎在齿间爆开——每一口都是一场微型川剧。食神判曰：你今日需要刺激。不是痛苦的刺激，是那种在麻辣中依然能分辨出每一种配料的清醒。少放辣油，多放芽菜——那是四川人的智慧。',
+        angry_bonus: '担担面！麻辣！但你搅都不搅就直接吃——上面是白面下面是全部调料！拌开！！立刻！！'
+      },
+      {
+        id: 'yangchunmian', name: '阳春面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起阳春面——清汤光面，一把葱花几滴酱油。食神点头：这是江南人的极简主义。你今天从一碗不争不抢的面开始，内心一定很平静。',
+          noon: '午间吃阳春面？你是真的喜欢清淡还是在省钱？食神理解：有时候最简单的面最能让人吃出面粉本身的香气。但不是每个人都懂这种「无招胜有招」的境界。',
+          evening: '晚餐阳春面——你今日在追求一种精神上的轻盈。食神认可：一碗阳春面下肚，身体和灵魂都没有负担。',
+          night: '深夜阳春面——你在模仿《花样年华》里的梁朝伟。食神微笑：凌晨的阳春面有一种电影感，但别吃太多碳水——你等下睡不着。'
+        },
+        diagnosis: '阳春面是面条界的白衬衫。没有浇头、没有红油、没有花哨——只有面条、清汤、一把葱花。但越是简单，越考验基本功。食神判曰：你今日需要的不是加法，是减法。阳春面教你：去掉所有多余的，剩下的才是真正的你。汤要清，面要韧，心要静。',
+        angry_bonus: '阳春面！！！……好吧，这个没法暴躁。太素了。但至少汤要鲜！！白开水泡面不叫阳春面！！那是牢饭！！'
+      },
+      {
+        id: 'youpo_mian', name: '油泼面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起油泼面？你是关中汉子还是今天准备干农活？食神抱拳：清晨吃油泼面的人，胆子是铁打的。那勺滚油浇在辣面上的滋啦声，是你今天最生猛的开场。',
+          noon: '午间油泼面——碳水+辣椒+滚油的三位一体。食神眯眼：吃这碗面的人下午不会有任何饥饿感，但可能会有困意。建议配合一杯浓茶。',
+          evening: '晚餐油泼面，你今天的碳水指标已经拉满。食神不拦：油泼面是面条界的摇滚乐，它不温柔、不精致，但能让你吃完之后觉得活着真好。',
+          night: '深夜油泼面？你真的不怕明天脸上爆痘吗？食神敬佩你的勇气——凌晨的滚油有一种不顾明天的痛快。'
+        },
+        diagnosis: '油泼面是陕西人的魂。宽面煮熟捞入碗中，辣椒面葱花蒜末铺在上面——一勺滚油浇下去，滋啦一声，香气炸裂。食神判曰：你今日需要一种痛快。不是克制的痛快，是滚油浇辣椒那种不留余地的痛快。把面拌匀，让每一根都裹上红油——这是你今天对自己的慷慨。',
+        angry_bonus: '油泼面！！！但你油没烧到冒烟就敢浇——那是温吞水泼面！油必须滚！必须冒烟！必须滋啦！！'
+      },
+      {
+        id: 'congyou_banmian', name: '葱油拌面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起葱油拌面——葱油在锅里熬了半小时的香气，是你今天最早的仪式。食神赞许：愿意早上拌面的人，对生活的要求不低。',
+          noon: '午间葱油拌面——简单快速但绝不潦草。炸得焦黄的葱段在面条间若隐若现，那是碳水化合物的精致表达。食神点头：好选择。',
+          evening: '晚餐葱油拌面，配一个荷包蛋——你今天的晚餐有一种上海弄堂里的温情。食神微笑：葱油拌面不贵，但它对得起任何一顿饭。',
+          night: '深夜葱油拌面？你在想家。食神知道——熬葱油的人要么有耐心，要么心里有一个人。'
+        },
+        diagnosis: '葱油拌面是上海人的私藏。小葱在油里慢慢熬到焦黄，酱油和糖在锅边融合——那碗素净的面条，被葱油一浇，立刻有了灵魂。食神判曰：你今天的幸福不在远处。它就在那碗拌面里——简单、直接、不需要解释。葱油是时间的味道，你要慢慢熬。',
+        angry_bonus: '葱油拌面！！精致！！但你葱没熬焦就关火——那是生葱油拌面！葱必须熬到深褐色！熬不到不准拌！！'
+      },
+      {
+        id: 'niurou_mian', name: '牛肉面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起牛肉面？你是真的饿还是昨晚没吃？食神咋舌：早上吃牛肉面的人，胃里有一支军队。那碗红烧牛肉浇在面上，是你今天的重型装甲。',
+          noon: '午间牛肉面——经典。牛肉炖得酥烂，面条吸饱了汤汁。食神点头：你中午需要的是一碗能撑到下午五点不饿的面，牛肉面完成了这个使命。',
+          evening: '晚餐牛肉面，你今天辛苦了。食神看到你碗里那几块带筋的牛肉——那是你今天应得的犒赏。把汤喝完，一滴都不要剩。',
+          night: '深夜牛肉面——你是台湾人还是看了太多《深夜食堂》？食神理解：凌晨的牛肉面有一种抚慰灵魂的功能，它的任务不是填饱你，是让你觉得这个世界还有温度。'
+        },
+        diagnosis: '牛肉面是面条界的硬通货。红烧牛肉在锅里煨了几小时，汤汁浓稠，面条筋道——咬一口牛肉，吸一口面，喝一口汤，这是三道工序组成的完整满足。食神判曰：你今日需要力量。那碗牛肉面不会说话，但它会默默地把腱子肉的韧劲、牛筋的胶质、汤汁的醇厚全部给你。',
+        angry_bonus: '牛肉面！！！但你要是先吃肉后吃面——顺序错了！！应该先喝一口汤！再吃一口面！肉是最后的奖赏！！'
+      },
+      {
+        id: 'liangpi', name: '凉皮', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起凉皮？你的胃还没醒就被泼了一瓢辣椒油。食神打冷颤：凉皮是夏天午后的甜品，不是早晨的唤醒方式。但既然你选了——祝你肠胃好运。',
+          noon: '午间凉皮——夏天午餐的最佳解。酸辣开胃，黄瓜丝增加脆爽，面筋吸饱调料。食神点头：这是炎热午间的正确打开方式。',
+          evening: '晚餐凉皮？你今天一定不想开火。食神理解——凉皮是懒人的高级选择：不用炒不用煮，拌开就吃。这是成年人对自己的一种温柔解放。',
+          night: '深夜凉皮——冰箱里的剩凉皮？食神皱眉：凉皮隔夜之后口感会变，面筋会变硬。但凌晨一点你没得选——吃吧，别挑剔了。'
+        },
+        diagnosis: '凉皮是夏天的法定食物。洗面沉淀出的淀粉浆，蒸成晶莹的皮子——切成条，浇上蒜水醋水辣椒油，那是酷暑中最清爽的救赎。食神判曰：你今日需要降温——不是身体的降温，是心里的降温。那股酸辣穿过喉咙的时候，你的烦躁也一起被冲走了。多加面筋，它是凉皮界的隐藏主角。',
+        angry_bonus: '凉皮！！！夏天吃！冬天吃凉皮的人是行为艺术！！除非你在海南——那另说！'
+      },
+      {
+        id: 'chaofen', name: '炒河粉', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起炒河粉？你是广东人还是昨晚的酒还没醒？食神抱拳：早上吃炒河粉的人，今天的碳水预算已经用掉一半。但那份锅气——值得。',
+          noon: '午间炒河粉——干炒牛河是最考验厨师功力的午餐。河粉不碎、牛肉嫩滑、芽菜脆爽——这三点做到了，你今天的午饭就值了。',
+          evening: '晚餐炒河粉是大排档的灵魂。食神看到你坐在塑料凳子上，面前是一盘冒着锅气的河粉——那是人间最真实的幸福。',
+          night: '深夜炒河粉——你是从夜市回来的吧。食神点头：凌晨的干炒牛河有一种烟火气，那是白天没有的。但别吃太多——河粉消化慢，你会带着它入梦。'
+        },
+        diagnosis: '炒河粉是广东大排档的旗舰产品。河粉在高温铁锅中翻滚，酱油在锅边焦化成一层薄薄的锅气——那是炒河粉的灵魂。食神判曰：你今日需要一种被大火翻炒过的热情。生活平淡时可以白灼，但今天——干炒。加辣，加牛肉，加芽菜。让锅气替你说出那些你没说出口的话。',
+        angry_bonus: '炒河粉！！！但你家炒锅不够热就敢下粉——那是焖粉不是炒粉！锅必须冒烟！河粉下锅必须有滋啦声！！'
+      },
+      {
+        id: 'mifen', name: '米线', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起米线？你是云南人还是今天要去爬山？食神点头：米线比面条更轻盈，早晨吃不会压胃。过桥米线的仪式感太强，简单一碗小锅米线就够。',
+          noon: '午间米线——酸浆米线还是干浆米线不重要，重要的是那碗汤底。食神提醒：米线是汤的载体，选对了汤底等于选对了今天的心情。',
+          evening: '晚餐米线，米线是全天候选手。它不像面条那样厚重，也不像米饭那样严肃——它是碳水化合物里最轻盈的游侠。',
+          night: '深夜米线——你大概率在云南以外的地方想念云南。食神理解：米线是一种会让人上瘾的东西，但凌晨的米线店可遇不可求。'
+        },
+        diagnosis: '米线是大米的另一种生命形态。从米浆到线条，它在蒸汽中完成了一次优雅的转世。食神观你面相：你今日在追求一种流畅感。米线入口顺滑，不需要过多咀嚼——它教你：有些事情不需要咬住不放，顺其自然就好。酸浆米线微酸，那是云南人给生活的调味。',
+        angry_bonus: '米线！！但你敢煮过头让它断成一锅糊——那是米线粥不是米线！入锅三十秒！多一秒都不行！！'
+      },
+      {
+        id: 'suanlafen', name: '酸辣粉', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起酸辣粉？？你的肠胃是钛合金做的。食神退后一步：酸辣粉是下午三点以后的合法食物，早上吃是对自己的一种味觉偷袭。但如果你执意——多喝水。',
+          noon: '午间酸辣粉——正当。红薯粉在酸辣汤中滑如泥鳅，花生黄豆增加脆度，肉末提供肉香。食神擦汗：你今天午饭选得有劲。',
+          evening: '晚餐酸辣粉是对今天所有委屈的清算。酸是生活的真相，辣是对真相的愤怒，粉是你穿过这一切的韧性。食神点头：吃。',
+          night: '深夜酸辣粉——你一定是重庆人或四川人。那份酸辣在凌晨有一种乡愁的味道。但请注意：酸辣粉的辣油会在你睡着后继续工作，明天早晨见分晓。'
+        },
+        diagnosis: '酸辣粉是川渝献给世界的情书。红薯粉条在酸辣汤中吸饱了滋味，每一根都是液态的冒险。食神判曰：你今日需要一种被击穿的感觉。不是受伤，是那种酸辣同时到达味蕾、眼泪和鼻涕同时被激活的透彻。这是一种生理性的释放——吃酸辣粉的人不需要心理咨询。',
+        angry_bonus: '酸辣粉！！！但醋和辣椒的比例不对——3:2！！醋三辣二！！多一滴少一滴都不是正宗酸辣粉！！'
+      },
+      {
+        id: 'tongxu_mian', name: '葱油通心面', icon: '🍝', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起意面？你在给自己做一顿西式早餐。食神挑眉：通心面煮到al dente，拌上葱油——这是中西合璧的早餐革命。勇气可嘉，但你的意大利祖母不会同意。',
+          noon: '午间通心面——你是自己做的还是昨天的剩饭？食神理解：意面是午餐的优雅选择，但请不要用番茄酱凑合——那是意面的童年，你已经长大了。',
+          evening: '晚餐意面是对自己的犒赏。橄榄油、大蒜、辣椒、欧芹——四样东西能撑起一盘体面的意面。食神赞许：简单即高级。',
+          night: '深夜煮意面？你大概率是饿了且冰箱只有干面。食神提醒：凌晨的意面有一种孤独的美感，但别忘了在煮面水里加盐——那是意面唯一的调味机会。'
+        },
+        diagnosis: '意面是面条中的国际主义者。从西西里到上海，它在任何厨房里都能找到自己的位置。食神判曰：你今天需要一种跨界的勇气。像意面一样——不局限于一种酱汁、一种吃法、一种文化。蒜香橄榄油是最简单的，也往往是最好的。别忘了面汤留一勺拌进酱里——那是意大利人的秘密。',
+        angry_bonus: '意面！！但你煮到完全软了——那是给婴儿吃的！！al dente！！弹牙！！咬下去有阻力！！'
+      },
+      {
+        id: 'guoqiao_mixian', name: '过桥米线', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起过桥米线？你今天不赶时间。食神敬仰：那碗滚烫的鸡汤上漂着一层封住热气的鸡油，配料一盘一盘下去——这是早餐界的皇家仪式。',
+          noon: '午间过桥米线——你是在用午餐时间给自己放了一个小假。食神点头：那碗汤的温度是你的壁垒，外面世界再乱，你先喝完这碗汤。',
+          evening: '晚餐过桥米线——你是今天约了人还是犒赏自己？那层封住热气的油膜之下，是云南高原的精华。食神祝福：慢慢吃，这是不能急的一顿饭。',
+          night: '深夜过桥米线？这个点没有正经店还在做过桥米线了。食神劝你：过桥米线的仪式感不适合凌晨——凌晨适合速食米线，那是一种完全不同的食物。'
+        },
+        diagnosis: '过桥米线是云南献给世界的餐桌戏剧。滚烫鸡汤上那层金黄的油膜，是热气的封印。鹌鹑蛋、火腿片、鸡肉片、韭菜、豆芽、米线——一盘一盘入汤，像一场精心编排的演出。食神判曰：你今日值得被隆重对待。别赶，别催，别边吃边看手机。这碗米线需要你的全部注意力——那是你对自己最体面的尊重。',
+        angry_bonus: '过桥米线！！！但你敢先放米线后放肉——顺序全错！！先肉后菜最后米线！！乱序是对云南人民的挑衅！！'
+      },
+      {
+        id: 'banchuan', name: '拌川', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起拌川？你是杭州人还是昨夜去了杭州？食神点头：拌川是杭州面食的隐藏宝藏——肉丝豆腐干韭芽在锅中爆炒，浇在面上，那是西湖边最踏实的早晨。',
+          noon: '午间拌川——片儿川或肉丝拌川，你选的是杭州人的工作日信仰。食神赞许：拌川不像苏式面那样精致，它有一种杭铁头的爽利。',
+          evening: '晚餐拌川，你在想念江南。食神理解：拌川的锅气里有一种氤氲的温柔，那是杭州这座城市的气质。',
+          night: '深夜拌川？你大概率在杭州以外的城市。食神只能说：拌川出了杭州就很难找到——你今晚的念想是一种奢侈。'
+        },
+        diagnosis: '拌川是杭州人的面食密码。它不是汤面也不是炒面，是介于两者之间的一种微妙状态。肉丝、豆腐干丝、韭芽在锅中爆炒，然后与煮好的面条同炒——面吸了菜的汁，菜裹了面的香。食神判曰：你今日需要一种恰到好处的分寸感。像拌川一样——不干不湿、不咸不淡、不卑不亢。',
+        angry_bonus: '拌川！！但你不要把它做成炒面！！拌川的魂是「拌」不是「炒」！！面入锅不超过三十秒！！'
+      },
+      {
+        id: 'lengmian', name: '冷面', icon: '🍜', category: '面食江湖',
+        time_judgement: {
+          morning: '晨起冷面？你是朝鲜族还是今天气温40度？食神打冷颤：冷面是盛夏的救命恩人，不是日常早餐。但如果外面已经热到融化——准了。',
+          noon: '午间冷面——酷暑午餐的终极答案。冰凉的牛肉汤底，荞麦面上漂着半个鸡蛋、一片牛肉、几片黄瓜——那是炎热午后的北极。食神盖章：夏天午餐的正确打开方式。',
+          evening: '晚餐冷面？你今天被太阳烤了一天。食神心疼：那碗带着冰碴的冷面是你今天的解脱。先喝一口酸甜的汤，让体温降下来。',
+          night: '深夜冷面？你是热得睡不着吧。食神理解：凌晨的冷面有一种特殊的功效——它不光降温，还降躁。但别把冰碴吞下去，你的胃不是冰窖。'
+        },
+        diagnosis: '冷面是盛夏的终极武器。荞麦面的灰褐色在冰凉的牛肉汤中静静潜伏，配上泡菜、鸡蛋、黄瓜、牛肉——每一口都是对炎热的一次反击。食神判曰：你今日需要冷静。不是冷漠的冷，是冷面的冷——酸甜微辣，清凉但不寒心。先喝一口汤，让那股凉意从喉咙蔓延到全身。然后吃面。',
+        angry_bonus: '冷面！！！但你端上来不放冰碴——那是凉面不是冷面！！必须有冰！！汤必须冰到让你大脑冻结！！'
+      },
+
+      // ── 米饭正餐 (15) ──────────────────────
+      {
+        id: 'huangmenji', name: '黄焖鸡米饭', icon: '🍛', category: '米饭正餐',
+        time_judgement: {
+          morning: '早餐黄焖鸡？你的胃是特种兵出身。食神震惊但不多言——毕竟鸡肉和米饭在任何时辰都是合法的组合。',
+          noon: '黄焖鸡米饭——打工人的午间灯塔。全国统一的味道，全国统一的慰藉。食神掐指一算：你公司楼下必有一家。去吧，微辣是今天的平衡点。',
+          evening: '晚餐黄焖鸡，简单直接。食神看到你今天没有花哨的心情，只想被一锅炖得入味的鸡肉温柔地打发。这种诚实值得尊重。',
+          night: '深夜黄焖鸡——如果这时候还有店开着，那是天意。食神提醒：米饭多要一点，汤汁浇透，这是对这顿深夜正餐最基本的尊重。'
+        },
+        diagnosis: '黄焖鸡米饭是打工人午餐界的无冕之王。它不惊艳但从不失手，不昂贵但有肉有菜有饭。食神观你今日运势：宜平稳，宜务实。那锅咕嘟冒泡的黄焖鸡，就是你今天最可靠的锚点。加一份香菇，它能吸走你今日的疲惫。',
+        angry_bonus: '黄焖鸡！但你点不辣的就太小看自己了。微辣起跳，中辣合格，这是神的最低要求！'
+      },
+      {
+        id: 'baozai_fan', name: '煲仔饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起煲仔饭？那是昨晚煲好的吧。食神揉眼：早上吃煲仔饭过于隆重，但如果你今天要面对一场硬仗——这份碳水储备是明智的。',
+          noon: '午间煲仔饭——腊味煲仔还是滑鸡煲仔？酱油浇在锅边滋啦作响的那一秒，是你今天午饭的高光时刻。食神提醒：锅底的锅巴是宝藏，别剩。',
+          evening: '晚餐煲仔饭，你今日辛苦了。瓦煲里米饭吸饱了腊味的油脂，每一粒都晶莹饱满。食神赞许：这是广式晚餐的正确打开方式。',
+          night: '深夜煲仔饭？这个时辰没有正经煲仔饭店还开着。但你如果自己做——食神敬你是厨神附体。'
+        },
+        diagnosis: '煲仔饭是米饭的奢华形态。瓦煲在火上慢慢加热，米饭从底部开始形成一层金黄的锅巴。腊味的油脂渗入米粒，酱油沿着锅边浇下的瞬间，滋啦一声——那是广式饮食中最动人的声音。食神判曰：你今日需要被耐心对待。煲仔饭不能急，小火慢煲。你也是——有些事急不来。',
+        angry_bonus: '煲仔饭！！！但你酱油浇完不盖盖子焖三十秒——那是酱油拌饭不是煲仔饭！！焖！必须焖！！'
+      },
+      {
+        id: 'danchaofan', name: '蛋炒饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起蛋炒饭？你是昨晚的剩饭找到了出路还是单纯想吃？食神点头：蛋炒饭是早餐里最灵活的选择——隔夜饭在油锅里重生，那是碳水化合物的涅槃。',
+          noon: '午间蛋炒饭——简单但不简陋。鸡蛋裹着米粒，葱花在油温中释放香气。食神赞许：愿意中午给自己炒饭的人，手上有功夫，心里有自己。',
+          evening: '晚餐蛋炒饭？你是冰箱只剩鸡蛋和剩饭了。食神不鄙视——在所有简陋的晚餐里，蛋炒饭是最有尊严的一种。加一勺老干妈，那是穷人的松露。',
+          night: '深夜蛋炒饭——凌晨的蛋炒饭有一种凌晨特有的香气，那是孤独和饥饿的共同产物。食神陪你站在灶台前，等锅里的米粒开始跳舞。'
+        },
+        diagnosis: '蛋炒饭是厨房里的基本功考试。隔夜饭、鸡蛋、葱——三样东西能撑起一个世界。关键在于火候：火大则焦，火小则腻。食神判曰：你今天需要的不是复杂，是那种把简单做到极致的力量。每一粒米都裹上蛋液，每一口都有葱香——这是蛋炒饭教你的：不要贪多，把手头的事做好。',
+        angry_bonus: '蛋炒饭！！！但你用刚煮的饭炒——那是蛋拌饭不是蛋炒饭！！必须隔夜饭！！粒粒分明！！'
+      },
+      {
+        id: 'lurou_fan', name: '卤肉饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起卤肉饭？你是台湾人还是今天需要重型早餐？食神咋舌：早上吃卤肉饭的人，胃是一座化工厂。但那份五花肉在酱油和冰糖中炖出的胶原蛋白——确实让人无法拒绝。',
+          noon: '午间卤肉饭——打工人的午间温柔。卤汁浇在米饭上，五花肉入口即化。食神点头：这是台式午餐的经典。加一颗卤蛋，让它完整。',
+          evening: '晚餐卤肉饭——你今天辛苦了。那碗卤肉饭里的五花肉，在卤汁中炖了至少两小时——那是时间的味道，也是你应得的犒赏。',
+          night: '深夜卤肉饭——如果还有剩卤肉，你是幸运的。凌晨的卤肉饭有一种深夜食堂的温情，它不是填饱你，是陪你度过这一夜。'
+        },
+        diagnosis: '卤肉饭是台湾献给世界的平民美食。五花肉切丁，在酱油、冰糖、八角、五香粉中慢炖——油脂化成胶质，瘦肉酥而不柴。浇在米饭上，酱色的卤汁渗入米粒。食神判曰：你今日需要一种化开的感觉。像卤肉一样——在时间的慢炖中，坚硬的部分变柔软，尖锐的部分变醇厚。',
+        angry_bonus: '卤肉饭！！！但你卤汁没浇透米饭——白饭在碗底瑟瑟发抖！必须每一粒米都沾上卤汁！拌匀！！'
+      },
+      {
+        id: 'galifan', name: '咖喱饭', icon: '🍛', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起咖喱饭？你是日本人还是今天的日程需要超强续航？食神揉太阳穴：咖喱作为早餐过于浓烈，但如果你今天要跑马拉松——准了。',
+          noon: '午间咖喱饭——咖喱的姜黄素是你下午的能量来源。食神点头：咖喱饭是午餐里的慢释能量包，从中午撑到下午五点，它不会让你失望。',
+          evening: '晚餐咖喱饭是对自己的一种温柔。咖喱在锅里咕嘟咕嘟冒泡的声音，是你今天听过最治愈的白噪音。食神建议：配一点福神渍，清口。',
+          night: '深夜咖喱饭？隔夜咖喱比新鲜咖喱更好吃——这是咖喱的物理定律。食神看到你从冰箱里端出那盒咖喱，心想：这个人懂吃。'
+        },
+        diagnosis: '咖喱饭是香料的大团结。姜黄、孜然、芫荽、辣椒——几十种香料在锅中融合成一锅金色的魔法。食神判曰：你今天需要被包裹。咖喱不像清汤那样透明，它是浓稠的、不透明的、把你整个人都裹进香气里的。隔夜的咖喱更好吃——有些东西确实需要等一等。',
+        angry_bonus: '咖喱饭！！！但你用的是咖喱块不是自己配香料——算了不骂了，咖喱块也行，但至少加一点自己炒的洋葱！！'
+      },
+      {
+        id: 'yangzhou_chaofan', name: '扬州炒饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起扬州炒饭？你是准备今天不吃饭了？食神抱拳：这份虾仁火腿青豆鸡蛋与米饭的交响乐，作为早餐过于豪华。但如果你今天只吃这一顿——那是明智的。',
+          noon: '午间扬州炒饭——你中午有客人还是单纯想对自己好？食神点头：扬州炒饭是炒饭界的旗舰，虾仁的弹、火腿的咸、青豆的甜——粒粒分明是基本功。',
+          evening: '晚餐扬州炒饭是对今天所有辛苦的交代。食神看到你碗里那个金黄色的饭堆——那是你今天应得的圆满。',
+          night: '深夜扬州炒饭？你没那个材料。虾仁火腿青豆缺一样都不叫扬州炒饭。食神劝你：凌晨做成蛋炒饭就好，别逞能。'
+        },
+        diagnosis: '扬州炒饭是炒饭金字塔的顶端。它不是蛋炒饭加了配料——它是每一粒米都经过油的高温洗礼，每一种配料都在恰当的时间入锅。虾仁弹牙、火腿咸香、青豆甜脆。食神判曰：你今日需要对自己好一点。不是凑合的好，是扬州炒饭级别的好——选料讲究，火候精准，不将就。',
+        angry_bonus: '扬州炒饭！！！但你敢不放虾仁——那是蛋炒饭不是扬州炒饭！虾仁火腿青豆鸡蛋葱花！！少一样降一级！！'
+      },
+      {
+        id: 'manyu_fan', name: '鳗鱼饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起鳗鱼饭？你是昨天剩的还是今天特意早起去日料店？食神震惊：鳗鱼饭作为早餐是贵族级别的任性。但那份蒲烧鳗鱼配米饭——确实让人无法拒绝。',
+          noon: '午间鳗鱼饭是你今天给自己的奖励。鳗鱼的油脂渗入米饭，酱汁在米粒间流淌。食神点头：这顿午饭有仪式感，请放下手机认真吃。',
+          evening: '晚餐鳗鱼饭——你在犒赏今天的自己。食神看到鳗鱼表面那层焦糖色的光泽，知道你今天过的不容易。鳗鱼是水中的武士，它值得被认真对待。',
+          night: '深夜鳗鱼饭？你大概率是在日剧里看到鳗鱼饭然后饿了。食神只能告诉你：这个时辰只有便利店鳗鱼饭团，那跟真正的鳗鱼饭不是同一种食物。'
+        },
+        diagnosis: '鳗鱼饭是日式料理中的明珠。蒲烧鳗鱼在炭火上反复刷酱，表面形成一层焦糖色的光泽——那是鳗鱼一生中最辉煌的时刻。食神判曰：你今日值得一种被认真对待的感觉。不是随便扒拉几口，是坐在桌前、打开漆盒、用筷子夹起一块鳗鱼的那种郑重。生活需要偶尔的隆重。',
+        angry_bonus: '鳗鱼饭！！！但你三两口吃完不看一眼——那是对鳗鱼生命的亵渎！鳗鱼从海洋到餐桌走了几千里！！你给我慢慢吃！！'
+      },
+      {
+        id: 'jipai_fan', name: '鸡排饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起鸡排饭？你的早餐卡路里已经爆了。食神揉太阳穴：鸡排作为早餐过于油腻，但如果你今天要去工地——这份能量是合理的。',
+          noon: '午间鸡排饭——炸鸡排的外壳在嘴里咔嚓作响，那是你今天最解压的声音。食神建议：配一杯冰红茶，切一切油腻。',
+          evening: '晚餐鸡排饭是你对今天的交代。鸡排大过你的脸，米饭堆成小山——这是一顿不需要思考的饭，它只管填饱你。',
+          night: '深夜鸡排饭？这个点只有外卖了。炸鸡排送到的时候已经不脆了——那是鸡排最悲哀的时刻。食神叹气：软掉的鸡排是对鸡排师傅的辜负。'
+        },
+        diagnosis: '鸡排饭是便当界的硬通货。鸡胸肉锤扁、腌制、裹粉、油炸——金黄色的外壳下是嫩白的鸡肉。咬开的瞬间，热气从裂缝中冲出。食神判曰：你今日需要一种直接的满足。不需要思考、不需要搭配、不需要摆盘——一个大鸡排盖在饭上，就是成年人最简单的快乐。加番茄酱或椒盐？这是你今天的唯一抉择。',
+        angry_bonus: '鸡排饭！！但你外卖点来已经软了——那是鸡排的遗体！鸡排必须在出锅后十分钟内入口！！'
+      },
+      {
+        id: 'pai_gu_fan', name: '排骨饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起排骨饭？你是广东人喝早茶还是今天有大工程？食神揉眼：排骨饭作为早餐过于厚重。但如果这是你唯一的一顿——排骨的蛋白质和米饭的碳水能扛到下午。',
+          noon: '午间排骨饭——豉汁排骨铺在米饭上，蒸汽一闷，豆豉的咸香渗入每一粒米。食神赞许：这是午餐里的硬菜。',
+          evening: '晚餐排骨饭是你对今天体力劳动的交代。那几根排骨上的肉，是你今天挣来的。把骨头上的肉啃干净——那是你对食物最大的尊重。',
+          night: '深夜排骨饭？如果还有剩排骨，你是富人。凌晨啃排骨有一种原始的快感——那是人类基因里对骨头上肉的渴望。'
+        },
+        diagnosis: '排骨饭是米饭与猪肉的经典联姻。排骨斩成小块，用豆豉、蒜蓉、酱油腌制，铺在米饭上一起蒸——米吸了肉汁，肉染了米香。食神判曰：今天你需要一种啃骨头的快感。不是狼吞虎咽，是一点一点把肉从骨头上剥离的耐心。生活也如此——好的东西往往藏在需要啃的地方。',
+        angry_bonus: '排骨饭！！但你只吃肉不啃骨头——骨头边上的肉是最香的！！你把它扔了等于把排骨的灵魂扔了！！'
+      },
+      {
+        id: 'suan_cai_yu', name: '酸菜鱼米饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起酸菜鱼？你的味觉系统还没醒就被酸菜攻击了。食神退后一步：酸菜鱼是午餐晚餐的合法食物，早上吃是对自己的一种过激行为。',
+          noon: '午间酸菜鱼——鱼片嫩滑，酸菜爽脆，汤汁浇在米饭上——你今天中午的快乐已经溢出。食神擦汗：但办公室同事可能会被你碗里的酸菜味吸引过来。',
+          evening: '晚餐酸菜鱼是你今天的高潮。酸菜的酸是发酵的智慧，鱼片的嫩是火候的精准。食神点头：晚餐选酸菜鱼的人，今天一定心情不错。',
+          night: '深夜酸菜鱼？这个点只有外卖了。酸菜鱼外卖送来的时候鱼片已经闷老了——那是鱼片最悲伤的结局。食神建议：不如明天中午吃新鲜的。'
+        },
+        diagnosis: '酸菜鱼是川菜送给世界的礼物。老坛酸菜在锅里煸出酸香，鱼片在滚汤中一烫即熟。酸是基底，辣是点缀，鲜是灵魂。食神判曰：你今日需要一种被唤醒的感觉。像鱼片入滚汤那一秒——从生到熟，从平淡到鲜美，只需要三秒钟。酸菜是时间的味道，老坛里发酵的不只是菜，还有耐心。',
+        angry_bonus: '酸菜鱼！！但酸菜不是老坛发酵的——那是醋泡菜！！老坛酸菜！最少腌一个月！不是昨天泡的！！'
+      },
+      {
+        id: 'hongshao_rou', name: '红烧肉饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起红烧肉？你是今天要搬砖还是准备把一天的脂肪在早上吃完？食神敬仰：红烧肉作为早餐是极限运动。但那份五花肉在冰糖和老抽中煨出的光泽——确实让人无法说不。',
+          noon: '午间红烧肉饭是对自己的慷慨。五花肉炖到筷子一夹就断，肥而不腻瘦而不柴。食神点头：这是午餐界的帝王。',
+          evening: '晚餐红烧肉——你今天一定完成了什么了不起的事。红烧肉是犒赏级别的食物，它不是日常，它是庆祝。食神祝你今天有值得庆祝的事。',
+          night: '深夜红烧肉？隔夜的红烧肉比新鲜的好吃！食神拍案：红烧肉放一晚上，油脂重新凝固再融化，味道会再上一层。凌晨吃隔夜红烧肉的人——懂吃。'
+        },
+        diagnosis: '红烧肉是中华料理的底色之一。五花肉在冰糖和老抽中慢慢煨煮，油脂化成透明，瘦肉酥而不散。那一块肉在筷子间颤颤巍巍——那是时间对猪肉的成全。食神判曰：你今日需要一种踏实的感觉。红烧肉不赶时髦，它靠的是慢火和耐心。你也一样——好东西急不来。',
+        angry_bonus: '红烧肉！！！但你用高压锅速成——那是压熟的肉不是红烧肉！！必须砂锅小火两小时！！高压锅出来的肉没有灵魂！！'
+      },
+      {
+        id: 'gongbao_jiding', name: '宫保鸡丁饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起宫保鸡丁？你是四川人还是今天需要麻辣开局？食神揉眼：宫保鸡丁作为早餐过于刺激。但如果你今天有重要会议——那口麻辣会让你比咖啡还清醒。',
+          noon: '午间宫保鸡丁饭——花生米在嘴里咔嚓，鸡肉嫩滑，辣椒和花椒在你的舌头上开派对。食神赞许：这顿午饭有性格。',
+          evening: '晚餐宫保鸡丁是你今天的味觉收尾。宫保是川菜中荔枝味的代表——酸甜微辣，那是四川人对味觉平衡的高级理解。',
+          night: '深夜宫保鸡丁？你是看了太多川菜视频。食神只能说：凌晨做宫保鸡丁需要备料——花生米、干辣椒、花椒、葱段——你冰箱里大概率没有。'
+        },
+        diagnosis: '宫保鸡丁是川菜的世界名片。鸡丁嫩滑、花生酥脆、辣椒焦香、花椒微麻——四者在高温铁锅中完成一次完美的合奏。食神判曰：你今日需要一种节奏感。宫保鸡丁是一道快菜——从下锅到出锅不超过三分钟，但备料需要半小时。生活也如此：精彩的瞬间背后，是别人看不到的准备。',
+        angry_bonus: '宫保鸡丁！！但你的花生不脆——那是回潮的花生！花生必须现炸！或者至少在下锅前干煸一下！！'
+      },
+      {
+        id: 'mabo_doufu', name: '麻婆豆腐饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起麻婆豆腐？你的胃是铁打的吗？食神擦汗：麻婆豆腐是米饭杀手，但早上吃——你的肠胃今天要打一场硬仗。祝好运。',
+          noon: '午间麻婆豆腐饭——豆腐在红油花椒中颤颤巍巍，浇在米饭上——你今天午饭的快乐非常简单：豆腐嫩、花椒麻、米饭多。食神点头：经典。',
+          evening: '晚餐麻婆豆腐是家常但不平常。牛肉末煸得酥香，豆瓣酱炒出红油——那是四川厨房里最熟悉的香气。食神建议：米饭多煮了，因为你肯定不够。',
+          night: '深夜麻婆豆腐？你在想家。食神理解——凌晨做麻婆豆腐的人，要么有个四川胃，要么有个四川妈。'
+        },
+        diagnosis: '麻婆豆腐是豆腐的终极形态。嫩豆腐在红油花椒中保持完整，牛肉末提供肉香，豆瓣酱是灵魂。一勺浇在米饭上——麻辣鲜香嫩烫酥，七种感受同时到达。食神判曰：你今日需要一种矛盾的美。像麻婆豆腐——豆腐是温柔的，麻辣是攻击性的，但两者在一起就是完美的。你也是：柔软和锋利可以共存。',
+        angry_bonus: '麻婆豆腐！！但你用老豆腐不用嫩豆腐——那是麻辣豆腐干！！嫩豆腐！！入口即化那种！！不然不叫麻婆！！'
+      },
+      {
+        id: 'fanqie_chao_dan', name: '番茄炒蛋饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起番茄炒蛋？你是自己做的还是妈妈做的？食神微笑：番茄炒蛋是中国人厨房里最温情的存在。早上吃这个，今天一整天都会有一层温柔的保护色。',
+          noon: '午间番茄炒蛋饭——酸甜的番茄汁裹着蓬松的鸡蛋，浇在米饭上。食神点头：这是午餐里最不具攻击性的选择——但也是最容易让人想家的。',
+          evening: '晚餐番茄炒蛋是家常菜的图腾。它不贵、不难、不花哨——但每个中国人心里都有一盘自己的番茄炒蛋。放糖还是不放糖？这是你家的DNA。',
+          night: '深夜番茄炒蛋？你是饿了且冰箱只有番茄和鸡蛋。食神微笑：凌晨的番茄炒蛋有一种特殊的温情——那是你小时候半夜饿了妈妈给你做的那种味道。'
+        },
+        diagnosis: '番茄炒蛋是中国人厨房里的国歌。每个家庭都有自己的版本——放糖的、不放糖的、先炒蛋的、先炒番茄的。它是分歧最小的菜，也是情感浓度最高的菜。食神判曰：你今日需要一种归属感。番茄炒蛋不问你是谁、从哪来、到哪去——它只是在那里，用最朴素的方式告诉你：有人在乎你。',
+        angry_bonus: '番茄炒蛋！！！但你炒得太干了——番茄炒蛋必须有汤汁！那是浇饭用的！干巴巴的番茄炒蛋是对米饭的背叛！！'
+      },
+      {
+        id: 'yuxiang_rousi', name: '鱼香肉丝饭', icon: '🍚', category: '米饭正餐',
+        time_judgement: {
+          morning: '晨起鱼香肉丝？你今天味觉开关打到最强档了。食神揉眼：鱼香肉丝作为早餐过于复杂，但鱼香是川菜复合味型的代表——酸甜咸辣葱姜蒜，早上给你的味蕾来了一场全面演习。',
+          noon: '午间鱼香肉丝饭——木耳的脆、胡萝卜的甜、肉丝的嫩、泡椒的辣——四种口感在口中交替。食神赞许：这是午餐里的复合型选手。',
+          evening: '晚餐鱼香肉丝是下饭之王。一碗米饭不够，两碗起跳。食神提醒：鱼香肉丝的汤汁是精华，别剩在盘子里，那是留给米饭的。',
+          night: '深夜鱼香肉丝？这道菜备料太复杂——木耳要泡、肉要切丝、泡椒要剁。凌晨的你不具备这个精力。点外卖吧。'
+        },
+        diagnosis: '鱼香肉丝是川菜味型学的杰出代表。没有鱼，但能做出鱼的味道——那是泡椒、姜蒜、糖醋在热油中发生的化学反应。食神判曰：你今日需要一种复合的体验。生活不是单一味道的——它酸甜咸辣都有。鱼香肉丝教会我们：不同的调料不是敌人，它们在高温中会成为彼此最好的搭档。',
+        angry_bonus: '鱼香肉丝！！但你做出来没有鱼味——那是糖醋肉丝！！泡椒是灵魂！！姜蒜是骨架！！糖醋是血肉！！缺一不可！！'
+      },
+
+      // ── 硬菜盛宴 (15) ──────────────────────
+      {
+        id: 'huoguo', name: '火锅', icon: '🫕', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起求火锅？！你昨晚是喝到断片刚醒还是今天准备不上班了？食神拍案：荒唐！但……也不是不行。只是这个点开门的火锅店，可能跟你的底线一样——几乎没有。',
+          noon: '午间火锅是奢侈的午休方式。你在对下午的工作说：我不在乎了。食神欣赏这份豁达，但提醒：吃完身上那股牛油味，会在会议室里帮你吸引不必要的注意。',
+          evening: '晚来围炉，人间至乐。食神掐指一算：你今日社交运旺盛，宜呼朋引伴。火锅是群体主义在餐桌上的最高表达——去吧，抢肉要快，姿势要帅。',
+          night: '深夜火锅——你已不在乎明天是否水肿，不在乎衣服要晾三天。这种自由令人动容。食神只有一句忠告：别点最辣的锅底，你不知道凌晨三点的胃有多脆弱。'
+        },
+        diagnosis: '火锅是中国人最接近共产主义的时刻——同锅而食，不分彼此。食神观你命盘，今日宜集体行动。你需要的不是食物本身，是那种在氤氲热气中模糊了面孔的亲密。毛肚七上八下，鹅肠三起三落——这些不成文的规矩是对混乱世界的温柔秩序。',
+        angry_bonus: '火锅？！一个人吃火锅是有罪的你知道不？快去找人！少于两个饭搭子不准开火！这是神谕！'
+      },
+      {
+        id: 'kaorou', name: '烤肉', icon: '🥩', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起求烤肉？你的食欲作息已经叛离人类阵营。食神揉着太阳穴：行吧，就当是「早餐式烤肉」，记得配生菜，假装自己在做健康选择。',
+          noon: '午间烤肉，是你在向平庸的工作日宣战。食神赞许：有胆色！午休时间最大化利用，这才是成年人该有的叛逆。',
+          evening: '晚来烤肉香，人生得意须尽欢。食神掐指一算，你今日需摄入至少200克蛋白质来弥补白天的精神损耗。准了。',
+          night: '子时求肉，非人即兽。你灵魂深处正在经历兽性反扑，食神理解，但不原谅。此签一出，明日清晨你必将与马桶签订一份不平等条约。且吃且珍惜。'
+        },
+        diagnosis: '烤肉是人类的返祖仪式。当油脂滴落炭火，青烟升起，你便在烟雾中看见了远古祖先围着篝火的倒影。食神判曰：你今日需要的不是食物，是那种撕咬的快感。去吧，点一份五花肉，让它在铁板上为你唱一首滋滋作响的赞歌。',
+        angry_bonus: '烤肉都不会自己烤的话当我没说。别点太多，上次有个凡人吃了三斤，第二天哭着来投诉。'
+      },
+      {
+        id: 'shaokao', name: '烧烤', icon: '🍢', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '早餐烧烤？你是昨晚没散场还是今早就要重新开局？食神抱头：这个时辰的烧烤摊还没支起来，你求的是虚空中的一串。',
+          noon: '午间烧烤？你是翘班了还是今天团建？食神眯眼：工作日中午吃烧烤的人，要么是老板，要么是不想干了。你是哪一种？',
+          evening: '晚来撸串，人间正道。啤酒配串，天下无敌。炭火是篝火的遗存，串是原始的分享单位。去吧，孜然和辣椒面是你今晚的战旗。',
+          night: '深夜烧烤——你已经抵达了快乐的终极形态。凌晨的烤串有一种白天的串没有的滋味，叫「不管了」。食神唯一担心的是你明天的体检报告。'
+        },
+        diagnosis: '烧烤是人类最古老的烹饪仪式。当肉串在炭火上滋滋作响，你其实在重演一万年前祖先的晚餐。食神判曰：你今日需要释放。不是优雅地释放，是那种嘴角沾着孜然、手指泛着油光的释放。点一份烤茄子，它是烧烤界最被低估的哲学家。',
+        angry_bonus: '烧烤！有品位！但你别什么都点！上次有人点了五十串最后剩一半——浪费食物在本神这里是重罪！吃多少点多少！'
+      },
+      {
+        id: 'malatang', name: '麻辣烫', icon: '🍲', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '清晨即求此物——你的肠胃是铁打的还是你已自我放弃了？食神敬你是条汉子，特批：今日麻辣烫可免麻免辣，但免不了同事对你早餐选择的侧目。',
+          noon: '午时求辣，正当其时。你体内有一团火需要以火攻火，食神认可这份以毒攻毒的胆识。',
+          evening: '晚来天欲雪，能涮一碗无？麻辣烫是夜晚的合法放纵，食神盖上御印：吃！',
+          night: '深夜麻辣烫，是对明天自己的公然宣战。食神不拦，但已在你档案里记了一笔：此人视肠胃为仇敌。'
+        },
+        diagnosis: '麻辣烫者，江湖之食也。万物皆可涮，百味一锅收。食神观你面相，今日你心中有火——不是愤怒，是那种「不管了今天就要吃顿痛快的」的豁出去。签文显示：加一份藕片，它能吸走你今日的晦气。',
+        angry_bonus: '吃吃吃！辣死你算了！不过说真的，别点特辣，你那个怂样我还不清楚？'
+      },
+      {
+        id: 'chuanchuan_xiang', name: '串串香', icon: '🍢', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起串串香？你是成都人还是今天不上班？食神扶额：早上吃串串的人，胃是一座辣椒仓库。但那股牛油香气——确实有让人早起的魔力。',
+          noon: '午间串串香——比火锅轻便，比麻辣烫丰富。竹签在红油锅里翻腾，那是午间的小型狂欢。食神点头：一个人吃也不丢人。',
+          evening: '晚来串串，朋友三四，竹签堆成小山——这是成都人最日常的幸福。食神掐指：你今晚社交运旺盛，数签子的时候会有人抢着买单。',
+          night: '深夜串串——成都的凌晨是串串的天下。食神看到你在路边摊前弯腰捡签子——那是凌晨最美的弧线。但数签子别数错，老板看着呢。'
+        },
+        diagnosis: '串串香是火锅的轻量化革命。竹签穿过食材，在红油锅中浮沉。吃完一根放一根，竹签在桌上堆成小山——那是今晚的战绩。食神判曰：你今日需要一种积累的快感。一根签子不算什么，但三十根签子堆在一起就是成就感。生活也是如此——大事由小事累积。',
+        angry_bonus: '串串！！但你签子乱放不分类——荤素分开！！不然数签子的时候你赔的比吃的还多！！'
+      },
+      {
+        id: 'mala_xiangguo', name: '麻辣香锅', icon: '🍲', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起麻辣香锅？你的味蕾还没醒就被干辣椒和花椒轰炸了。食神退后一步：香锅是午餐晚餐的合法食物，早上吃是对胃的一场闪电战。',
+          noon: '午间麻辣香锅——自选食材铁锅爆炒，辣椒花椒在油中翻腾。食神擦汗：这顿午饭会让你整个下午都处于一种麻辣的亢奋中。配米饭，必须配米饭。',
+          evening: '晚餐麻辣香锅是你今天的高潮。虾、藕片、午餐肉、土豆、西兰花——万物皆可香锅。食神赞许：选择困难症患者的福音——什么都来一点。',
+          night: '深夜麻辣香锅？外卖送到的时候油已经凉了。食神叹气：香锅必须在铁锅的余温中吃，凉了的香锅是失去了灵魂的躯壳。'
+        },
+        diagnosis: '麻辣香锅是自由的铁锅。没有固定搭配，没有必须遵守的菜单——你选你喜欢的一切，师傅在铁锅中把它们变成一个麻辣的整体。食神判曰：你今日需要一种掌控感。香锅的精髓是「自己选」——选食材、选辣度、选搭配。你的人生也应该是自选的。加一份午餐肉，那是你应得的快乐。',
+        angry_bonus: '麻辣香锅！！但你选了二十种食材——你以为这是自助餐？！选五到八种！多了炒不开！贪心的人是会被麻辣反噬的！！'
+      },
+      {
+        id: 'shuizhu_yu', name: '水煮鱼', icon: '🍲', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起水煮鱼？你的胃是钢筋混凝土浇筑的。食神敬礼：水煮鱼作为早餐过于凶残——那层漂浮的辣椒和花椒不是早餐该有的东西。但如果你今天要打拳击比赛——准了。',
+          noon: '午间水煮鱼——鱼片嫩白在红油中浮沉，那是午餐里最壮观的景象。食神建议：请至少两个人一起吃，一个人面对那么大一盆水煮鱼是孤独的。',
+          evening: '晚餐水煮鱼是你对今天的隆重交代。鱼片的嫩、辣椒的烈、花椒的麻——三位一体在你的舌头上进行了一场交响乐。米饭告急——你肯定不够。',
+          night: '深夜水煮鱼？这个时辰只有外卖。水煮鱼外卖送到的时候，鱼片已经在热油中继续熟了三十分钟——不再是嫩滑而是老硬。食神建议：水煮鱼必须在出锅后十分钟内到达餐桌。'
+        },
+        diagnosis: '水煮鱼是川菜中的暴力美学。不是「煮」——是滚油浇在辣椒花椒上，滋啦一声把鱼肉烫熟。嫩白的鱼片在红色的油海中浮沉。食神判曰：你今日需要一种冲击。不是温和的改变，是滚油浇辣椒那种一瞬间的蜕变。鱼片在油温中三秒即熟——有时人生也需要这种果断。',
+        angry_bonus: '水煮鱼！！但你最后不浇那一勺滚油——那是水泡鱼！！最后一勺滚油是点睛！！浇上去必须有滋啦声！！'
+      },
+      {
+        id: 'kaoya', name: '烤鸭', icon: '🦆', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起烤鸭？你是昨晚剩下的还是今天有贵客？食神挑眉：烤鸭作为早餐——你不是普通人。但鸭皮蘸白糖、鸭肉卷饼——这份早餐的含金量，超过你一天的工资。',
+          noon: '午间烤鸭是对自己的犒赏。荷叶饼裹着鸭皮鸭肉黄瓜条甜面酱——一口咬下去，酥脆、柔软、清爽、甜咸同时到达。食神点头：你今天一定签了大单子。',
+          evening: '晚餐烤鸭——你是今天有重要的人要见。食神掐指：烤鸭是最适合分享的硬菜。片鸭师傅推着餐车过来的时候，那一刀下去，鸭皮破裂的声音是你今晚的序曲。',
+          night: '深夜烤鸭？这个点只有烤鸭外卖——送到的时候鸭皮已经软了。食神哭了：软掉的烤鸭皮是世界上最悲伤的东西之一。烤鸭必须在出炉后二十分钟内被片开！'
+        },
+        diagnosis: '烤鸭是北京献给世界的礼物。鸭子经过打气、烫皮、挂糖、风干、烤制——最后变成一只琥珀色的艺术品。片鸭师傅一刀下去，鸭皮在灯光下闪着金光。食神判曰：你今日值得一场仪式。烤鸭不是日常食物——它是庆祝的图腾。鸭皮蘸白糖是前奏，鸭肉卷饼是主歌，鸭架汤是尾声。慢慢来。',
+        angry_bonus: '烤鸭！！！但你用微波炉加热剩烤鸭——住手！！那是犯罪！！剩烤鸭用烤箱！低温！让鸭皮重新变脆！！微波炉出来的烤鸭是鸭皮抹布！！'
+      },
+      {
+        id: 'tangcu_liji', name: '糖醋里脊', icon: '🥩', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起糖醋里脊？你的血糖今天要坐过山车了。食神扶额：糖醋里脊是午餐晚餐的合法公民，早上吃——你的胰腺今天要加班。',
+          noon: '午间糖醋里脊——外酥里嫩，糖醋汁在口中炸开。食神赞许：这是一道让人开心的菜。里脊肉的嫩和糖醋汁的酸甜——它们在嘴里开派对。',
+          evening: '晚餐糖醋里脊是家常菜中的明星。那层薄薄的脆壳裹着酸甜的酱汁，咬下去的瞬间——咔嚓。食神盖章：晚饭有这道菜，今天圆满。',
+          night: '深夜糖醋里脊？你大概率是外卖。糖醋里脊外卖送来的时候已经不脆了——失去了脆壳的糖醋里脊，像失去了灵魂的人。食神建议：糖醋里脊必须堂食。'
+        },
+        diagnosis: '糖醋里脊是酸甜口味的极致。猪里脊切条，挂糊油炸，糖醋汁在锅中熬到拉丝——浇在里脊上，每一根都裹着琥珀色的酱汁。咔嚓一声咬开脆壳，嫩肉在齿间弹跳。食神判曰：你今天需要一点甜。不是软绵绵的甜，是糖醋里脊那种有脆壳保护的甜——酸甜中带着酥脆，不腻。',
+        angry_bonus: '糖醋里脊！！但你酱汁太稀挂不上——那是糖醋水不是糖醋汁！！酱汁必须熬到能拉丝！！挂上去不能滴下来！！'
+      },
+      {
+        id: 'dongpo_rou', name: '东坡肉', icon: '🥩', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起东坡肉？你是苏东坡本人还是今天有体力活？食神敬仰：东坡肉作为早餐是贵族级别的任性。五花肉在黄酒和酱油中煨了三小时，肥肉化成透明——早上吃这是对一天的最高敬意。',
+          noon: '午间东坡肉是对自己的一天中最高的犒赏。块肉入口即化，咸中带甜。食神点头：你中午就吃东坡肉——今天一定是一个值得庆祝的日子。',
+          evening: '晚餐东坡肉——你是今天做了什么了不起的事。东坡肉不是日常菜，它是需要理由的。食神愿闻其详——你升职了？追到人了？还是单纯就是想吃了？都是合理的理由。',
+          night: '深夜东坡肉？隔夜的东坡肉比新鲜的更好——油脂重新凝固后再度融化，味道更醇厚。食神赞许：你懂。凌晨吃隔夜东坡肉的人，是真正的美食家。'
+        },
+        diagnosis: '东坡肉是苏东坡留给中国餐桌的遗产。五花肉在砂锅中用黄酒、酱油、冰糖文火慢炖——三个小时后，肥肉化成透明的琥珀，瘦肉酥而不散。一块肉入口，舌头一顶就化开。食神判曰：你需要一种被时间成全的感觉。东坡肉不能急——小火慢炖，时间会给它最好的答案。你也一样。',
+        angry_bonus: '东坡肉！！！但你用高压锅压——那不是东坡肉！！那是压力锅红烧肉！！东坡肉的魂是文火！！是慢！！是等！！'
+      },
+      {
+        id: 'duojiao_yutou', name: '剁椒鱼头', icon: '🫕', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起剁椒鱼头？你今天的味觉已经拉满了。食神敬礼：剁椒鱼头作为早餐——你有湖南血统吧。那层红艳艳的剁椒铺在鱼头上，是早晨最壮观的景象。',
+          noon: '午间剁椒鱼头——你是今天有客人还是单纯想对自己好？鱼头的嫩、剁椒的辣——那是湘菜的灵魂。食神提醒：鱼脑是精华，别留给别人。',
+          evening: '晚餐剁椒鱼头——你是今天在长沙还是想念长沙？鱼头在蒸锅里被剁椒的汁水浸透，那是湘江边最鲜美的表达。配一碗米饭，把汤汁浇上去——圆满。',
+          night: '深夜剁椒鱼头？这个时辰没有鱼头可蒸了。食神只能说：剁椒鱼头需要当天的新鲜鱼头，凌晨的鱼头已经不新了。明天请早。'
+        },
+        diagnosis: '剁椒鱼头是湘菜送给世界的战书。新鲜鱼头铺上一层剁椒，上锅蒸——辣椒的汁水渗入鱼肉，鱼肉的鲜味融入辣椒。用筷子拨开辣椒，露出下面嫩白的鱼肉——那是食客最期待的时刻。食神判曰：你今日需要一种穿透力。像剁椒穿透鱼头一样，穿透那些阻挡你的东西。鱼的鲜和辣椒的烈——矛盾但完美。',
+        angry_bonus: '剁椒鱼头！！但你剁椒不是自己剁的——买现成的也行，但至少加一点自己炒的蒜蓉！！剁椒必须有蒜！！'
+      },
+      {
+        id: 'xiaolongxia', name: '小龙虾', icon: '🦞', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起小龙虾？你是昨晚的局没散还是今早就要开始？食神抱拳：小龙虾是夜晚的法定食物，早上吃是对社交规律的挑战。但如果你真的是早上吃——这很朋克。',
+          noon: '午间小龙虾？你是团建还是翘班？食神眯眼：小龙虾是社交食物——它需要双手剥壳，无法同时看手机。这份专注在午间尤为珍贵。',
+          evening: '晚来小龙虾是对夏天最高的敬意。一盆红艳艳的小龙虾在桌上冒着热气，手套一戴——你今晚的任务只有一个：剥虾。食神掐指：今晚你的手指会被辣油染红，那是夏天的勋章。',
+          night: '深夜小龙虾是夏天凌晨的保留节目。一盆龙虾配两瓶啤酒——你已经不在乎明天是否腹泻。食神敬告：十三香还是麻辣？这是你凌晨唯一的哲学问题。'
+        },
+        diagnosis: '小龙虾是夏天的社交货币。它不像牛排那样可以优雅地切割——它需要你双手并用、不顾形象地剥壳吮指。食神判曰：你今日需要一种投入感。剥小龙虾的时候你不能看手机、不能假装优雅——你必须全身心投入。这是一种解放。十三香是稳健派，麻辣是冒险派——你今天是哪一种？',
+        angry_bonus: '小龙虾！！但你戴着手套还嫌脏——吃小龙虾就是要手脏！！手套是对小龙虾的不尊重！！徒手剥！！'
+      },
+      {
+        id: 'dazhaxie', name: '大闸蟹', icon: '🦀', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起大闸蟹？你是昨天晚上没吃完还是今天就要开荤？食神抬眉：大闸蟹是秋天的仪式，但作为早餐——你不是寻常人。蟹黄蟹膏蘸姜醋，早晨这么吃，今天一整天都是皇帝。',
+          noon: '午间大闸蟹是你对秋天最隆重的致敬。蟹八件摆开，姜醋调好——这是一顿不能急的午餐。食神点头：愿意花一小时吃一只蟹的人，是懂得生活的人。',
+          evening: '晚餐大闸蟹是秋天的巅峰体验。膏满黄肥，蟹肉鲜甜。食神掐指：你今日一定有好事发生。大闸蟹不是日常食物——它是秋天的奖赏。',
+          night: '深夜大闸蟹？你是买了蟹没来得及吃。食神提醒：蟹必须当天吃，隔夜的蟹是危险的。凌晨蒸蟹虽然浪漫，但别一个人吃——寒性太大。'
+        },
+        diagnosis: '大闸蟹是秋天写给人类的诗。揭开蟹壳，蟹黄如金，蟹膏如玉——那是螃蟹用一生时间积累的精华。蟹八件一字排开，姜醋在小碟中漾着——吃蟹是一场安静的修行。食神判曰：你今日需要慢下来。蟹不能急——一点点拆、一点点吮、一点点品。你的人生也该有这种不赶时间的时刻。',
+        angry_bonus: '大闸蟹！！！但你把蟹腿掰断用牙咬——那是野蛮人！！蟹八件拿出来！蟹腿要用签子捅！蟹肉要完整地出来！！'
+      },
+      {
+        id: 'yangshai_zi', name: '羊蝎子', icon: '🍖', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起羊蝎子？你是昨晚的锅底没熄火？食神敬仰：羊蝎子作为早餐——你不是普通人。羊脊骨在浓汤中煮到骨肉分离，早上吃这是对一天的最高能量储备。',
+          noon: '午间羊蝎子是对冬天的尊重。羊脊骨在锅中咕嘟咕嘟冒泡，骨髓从骨头里溢出——那是寒冬午间最好的暖源。食神提醒：记得吸骨髓。',
+          evening: '晚餐羊蝎子——你是老北京还是单纯怕冷？羊蝎子锅的热气模糊了对面的脸，你在氤氲中度过最温暖的晚餐。食神赞许：冬季晚餐的正确选择。',
+          night: '深夜羊蝎子——你是从酒吧出来后找补的。羊蝎子凌晨还在营业——这就是它的伟大之处。啃完最后一根骨头，你的胃有一个温暖的句号。'
+        },
+        diagnosis: '羊蝎子是羊脊骨在火锅中的狂欢。骨头与骨头之间的肉最香，骨髓用吸管一吸——那是羊身上最精华的部分。食神判曰：你今日需要一种啃骨头的耐心。好肉不在表面，在骨缝之间。生活也如此——最好的东西往往需要你仔细去找、耐心去拆。别急，骨头就在锅里，跑不掉。',
+        angry_bonus: '羊蝎子！！但你吸骨髓不用吸管用嘴——那是原始人！！骨髓要用吸管！把吸管插进骨髓腔！一口吸出来！！'
+      },
+      {
+        id: 'sheng_jian_niurou', name: '生拌牛肉', icon: '🥩', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起生拌牛肉？你是朝鲜族还是今天要当原始人？食神退后一步：生牛肉作为早餐——你的勇气令人敬畏。梨丝拌牛肉丝加生鸡蛋——那是朝鲜半岛的早餐传统，不是你的。',
+          noon: '午间生拌牛肉是对食材的终极信任。牛肉必须是当天宰杀的，梨丝必须是脆的，鸡蛋必须是能生吃的。食神点头：敢中午吃生牛肉的人，对世界有不设防的信任。',
+          evening: '晚餐生拌牛肉是你今天的冒险。肉丝裹着蛋黄和梨丝，入口嫩滑带着微甜。食神祝好：但请确保牛肉来源可靠——神不想明天在急诊室看到你。',
+          night: '深夜生拌牛肉？？你是疯了还是醉了？食神严厉制止：凌晨的生牛肉不是食物，是俄罗斯轮盘。放下筷子——煮了再吃。'
+        },
+        diagnosis: '生拌牛肉是朝鲜族饮食中的极限运动。新鲜牛里脊切丝，拌上梨丝、蒜末、芝麻油，打一颗生蛋黄——搅拌的瞬间蛋黄裹住每一根肉丝。食神判曰：你今天需要信任。信任食材、信任厨师、信任自己的判断。生拌牛肉容不得半点怀疑——你一旦犹豫，就失去了享受它的能力。',
+        angry_bonus: '生拌牛肉！！！但牛肉不是当天宰杀的——那是在玩命！！生拌牛肉的牛肉必须是屠宰后四小时内的！！超过时间的请煎了再吃！！'
+      },
+      {
+        id: 'tieban_niuwa', name: '铁板牛蛙', icon: '🍲', category: '硬菜盛宴',
+        time_judgement: {
+          morning: '晨起铁板牛蛙？你的早餐画风逐渐离谱。食神揉太阳穴：牛蛙作为早餐——你的勇气可嘉但动机可疑。是昨晚剩的还是你真的早上就想吃蛙？',
+          noon: '午间铁板牛蛙——牛蛙腿在铁板上滋滋作响，蒜瓣大的蛙肉弹牙紧实。食神赞许：这是午餐里的惊喜。配一碗米饭，蛙肉的汁水浇上去——满足。',
+          evening: '晚餐铁板牛蛙是对自己的一种犒赏。牛蛙肉比鸡肉嫩、比鱼肉弹——它是肉类中最灵活的运动员。食神掐指：你今天运动量大，需要高蛋白低脂肪——牛蛙是精准匹配。',
+          night: '深夜铁板牛蛙——你是长沙人吧。食神理解：铁板牛蛙是夜宵界的明星。但凌晨的铁板牛蛙——你明天醒来脸上可能会多几颗痘，那是辣椒的反扑。'
+        },
+        diagnosis: '铁板牛蛙是蛙类烹饪的高光时刻。牛蛙腿在烧红的铁板上跳跃，蒜瓣似的蛙肉在高温中迅速收紧——咬下去弹牙紧实，比鸡肉嫩，比鱼肉韧。食神判曰：你今日需要一种弹跳力。像牛蛙腿一样——在压力中保持弹性，在高温中依然紧实。不要软塌塌地过今天。',
+        angry_bonus: '铁板牛蛙！！但你火太大把蛙肉煎老了——那是蛙肉橡胶！！铁板烧热！转中小火！蛙肉断生即可！！过了就是老蛙！！'
+      },
+
+      // ── 快餐小吃 (15) ──────────────────────
+      {
+        id: 'hanbao', name: '汉堡', icon: '🍔', category: '快餐小吃',
+        time_judgement: {
+          morning: '早餐汉堡？你在美式生活方式的路上一去不返。食神提醒：配咖啡比配可乐稍微体面一点，但只是一点。',
+          noon: '午餐汉堡，快捷高效的选择。食神看到你今日行程很满，没空矫情。汉堡是打工人的忠诚战友——它从不多嘴，只管填饱。',
+          evening: '晚餐汉堡？你是加班到没力气选了吧。至少点个非连锁的，让这顿晚餐有点尊严。',
+          night: '深夜汉堡是灵魂的创可贴。你今天的伤口，需要牛肉饼、芝士和碳水化合物的联合包扎。食神理解。吃吧，明天再减肥。'
+        },
+        diagnosis: '汉堡者，现代文明的快捷祭品。两片面包夹着人类对效率的全部理解。食神判曰：你今日需要简单粗暴的满足感。不要愧疚——偶尔的汉堡是对精致生活的一种必要反叛。记得加酸黄瓜，它能切穿油腻，如同清醒切穿混沌。',
+        angry_bonus: '汉堡都不会选？别点那个金色拱门的，去点真正有肉有芝士的！你的人生已经够凑合了，这顿饭不准凑合！'
+      },
+      {
+        id: 'shutiao', name: '薯条', icon: '🍟', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起薯条？你是昨晚剩的还是早起就想要油炸碳水？食神皱眉：薯条当早餐——你的血糖今天要坐过山车了。但刚出锅的薯条外酥里绵——确实让人无法拒绝。',
+          noon: '午间薯条是给自己的小型奖赏。薯条是午餐的合法附件——但不应该成为主菜。食神建议：至少配个汉堡，让薯条有个名分。',
+          evening: '晚餐薯条？你是今天太累了只想吃让自己开心的东西。食神理解：薯条是油炸碳水中的王者，但请蘸番茄酱而非直接干吃——有点仪式感。',
+          night: '深夜薯条——冷冻薯条用空气炸锅加热，那是凌晨最常见的一幕。食神陪你等那声「叮」——薯条是你今晚的安慰剂。'
+        },
+        diagnosis: '薯条是土豆最光荣的形态。外皮金黄酥脆，内心绵软如泥——油炸给予土豆第二次生命。食神判曰：你今日需要一种简单的快乐。薯条不复杂、不装腔、不需要任何解释。趁热吃，凉了的薯条是对土豆生命的浪费。蘸不蘸番茄酱是你今天唯一的自由意志。',
+        angry_bonus: '薯条！！但你放凉了才吃——那是薯条尸体！！薯条的生命周期是出锅后七分钟！！过了就软了！！'
+      },
+      {
+        id: 'pizza', name: '披萨', icon: '🍕', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起披萨？你是昨晚的剩披萨还是早餐就叫了外卖？食神点头：冷披萨当早餐——这是大学生和程序员的传统，神不审判。冷披萨有一种热披萨没有的嚼劲。',
+          noon: '午间披萨是你的快乐午餐。芝士拉丝的那一刻，你今天所有的烦恼都被拉走了。食神提醒：意式薄底披萨比美式厚底更适合午餐——不会让你下午犯困。',
+          evening: '晚餐披萨是你今天不想做饭的信号。食神理解：披萨是共享食物——一个人吃披萨是孤独的数学（直径12寸=面积113平方寸的寂寞）。请至少两个人。',
+          night: '深夜披萨——你是看完电影还是加班到现在？凌晨的披萨外卖有一种救赎感。食神点头：但请选薄底，厚底在凌晨会变成胃里的砖头。'
+        },
+        diagnosis: '披萨是面饼上的民主。从玛格丽特到夏威夷，每个人都能在披萨上找到自己的立场。食神判曰：你今日需要一种分享的快乐。披萨不适合一个人吃——三角形切开，每人一片，那是食物里最美的几何。加菠萝还是不加？这是今天唯一值得争论的问题。',
+        angry_bonus: '披萨！！但你在意大利人面前点菠萝披萨——那是宣战！！夏威夷披萨不是披萨！！是菠萝烤饼！！'
+      },
+      {
+        id: 'zhaji', name: '炸鸡', icon: '🍗', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起炸鸡？你是昨晚剩的还是今早就要开荤？食神揉眼：炸鸡当早餐——你的肠胃是装甲车。但那层金黄酥脆的外壳在早晨阳光下——确实有一种不合时宜的诱惑。',
+          noon: '午间炸鸡是给自己的犒赏。鸡腿在手，外壳咔嚓作响，肉汁在齿间迸发——那是午餐里最痛快的时刻。食神建议：原味还是甜辣？这是你今天最重要的选择。',
+          evening: '晚餐炸鸡配啤酒——你是韩国人还是看了太多韩剧？食神理解：炸鸡和啤酒的结合是二十世纪最伟大的饮食发明之一。但别一个人吃一整只——那是孤独的炸鸡。',
+          night: '深夜炸鸡是凌晨最常被外卖召唤的食物。食神看到你在凌晨下单——你的灵魂需要油脂的安抚。但明天醒来脸上多几颗痘的时候，别怪神没有提醒你。'
+        },
+        diagnosis: '炸鸡是油炸食品的国王。鸡肉在高温油中完成蜕变——外壳金黄酥脆，肉质多汁嫩滑。咬开的瞬间，热气带着肉香从裂缝中冲出。食神判曰：你今天需要一种原始的满足。用手抓着吃，手指上沾着油光和碎屑——这是一种不必优雅的快乐。原味是经典，甜辣是冒险，你今天是哪一种？',
+        angry_bonus: '炸鸡！！但你用微波炉加热剩炸鸡——天理难容！！剩炸鸡必须用烤箱或空气炸锅！！微波炉出来的炸鸡是软的！！那是油炸面包！！'
+      },
+      {
+        id: 'luosifen', name: '螺蛳粉', icon: '🍜', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起嗦粉，且是螺蛳粉——你的同事今日将经历一场嗅觉浩劫。食神佩服你的社交勇气，但建议吃完后至少通风半小时再与人交谈。',
+          noon: '午间螺蛳粉，气味扩散半径3米。你工位附近的同事今日运势：-50。食神提醒：酸笋是人类分裂的根源，你选了站队的那一边。',
+          evening: '晚来嗦粉，最佳时机。夜风会帮你把气味散到整条街，你将收获路人复杂的眼神。食神批准：这很江湖。',
+          night: '深夜螺蛳粉——你已经不在乎任何人包括明天的自己了。这种自由令人敬畏。食神唯一的要求：别在卧室吃，粉味入被褥需要三天才能散尽。'
+        },
+        diagnosis: '螺蛳粉是食物界的榴莲，爱之者视若珍宝，恨之者避之不及。食神观你命盘，你今日需要一场不留余地的味觉刺激。酸笋的臭味是生活的真相，米粉的滑韧是在真相中穿行的韧性。去吧，但记得开窗。',
+        angry_bonus: '螺蛳粉？！你是要熏死本神吗？不过比起那些没性格的食物，至少你还有种。行，准了，但别靠近我。'
+      },
+      {
+        id: 'choudoufu', name: '臭豆腐', icon: '🧈', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起臭豆腐？你是昨晚宿醉刚醒还是今早就要挑战人类的嗅觉底线？食神戴防毒面具：臭豆腐是夜市小吃，早上吃是对社会秩序的挑战。',
+          noon: '午间臭豆腐——你在办公室吃的话，人事部可能会找你谈话。食神敬佩你的不在乎——油炸臭豆腐配蒜汁辣椒，那个味道在你身上留到下午。',
+          evening: '晚来臭豆腐——这是它的正确时区。夜市摊前，黑色的豆腐块在油锅中翻滚，出锅后戳破浇上蒜汁辣椒——这是夜晚最诚实的味道。',
+          night: '深夜臭豆腐是凌晨的灵魂食物。刚出锅的臭豆腐外焦里嫩，咬开的一瞬间臭味和香味同时炸开——那是深夜最复杂的情感体验。'
+        },
+        diagnosis: '臭豆腐是中国小吃中最具争议的王者。闻着臭吃着香——这是发酵的魔法。豆腐在卤水中发酵，蛋白质分解成氨基酸——那种「臭」其实是鲜味的最浓形态。食神判曰：你今天需要一种勇气。不在乎别人的眼光，坚持自己的选择。臭豆腐教会我们：香和臭的边界是模糊的，好坏往往只有一线之隔。',
+        angry_bonus: '臭豆腐！！但你不过油炸就直接吃——那是生化武器！！必须炸！！炸到黑皮鼓起！！然后戳破浇蒜汁！！'
+      },
+      {
+        id: 'roujiamo', name: '肉夹馍', icon: '🥙', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起肉夹馍——你是西安人还是今天有体力活？食神点头：腊汁肉在白吉馍中夹得满满当当——这是北方早晨最扎实的问候。肉香馍脆，你今天是秦川大地的一部分。',
+          noon: '午间肉夹馍是西北人的午间信仰。白吉馍在炉中烤到鼓胀，腊汁肉剁碎夹入——每一口都有肉汁渗入馍中。食神赞许：这是午餐里最不费时间的硬菜。',
+          evening: '晚餐肉夹馍配凉皮——你是西安人想家了。肉夹馍是西安递给世界的名片。食神理解：腊汁肉的香气是乡愁的另一种形态。',
+          night: '深夜肉夹馍？这个点只有外卖了。肉夹馍送到的时候馍已经不脆了——那是肉夹馍最悲伤的结局。食神叹气：肉夹馍必须在出炉后五分钟内入口！'
+        },
+        diagnosis: '肉夹馍是陕西人的早餐信仰。腊汁肉在陈年老汤中炖到酥烂，白吉馍在炉中烤到表面焦黄——一刀剖开，热气从馍中冲出，腊汁肉塞进去，肉汁渗入馍心。食神判曰：你今日需要一种被充满的感觉。不是空虚的忙碌，是实实在在的被肉填满。咬一口，肉香馍脆——这是大西北对你的全部温柔。',
+        angry_bonus: '肉夹馍！！但你加了青椒——那是异端！！传统肉夹馍只有肉！！不加青椒不加香菜！！纯肉！！'
+      },
+      {
+        id: 'jiaozi', name: '饺子', icon: '🥟', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起饺子——你是昨晚剩的还是早起现包的？食神区分对待：隔夜饺子煎着吃是对饺子生命的延续；现包的是你今天最早的修行。',
+          noon: '午间饺子是一顿完整的午餐。主食与馅料的二元一体——饺子是最简洁的食物。食神点头：猪肉白菜是安全牌，韭菜鸡蛋是冒险牌，三鲜是豪华牌。',
+          evening: '晚餐饺子是家的味道。食神看到你面前那盘冒着热气的饺子——你是在想家还是在自己家？蘸醋还是蘸酱油？那是你家的DNA。',
+          night: '深夜速冻水饺——凌晨最常被翻牌的速食。食神陪你等水烧开：至少点三次凉水，软塌塌的饺子是对饺子之神的不敬。'
+        },
+        diagnosis: '饺子是华夏饮食的元符号。面皮包裹馅料，如同家包裹游子。食神观你命盘：你今日需要的不是惊艳，是那种咬开瞬间涌出的热气。三鲜还是猪肉白菜不重要，重要的是你愿意花时间等一锅水烧开——那是对自己的一份耐心。',
+        angry_bonus: '饺子！！好选择！！但你煮的时候别玩手机！破一个饺子，就是在神的脸上划一道！严肃点！'
+      },
+      {
+        id: 'guotie', name: '锅贴', icon: '🥟', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起锅贴——你是昨晚剩的还是早起现煎的？食神赞许：锅贴底部焦黄，上面柔软——那是煎饺的高级形态。配一碗小米粥，你今天从焦脆的早晨开始。',
+          noon: '午间锅贴是对自己的犒赏。猪肉白菜在铁锅中煎到底部金黄——咬下去咔嚓作响。食神点头：锅贴比饺子多一层焦香，那是火候的奖赏。',
+          evening: '晚餐锅贴配酸辣汤——你今天走的是北方小吃路线。食神认可：锅贴是煎饺的升级版，一字排开在铁锅中的锅贴有一种几何美。',
+          night: '深夜锅贴？速冻锅贴煎一煎就是凌晨的盛宴。食神提醒：煎锅贴的时候水不要多——锅贴不是水饺，蒸汽太多会让底部变软。'
+        },
+        diagnosis: '锅贴是饺子与煎的结合。一排饺子在铁锅中整齐排列，加水盖盖——蒸汽把馅蒸熟，锅底的油把底面煎到金黄。出锅时底部形成一层焦壳，那是锅贴最骄傲的部分。食神判曰：你今日需要一种焦脆的自信。锅贴的底部经历过最直接的考验——火和油——才变得最香。你也是。',
+        angry_bonus: '锅贴！！但你煎的时候不盖锅盖——那是煎饺不是锅贴！！必须加水盖盖！！蒸汽蒸熟馅料！！底焦上面嫩！！'
+      },
+      {
+        id: 'kao_hongshu', name: '烤红薯', icon: '🍠', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起烤红薯？你是养生达人还是昨晚路边买的没吃完？食神点头：烤红薯是早餐里的自然甜——没有添加糖，只有红薯在高温中释放的蜜汁。这是早晨最诚实的甜。',
+          noon: '午间烤红薯——你今天的午餐异常朴素。食神看到你手捧一个烤红薯在寒风中啃——你是有多忙还是有情怀？红薯管饱但不管蛋白质，下午加个蛋。',
+          evening: '晚餐烤红薯？你今天在追求一种返璞归真的感觉。食神理解：烤红薯的香气是冬天最温暖的味道。那层流着蜜汁的薯肉——是大地给你的礼物。',
+          night: '深夜烤红薯——你是饿了且只有红薯。食神陪你等烤箱里的红薯慢慢变软——那是凌晨唯一的耐心时刻。蜜汁流出的时候，你的夜晚被点亮了。'
+        },
+        diagnosis: '烤红薯是冬天最温暖的街头小吃。红薯在烤炉中慢慢变软，糖分在高温中焦化——流出琥珀色的蜜汁。捧在手心里，烫得左右手倒换——那是冬天最美的狼狈。食神判曰：你今日需要一种简单的温暖。红薯不复杂——它只是在地里长大的根茎，用最朴素的方式告诉你：甜不需要理由。',
+        angry_bonus: '烤红薯！！但你用微波炉烤——那不是烤红薯！！那是蒸红薯！！红薯必须明火或烤箱！微波炉出来的红薯没有蜜汁！！那是红薯尸体！！'
+      },
+      {
+        id: 'kao_lengmian', name: '烤冷面', icon: '🫓', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起烤冷面？你是东北人还是学校门口的回忆？食神点头：烤冷面当早餐——这不是常规选择，但铁板上烤出的焦香确实能唤醒早晨。加蛋加肠，今天从东北街头开始。',
+          noon: '午间烤冷面是你对学校时光的致敬。冷面在铁板上烤到微焦，打一颗蛋在上面摊开——那是东北学生时代的午间味道。食神微笑：你是在怀念过去。',
+          evening: '晚餐烤冷面？你今天不想正经吃饭。食神理解——烤冷面是街头小吃界的瑞士军刀：可以加蛋、加肠、加鸡排、加辣条。你的冷面你做主。',
+          night: '深夜烤冷面——东北夜市的灵魂。铁板上冷面滋滋作响，刷上酱料，撒上芝麻——那是凌晨最香的街头味道。但你现在大概率不在东北——烤冷面外卖是次等体验。'
+        },
+        diagnosis: '烤冷面是东北街头的平民美食。冷面板在铁板上烤软，打一颗蛋摊开，刷上甜面酱和辣椒酱——翻面、撒芝麻、切段。那是从哈尔滨到沈阳的街头通用语言。食神判曰：你今日需要一种接地气的快乐。烤冷面不贵、不难、不需要正襟危坐——它是食物最本真的样子：好吃就行。',
+        angry_bonus: '烤冷面！！但你不加蛋——那是干烤面！！蛋是烤冷面的灵魂！！不加蛋的烤冷面是对东北人民的挑衅！！'
+      },
+      {
+        id: 'shouzhua_bing', name: '手抓饼', icon: '🫓', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起手抓饼——你是自己烙的还是路边买的？层层酥脆的饼皮在手中散开——那是早餐里最解压的触感。加蛋加里脊，你今天从一份扎实的碳水开始。',
+          noon: '午间手抓饼是对午餐的一种轻量化处理。食神点头：手抓饼管饱但不压胃——下午不会犯困。这就是它在午餐界的生存之道。',
+          evening: '晚餐手抓饼？你今天是真的不想做饭。食神理解——手抓饼是万能外衣：可以夹鸡蛋、夹火腿、夹生菜、夹一切。它是饼界的包容之王。',
+          night: '深夜手抓饼——冷冻手抓饼在平底锅上解冻加热，那是凌晨最简单的DIY食物。食神提醒：别烙糊了，糊了的部分是苦的不是香的。'
+        },
+        diagnosis: '手抓饼是千层酥皮的平民版本。面团在油中折叠擀开，形成千百层酥皮——在热锅上烙到金黄，用双手一抓一拉，层层分离。食神判曰：你今日需要一种层次感。生活不是单一维度——像手抓饼一样，层层叠叠，每一层都有它的意义。加蛋是基础，加一切是你的自由。',
+        angry_bonus: '手抓饼！！但你烙的时候不抓——那叫烙饼不叫手抓饼！！出锅前必须两只手抓着抖散！！让层次分开！！不抖散是死饼！！'
+      },
+      {
+        id: 'zhangyu_xiaowanzi', name: '章鱼小丸子', icon: '🧆', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起章鱼小丸子？你是从大阪回来还是昨晚剩的？食神挑眉：章鱼小丸子当早餐——你有着不合时宜的可爱。但刚出锅的小丸子确实有一种早晨不该有的诱人。',
+          noon: '午间章鱼小丸子是你给自己的小确幸。外皮微焦，内里绵软，章鱼粒在齿间弹跳——那是午餐里最小型的惊喜。食神提醒：柴鱼片在热丸子上跳舞——那是你今天的快乐。',
+          evening: '晚餐章鱼小丸子不能当正餐——但你加了炒面和沙拉，变成了「章鱼烧定食」。食神点头：这是日式街头小吃最完整的体验。',
+          night: '深夜章鱼小丸子——你是在夜市逛到了最后。凌晨的小丸子有一种特殊的温度——那是摊主守到深夜的诚意。酱汁多一点，柴鱼片多一点——深夜需要慷慨。'
+        },
+        diagnosis: '章鱼小丸子是日本街头递给世界的名片。面糊在球形模具中旋转，章鱼粒在中心潜伏。出锅后浇上酱汁、蛋黄酱、撒上柴鱼片——柴鱼片在热丸子上蜷曲舞动。食神判曰：你今天需要一点童趣。小丸子的快乐是直接的——咬开、烫到、吹气、再咬。这种简单的快乐成年人也需要。',
+        angry_bonus: '章鱼小丸子！！但你把柴鱼片和酱汁省了——那是裸丸子！！酱汁是衣服！柴鱼片是配饰！蛋黄酱是香水！缺一样都是裸奔！！'
+      },
+      {
+        id: 'zhachuan', name: '炸串', icon: '🍢', category: '快餐小吃',
+        time_judgement: {
+          morning: '晨起炸串？你的早餐画风已经从正经一路滑向街头了。食神捂眼：炸串是下酒的夜宵，不是醒神的早餐。但如果你执意——炸茄盒和炸藕盒至少还有点体面。',
+          noon: '午间炸串？你是翘班去街边摊还是学校门口？食神理解：炸串是学生时代的快乐源泉。午餐吃炸串——你今天一定有青春期的烦恼。',
+          evening: '晚来炸串是对一天的最好结算。炸鸡排、炸里脊、炸火腿肠、炸蔬菜——万物皆可裹面糊下油锅。食神赞许：这是油炸赋予万物的第二次生命。',
+          night: '深夜炸串是夜市的灵魂。油锅在凌晨翻腾，串在油中上下浮沉。食神擦口水：刷上辣椒酱和孜然——那是凌晨最不可抗拒的召唤。但明天脸上的痘是你支付的代价。'
+        },
+        diagnosis: '炸串是街头油炸的极致民主。从鸡排到韭菜，从火腿肠到金针菇——面糊一裹，油锅一炸，刷上酱料——万物平等地变成金黄酥脆的美味。食神判曰：你今日需要一种多样化的快乐。不要只选一种——炸串的精髓是多样。荤素搭配，油炸共犯。刷辣酱还是甜酱？那是你今天唯一的分歧。',
+        angry_bonus: '炸串！！但油温不够就下锅——那是浸油串不是炸串！！油必须热到冒烟！串下去必须有滋啦声！！不然炸出来的串是油里的不是酥的！！'
+      },
+
+      // ── 沙拉轻食 (7) ─────────────────────
+      {
+        id: 'shala', name: '沙拉', icon: '🥗', category: '沙拉轻食',
+        time_judgement: {
+          morning: '晨起食草，你是自律的化身还是昨夜吃多的赎罪？食神姑且信你是前者。这份沙拉，神赐名【新一天的虚伪希望】。',
+          noon: '午饭吃草——你今日必有一场硬仗要打，以至于潜意识逼迫你用清醒的痛苦武装自己。食神敬告：加一份鸡胸肉，否则下午3点你的手会不受控制地伸向同事的零食抽屉。',
+          evening: '晚餐吃草，要么你是健身狂魔，要么你在为中午的炸鸡赎罪。食神不评判，但提醒：别把沙拉酱倒得比草还多。',
+          night: '深夜吃沙拉？你是真的自律还是在表演自律？食神冷笑：冰箱灯下独自嚼生菜的画面，比你想象的更凄凉。不如去睡吧。'
+        },
+        diagnosis: '沙拉是饮食界的苦行僧。选择它的人，要么在修行，要么在忏悔。食神掐指一算，你命中缺油水，但这未必是坏事——清简之食带来清醒之脑。只是记住：别用沙拉酱把这一切毁了，那是伪善。',
+        angry_bonus: '吃草？你当自己是兔子？行，那你别加沙拉酱，别加鸡胸肉，别加任何让草变好吃的东西。纯草！敢吗？'
+      },
+      {
+        id: 'suan_nai_wan', name: '酸奶碗', icon: '🥣', category: '沙拉轻食',
+        time_judgement: {
+          morning: '晨起酸奶碗——酸奶+格兰诺拉+莓果+蜂蜜。食神点头：这是Instagram式早餐的经典构图。你今天从一张可以发小红书的早餐开始。',
+          noon: '午间酸奶碗？你是真的在减脂还是不想吃热饭？食神理解：酸奶碗作为午餐太轻了——下午三点你会饿到手抖。加一勺蛋白粉和一把坚果，保你撑到五点。',
+          evening: '晚餐酸奶碗——你今天走的是极简主义晚餐路线。食神不反对：酸奶碗对肠胃零负担。但别天天晚上吃这个——你的胃需要偶尔的热食。',
+          night: '深夜酸奶碗——你是饿但不想有罪恶感。食神认可：酸奶碗是深夜最安全的选择。但别放太多格兰诺拉——糖分会在你睡着后悄悄变成脂肪。'
+        },
+        diagnosis: '酸奶碗是现代健康饮食的美学代表。希腊酸奶为底，铺上格兰诺拉麦片、蓝莓、草莓、香蕉片，淋一圈蜂蜜——那是早晨最美的仪式。食神判曰：你今日在追求平衡。酸奶的酸遇见蜂蜜的甜，麦片的脆遇见水果的软——一切都恰到好处。这是你对自己最温和的照顾。',
+        angry_bonus: '酸奶碗！！但你格兰诺拉倒半袋——那是糖分炸弹！！格兰诺拉是点缀不是主食！！三勺！最多三勺！！'
+      },
+      {
+        id: 'bowl_guwu', name: '谷物碗', icon: '🥣', category: '沙拉轻食',
+        time_judgement: {
+          morning: '晨起谷物碗——藜麦牛油果溏心蛋羽衣甘蓝。食神赞许：这是健康早餐的天花板。你今天从一碗绿色的能量开始——但你的钱包可能受了点伤。',
+          noon: '午间谷物碗——你是高级打工人还是健身博主？藜麦的蛋白质+牛油果的健康脂肪+羽衣甘蓝的纤维——这是午餐界的营养学满分答卷。',
+          evening: '晚餐谷物碗是你今天的自律勋章。食神点赞：能早餐午餐晚餐都保持健康饮食的人，活该长寿。但偶尔放纵一下也是人类的权利——别把自己逼太紧。',
+          night: '深夜谷物碗？你是真有毅力。凌晨做谷物碗——煮藜麦十五分钟，切牛油果，拌羽衣甘蓝——这份自律让食神感动到哽咽。但早点睡比什么都健康。'
+        },
+        diagnosis: '谷物碗是健康饮食的集大成者。以藜麦/糙米为底，铺上牛油果、溏心蛋、烤蔬菜、羽衣甘蓝——淋一点柠檬汁和橄榄油。每一勺都是营养学的精准打击。食神判曰：你今日在掌控自己的健康。谷物碗是你对身体的宣言：我在乎你。藜麦是古老的超级食物——它养活了印加文明，今天它来养活你。',
+        angry_bonus: '谷物碗！！但你把藜麦煮成粥——那是藜麦粥不是谷物碗！！藜麦必须粒粒分明！！煮过头是对藜麦的侮辱！！'
+      },
+      {
+        id: 'juanshi_lingshi', name: '轻食卷', icon: '🌯', category: '沙拉轻食',
+        time_judgement: {
+          morning: '晨起轻食卷——全麦饼皮裹着鸡胸肉生菜番茄黄瓜。食神点头：这是通勤路上的最佳早餐——一只手拿卷一只手扶地铁扶手。便捷与健康的完美平衡。',
+          noon: '午间轻食卷是你对午休时间的尊重。不用排队、不用等待、不用餐具——打开包装纸直接咬。食神赞许：这是效率与营养的交叉点。',
+          evening: '晚餐轻食卷？你今天不想开火。食神理解：轻食卷是冰箱剩菜的最佳归宿——任何蔬菜和蛋白质卷进饼皮里都显得体面。这是懒人的智慧。',
+          night: '深夜轻食卷——冰箱里的全麦饼皮和各种剩菜在你的手中变成一卷凌晨的盛宴。食神称赞：不浪费食物的人，在神这里加分。'
+        },
+        diagnosis: '轻食卷是现代人的便携营养学。全麦饼皮是碳水化合物的体面形态，鸡胸肉是蛋白质的瘦身代表，蔬菜是维生素的鲜脆贡献者。一卷在手，营养不愁。食神判曰：你今日需要高效但不将就。轻食卷教会我们：好东西可以便携——不必为了效率牺牲品质。加一点鹰嘴豆泥，那是地中海的智慧。',
+        angry_bonus: '轻食卷！！但你把所有东西切成大块卷不紧——那是散装沙拉！！所有食材必须切细丝！！卷紧！！咬下去不能掉渣！！'
+      },
+      {
+        id: 'boqi_fan', name: '波奇饭', icon: '🍚', category: '沙拉轻食',
+        time_judgement: {
+          morning: '晨起波奇饭？你是夏威夷人还是今天准备冲浪？食神挑眉：波奇饭作为早餐——三文鱼刺身在早晨的阳光中闪着光，那是早餐界的高级定制。',
+          noon: '午间波奇饭——三文鱼金枪鱼铺在寿司饭上，牛油果和海藻作伴，淋上酱油和芝麻油。食神赞许：这是午餐里最像艺术品的食物。',
+          evening: '晚餐波奇饭是你对自己的宠溺。生鱼片的新鲜口感遇上寿司饭的微酸——那是夏威夷和日本的完美结合。食神提醒：生鱼片必须新鲜——你的鼻子比眼睛更诚实。',
+          night: '深夜波奇饭？？生鱼片在凌晨的新鲜度是个问号。食神严厉提醒：凌晨的波奇饭等同于食物安全的俄罗斯轮盘。明天中午再吃！'
+        },
+        diagnosis: '波奇饭是夏威夷对世界的饮食贡献。新鲜生鱼块铺在调过味的寿司饭上，旁边围绕着牛油果、毛豆、海藻、黄瓜——淋上酱油和芝麻油。食神判曰：你今日需要一种新鲜感。波奇饭的每一口都是大海和陆地的对话。生鱼片是海的馈赠，牛油果是土地的温柔，米饭是人类的智慧。',
+        angry_bonus: '波奇饭！！但你用的是冷冻三文鱼——那是解冻波奇！！三文鱼必须是刺身级的！！冷冻的只能煎了吃！！'
+      },
+      {
+        id: 'sushi_sushi', name: '寿司', icon: '🍣', category: '沙拉轻食',
+        time_judgement: {
+          morning: '晨起寿司？你是昨夜日料吃剩了还是对生活有极致追求？食神倾向于后者，但冷静提醒：便利店寿司不算。',
+          noon: '午间寿司，一份克制的优雅。你在用米饭和鱼生的精确配比告诉世界：今天我不慌。食神点头：懂得在中午善待自己的人，运气不会太差。',
+          evening: '晚餐寿司，是今天一切顺利的犒赏，或一切不顺的安慰。食神建议：坐吧台，看师傅捏，那种仪式感比你想象的更治愈。',
+          night: '深夜寿司？这个点只有便利店的了。食神叹气：虽然米饭已经硬了，鱼生也不再晶莹，但你的饥饿不会嫌弃。吃吧，但别骗自己这是「日料」。'
+        },
+        diagnosis: '寿司是食物界的俳句——少即是多，简中见繁。食神观你今日之相：你需要秩序感，需要一种精确的美来对冲生活的混乱。去握一份三文鱼，看酱油在碟中漾开的弧度，那是今日份的禅。',
+        angry_bonus: '寿司！讲究人！不过你要是把芥末全搅在酱油里，本神今晚就托梦骂你。分开蘸！这是底线！'
+      },
+
+      // ── 甜品饮品 (12) ─────────────────────
+      {
+        id: 'naicha', name: '奶茶', icon: '🧋', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起即求奶茶，你的血糖曲线今日将如过山车般精彩。食神提醒：空腹灌奶茶是对胰岛的一场偷袭。至少配点吃的——求你了。',
+          noon: '午间奶茶是给自己的一份合法贿赂。「喝完这杯就去认真工作」——食神听到这句话的频率，仅次于「明天开始减肥」。',
+          evening: '晚餐后一杯奶茶，是今日份的甜蜜句号。食神理解：你需要的不是茶也不是奶，是珍珠在齿间爆开的那0.3秒的快乐。',
+          night: '深夜奶茶——你已经不在乎咖啡因会不会让你失眠到凌晨三点。食神敬告：这杯下去，你今晚将与天花板进行一场深刻的互相凝视。但如果执意如此，至少选半糖。'
+        },
+        diagnosis: '奶茶是液态的快乐，是现代人最便捷的情绪补丁。食神观你面相：你今日需要甜。不是糖的甜，是那种手握温热杯子时从掌心蔓延到心里的安全感。珍珠、椰果、波霸——选你最喜欢的配料，那是今天你对自己说的「我值得」。',
+        angry_bonus: '奶茶？！喝喝喝就知道喝！……等一下，什么口味？芋泥波波？……还行，至少品味没烂透。全糖不准点！半糖！这是命令！'
+      },
+      {
+        id: 'kafei', name: '咖啡', icon: '☕', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起咖啡——你是现代文明的标配人类。食神点头：咖啡是合法的兴奋剂，是资本主义给打工人的契约。美式是清醒，拿铁是温柔，浓缩是「今天别惹我」。',
+          noon: '午间咖啡是你对下午困意的先发制人。食神掐指一算：你今天下午2-3点会有一个困意高峰。这杯咖啡是提前布置的防线。',
+          evening: '晚餐后咖啡？你是今晚要加班还是单纯喜欢咖啡的味道？食神提醒：晚间咖啡的半衰期会覆盖你的睡眠时间。选低因的吧——给自己一个好觉。',
+          night: '深夜咖啡——你已经在和睡眠宣战了。食神敬告：凌晨的咖啡是一种透支——你从明天借了清醒，明天会让你加倍偿还。'
+        },
+        diagnosis: '咖啡是成年人最体面的瘾。从埃塞俄比亚的山羊到华尔街的精英——咖啡因跨越了千年和万里，在你的杯子里安家。食神判曰：你今天需要的不是糖，是清醒。一杯好的咖啡不需要糖和奶来掩饰——它的苦涩本身就是一种诚实。美式是极简，手冲是修行，你今天是哪一种？',
+        angry_bonus: '咖啡！！！但你往精品咖啡里倒三包糖——那是咖啡味糖水！！喝精品咖啡不加糖！那是你对咖啡农的不尊重！！'
+      },
+      {
+        id: 'guozhi', name: '果汁', icon: '🧃', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起鲜榨果汁——你是养生达人还是昨晚喝多需要补维生素C？食神点头：橙汁是早晨的液体阳光。但记住：果汁不能替代水果——纤维在榨汁过程中被扔掉了。',
+          noon: '午间果汁是对午餐的补充。食神建议：选绿色蔬果汁而非纯果汁——黄瓜芹菜菠菜苹果——你下午会感谢这份绿色能量。',
+          evening: '晚餐后果汁是健康的句号。但请注意：果汁的糖分和可乐不相上下——水果中的果糖在没有纤维保护的情况下会直接冲击你的肝脏。',
+          night: '深夜果汁？你是真的渴了还是在假装健康？食神直言：晚上喝果汁和晚上喝可乐对血糖的影响差别不大。喝水吧，真的。'
+        },
+        diagnosis: '果汁是水果的另一种生命形态。橙子是早晨的阳光，西瓜是夏天的风扇，石榴是秋天的红宝石——它们在水里重新活了一次。食神判曰：你今天需要一种新鲜的注入。但记住神的忠告：吃水果比喝果汁更健康。纤维是水果给你的礼物——别把它扔在榨汁机的残渣里。',
+        angry_bonus: '果汁！！！但你买的是「果汁饮料」不是「纯果汁」——那是糖水加香精！！看配料表！！第一位必须是水果！！不是水！！不是糖！！'
+      },
+      {
+        id: 'bingqilin', name: '冰淇淋', icon: '🍦', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起冰淇淋？你是小孩还是今天不上班？食神扶额：冰淇淋是下午茶不是早餐。但你如果执意——香草味比巧克力味稍微不那么离谱。',
+          noon: '午间冰淇淋是你的午餐甜点。食神理解：中午吃冰淇淋有一种叛逆的快感——大人们在会议室开会，你在甜品店里舔勺。这是你应得的自由。',
+          evening: '晚餐后一支冰淇淋是今天最完美的句号。食神掐指：你今天过得不错——愿意用冰淇淋结束一天的人，心里没有太多疙瘩。',
+          night: '深夜冰淇淋——你站在冰箱前，勺子在冰淇淋桶里挖了一个月球表面。食神看到了你内心的空洞——冰淇淋是临时的填充物。但至少选低糖的，给明天的你一点余地。'
+        },
+        diagnosis: '冰淇淋是液态的童年。从意大利的Gelato到日本的抹茶软雪糕——全人类都在用不同的方式做同一件事：把甜和冷结合在一起。食神判曰：你今天需要一点甜头。不是生活的全部变甜——只是舌尖上那几秒钟的冰凉甜蜜，就够你撑过接下来的几个小时。选一个你最喜欢的口味，别分享。',
+        angry_bonus: '冰淇淋！！但你吃完一整桶——那是自虐！！三勺！！最多三勺！！冰淇淋是快乐不是主食！！'
+      },
+      {
+        id: 'dangao', name: '蛋糕', icon: '🍰', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起蛋糕？你是今天过生日还是昨天剩的？食神抬眉：蛋糕当早餐——这是成年人的任性。奶油和海绵蛋糕在早晨的阳光中闪闪发光——这是不健康的但快乐的开始。',
+          noon: '午间蛋糕是你给自己的奖励。食神点头：蛋糕不是正餐——但偶尔用来犒赏中午的自己，是对「成年人只能严肃吃午饭」这条规则的反叛。',
+          evening: '晚餐后一块蛋糕是今天的高潮。巧克力蛋糕还是芝士蛋糕？这是你今天最后的哲学问题。食神祝福：甜食是合法的快乐——不要有罪恶感。',
+          night: '深夜蛋糕——你站在冰箱前，用叉子直接挖蛋糕盒。食神看到你了——凌晨的蛋糕有一种偷来的快乐。但明天早上你的血糖会告诉你什么叫后悔。'
+        },
+        diagnosis: '蛋糕是面粉、鸡蛋、糖和黄油的共谋。它们在一起变成了比各自单独存在时好一百倍的东西。食神判曰：你今日值得一块蛋糕。不是因为它健康，不是因为它有营养——仅仅因为它让你开心。成年人需要学会一件事：偶尔不需要理由地对自己好。',
+        angry_bonus: '蛋糕！！但你买的是植物奶油蛋糕——那是反式脂肪酸炸弹！！植物奶油不是奶油！！动物奶油！！贵但那是真的奶油！！'
+      },
+      {
+        id: 'buding', name: '布丁', icon: '🍮', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起布丁？你是昨晚剩的还是早起想吃甜？食神挑眉：焦糖布丁当早餐——这份甜蜜的开局有点过于柔软。但敲开焦糖壳的那一声脆响——确实比闹钟好听。',
+          noon: '午间布丁是午餐的温柔收尾。焦糖的微苦和布丁的嫩滑在口中交替——这是法国人给你的午餐句号。食神赞许：优雅。',
+          evening: '晚餐后布丁是你对今天的甜蜜告别。布丁在勺子上颤颤巍巍——那是甜品中最温柔的姿态。食神微笑：今天辛苦了，吃个布丁吧。',
+          night: '深夜布丁——冰箱里那盒布丁在凌晨两点散发出的诱惑是无法抵抗的。焦糖已经渗入布丁——冷布丁有一种不同于室温布丁的Q弹。'
+        },
+        diagnosis: '布丁是蛋奶在低温中的魔法。鸡蛋、牛奶、糖的混合液在水浴中慢慢凝固——变成一种颤颤巍巍的嫩滑。焦糖在底部融化成金色的糖浆。食神判曰：你今天需要一种柔软。不是软弱的软——是布丁那种有韧性的柔软。用勺子敲开焦糖壳的那一刻，是你今天最解压的动作。',
+        angry_bonus: '布丁！！但你用吉利丁粉做——那是果冻不是布丁！！真正的布丁用鸡蛋！！蛋奶液！！水浴烤！！'
+      },
+      {
+        id: 'shuangpi_nai', name: '双皮奶', icon: '🍮', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起双皮奶？你是顺德人还是昨天剩的？食神点头：双皮奶当早餐——这是广式甜品对早晨最温柔的入侵。那层奶皮在勺子上颤动——是早晨最美的质地。',
+          noon: '午间双皮奶是你给自己的广式午茶。食神赞许：水牛奶做的双皮奶有一种普通牛奶没有的浓郁——那是顺德人的骄傲。',
+          evening: '晚餐后双皮奶是广式甜品的代表。两层奶皮夹着嫩滑的炖奶——那是水牛奶最光荣的形态。食神盖章：完美的晚餐收尾。',
+          night: '深夜双皮奶？双皮奶需要现做现吃。凌晨的双皮奶只能在你的记忆里。食神只能说：明天去顺德吧——或者找一家广式甜品店。'
+        },
+        diagnosis: '双皮奶是顺德人献给世界的甜品。水牛奶煮沸后倒出，碗底留下一层奶皮；蛋清和牛奶混合再倒回去——形成第二层奶皮。两层奶皮夹着嫩滑的炖奶。食神判曰：你今日需要一种层次感的美。不是表面的美——是像双皮奶一样，好味道需要一层一层去发现。生活也是如此：表面之下藏着更深的美好。',
+        angry_bonus: '双皮奶！！但你用普通牛奶不用水牛奶——那是单皮奶！！水牛奶的脂肪含量是普通牛奶的两倍！！那才是双皮的根本！！'
+      },
+      {
+        id: 'yangzhi_ganlu', name: '杨枝甘露', icon: '🥭', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起杨枝甘露？你是香港人还是今天太热？食神点头：芒果的西柚的椰奶的——这是热带早晨最华丽的液体。酸甜微苦奶香——四种味道在同一个碗里开峰会。',
+          noon: '午间杨枝甘露是对炎热午后的反击。芒果的甜、西柚的苦、椰奶的滑、西米的Q——四重口感在口中接力。食神盖章：夏天午餐的最佳配甜品。',
+          evening: '晚餐后杨枝甘露是你今天的甜蜜终章。食神看到你碗里那颗晶莹的西米——那是甜品界的鱼子酱。慢慢嚼，让椰子味在口中多留一会儿。',
+          night: '深夜杨枝甘露？这个点只有甜品店外卖。送到的时候西柚已经出苦水了——那是杨枝甘露最悲伤的结局。明天中午再吃吧，新鲜的。'
+        },
+        diagnosis: '杨枝甘露是港式甜品的皇冠明珠。芒果打底、西柚粒点缀、椰奶浇入、西米沉底——一碗之中藏着热带水果的全部精华。食神判曰：你今天需要一种丰盛感。不是大鱼大肉的丰盛——是杨枝甘露那种精致的丰盛：每一样食材都经过精心处理，每一种味道都恰到好处。这是甜品中的奢侈品——你值得。',
+        angry_bonus: '杨枝甘露！！但你的西柚粒不剥干净——白色筋膜是苦的！！必须一粒一粒剥！！白色部分全部去掉！！不然苦味毁了整碗！！'
+      },
+      {
+        id: 'douhua_tian', name: '甜豆花', icon: '🥣', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起甜豆花——你是南方人吧。嫩豆花上淋一圈姜糖水——那是南方早晨最温柔的甜。食神点头：甜党的人，今天一天都是甜的。',
+          noon: '午间甜豆花？你是当甜品吃。食神理解：豆腐花本身无味——甜是加进去的。你今天需要给平淡的午间加一点甜。姜糖水是热性的——暖胃暖心。',
+          evening: '晚餐后甜豆花是温润的收尾。不同于冰淇淋的冷刺激，甜豆花的温暖是缓慢的、包裹的。食神建议：加一点红豆和绿豆——让这碗豆花不只是甜，还有层次。',
+          night: '深夜甜豆花——你是真的想吃还是渴了？凌晨的甜豆花只有自己煮豆浆点卤。这个工程量——食神敬你是动手能力极强的夜猫子。'
+        },
+        diagnosis: '甜豆花是豆腐在甜品界的柔软形态。豆浆在石膏或内酯的作用下凝固成颤颤巍巍的嫩块——浇上一勺熬了姜的糖水。食神判曰：你今日需要一种被温柔甜到的感觉。豆花的嫩是入口即化的，姜糖的甜是有温度的——两者在一起是一种最朴素的甜品体验。甜党咸党的争论不重要——重要的是你此刻的满足。',
+        angry_bonus: '甜豆花！！但你加的红豆是罐头的——那是红豆罐头不是现熬红豆！！红豆必须自己熬！！熬到软糯但粒粒分明！！'
+      },
+      {
+        id: 'bingfen', name: '冰粉', icon: '🍧', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起冰粉？你是四川人还是今天气温40度？食神打冷颤：冰粉是夏天的救命恩人，但早上吃——你的胃还没醒就被冰到了。不过外面如果已经热到融化——准了。',
+          noon: '午间冰粉是酷暑午餐的终极答案。透明的冰粉在碗中微微颤动，红糖水浇上去——那是炎热午后的北极。食神盖章：夏天午餐的正确打开方式——先吃冰粉再吃正餐。',
+          evening: '晚餐后冰粉是你对夏天的温柔报复。花生碎、葡萄干、山楂片、糍粑——铺在冰粉上，红糖水从缝隙中流下。食神微笑：这是四川人夏天的标配。',
+          night: '深夜冰粉——你是热得睡不着。食神理解：凌晨一碗冰粉下肚，体温降下来，烦躁也降下来。但别放太多红糖——凌晨的糖分会让你更加睡不着。'
+        },
+        diagnosis: '冰粉是四川夏天最常见的街头甜品。冰粉籽在水中搓出的透明凝胶——像果冻但比果冻更嫩更滑。红糖水是基底，花生碎是脆，葡萄干是甜，山楂片是酸——小小一碗藏着丰富的世界。食神判曰：你今天需要降温。不只是身体——心里的火也需要一碗冰粉来浇灭。多加糍粑，那是冰粉界的隐藏王者。',
+        angry_bonus: '冰粉！！但你用冰粉粉冲的不用冰粉籽手搓——那是速溶冰粉！！真正冰粉必须用冰粉籽在水里一点点搓出来！！那是匠心！！'
+      },
+      {
+        id: 'shaoxiancao', name: '烧仙草', icon: '🍧', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起烧仙草？你是福建人还是今天需要清火？食神点头：仙草熬出的黑色冻块——那是福建人夏天的信仰。蜂蜜水浇上去，黑色冻块在碗中微颤——早晨吃清凉开胃。',
+          noon: '午间烧仙草是对炎热的正面回应。烧仙草比龟苓膏温和——它不苦，只有仙草的清香。食神赞许：这是午间最消暑的甜品。',
+          evening: '晚餐后烧仙草是你对夏天的致敬。芋圆、红豆、花生、仙草冻——四种配料在碗中聚会。食神掐指：你今天在福建或者想念福建。那碗黑亮的仙草冻，是你和闽南之间的最短距离。',
+          night: '深夜烧仙草？这个点甜品店早关门了。冰箱里如果有剩的——你是幸运的。冷仙草冻有一种室温没有的紧实口感，凌晨吃它，是对炎热夜晚的最后反击。'
+        },
+        diagnosis: '烧仙草是闽南夏天的灵魂。仙草熬出的黑色冻块，在碗中微微颤动——浇上蜂蜜水或红糖水，配上芋圆、红豆、花生。一口下去，清凉从喉咙滑到胃里。食神判曰：你今天需要清火。烧仙草不是药，但它有一种比药更温柔的去火方式——它不苦，它甜着来。这是福建人的智慧：以甜克火。',
+        angry_bonus: '烧仙草！！但你用仙草粉冲不用仙草干熬——那是速溶仙草！！仙草干必须熬至少两小时！！熬出那种天然的胶质！！'
+      },
+      {
+        id: 'naicha_baobing', name: '奶茶刨冰', icon: '🍧', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起奶茶刨冰？你是认真的吗？食神揉太阳穴：早上吃冰——你的胃需要钢铁般的意志。但外面40度的话——准了。奶茶刨冰是酷暑早晨的唯一合法冰品。',
+          noon: '午间奶茶刨冰是对烈日最坚决的反击。刨冰在奶茶中慢慢融化，珍珠在冰渣间若隐若现——这是奶茶的终极进化形态。食神盖章：夏天午餐的合法收尾。',
+          evening: '晚餐后奶茶刨冰是你对夏天最长情的告白。刨冰+奶茶+珍珠+椰果——四种快乐在一个杯子里开派对。食神提醒：冰化了之后就是一杯普通奶茶——趁冰还在，赶紧享受。',
+          night: '深夜奶茶刨冰？你在双重作死——咖啡因加冰。食神叹气：这杯下去你今晚将在清醒和寒冷中度过。但如果你执意——半糖，去冰是不可能去冰的，但至少少冰。'
+        },
+        diagnosis: '奶茶刨冰是奶茶王国的终极形态。刨冰在奶茶中浮沉，珍珠在冰渣间穿梭——每一口都是冷、甜、Q弹的三重奏。食神判曰：你今天需要一种极致的快乐。不是普通的奶茶——是奶茶加上刨冰的版本。这是一种奢侈的叠加：把你喜欢的两种东西放在一起。生活偶尔需要这种「小孩才做选择，大人全都要」的时刻。',
+        angry_bonus: '奶茶刨冰！！但你喝完冰才吃珍珠——顺序错了！！珍珠在冰里会变硬！！先吃珍珠再喝冰！！不然珍珠变成橡胶球！！'
+      },
+      {
+        id: 'bingtiang_ningmeng', name: '冰镇柠檬水', icon: '🍋', category: '甜品饮品',
+        time_judgement: {
+          morning: '晨起冰镇柠檬水——你是养生博主还是昨晚喝多了？食神点头：温水柠檬水是早晨的正确打开方式，冰镇的不是。但如果你在撒哈拉——准了。',
+          noon: '午间冰镇柠檬水是对炎热的优雅反击。柠檬的酸在冰水中变得更加锋利——那是午间最好的清醒剂。食神建议：加一点蜂蜜和薄荷——让这杯柠檬水不只是酸。',
+          evening: '晚餐后冰镇柠檬水是夏天的养生选择。柠檬的维生素C在你体内悄悄工作——明天你的皮肤会感谢今天的这杯水。食神赞许：这是最健康的晚间饮品。',
+          night: '深夜冰镇柠檬水——你是渴了还是想要一种仪式感？柠檬水是安全的深夜饮品——不含咖啡因、不含糖。但冰镇的凌晨喝——你的胃可能会抗议。去冰吧，真的。'
+        },
+        diagnosis: '柠檬水是最简单的饮品。柠檬+水+冰——三样东西创造了一种跨越文化的清凉。食神判曰：你今天需要一种清爽。柠檬的酸是直接的不拐弯抹角的——就像你应该对某些人说的话。冰镇让它更锋利，蜂蜜让它更温柔。你今天是锋利还是温柔？加不加蜂蜜决定了一切。',
+        angry_bonus: '冰镇柠檬水！！但你用的是浓缩柠檬汁不是鲜柠檬——那是柠檬味糖水！！鲜柠檬！！现切！！现挤！！不然不叫柠檬水！！'
+      }
+    ];
+
+    // ═══════════════════════════════════════════
+    //  应用状态
+    // ═══════════════════════════════════════════
+    let state = {
+      currentFood: null,
+      timePeriod: null,
+      mood: null,
+      antiCommandCount: 0,
+      consecutiveDays: 0,
+      lastVisitDate: null,
+      godLetterName: null,
+      sinRecords: [],
+      isDrawing: false,
+      poisonModeUnlocked: false,
+      lastRejectedFood: null
+
+
+    };
+
+    // ═══════════════════════════════════════════
+    //  音效管理
+    // ═══════════════════════════════════════════
+    const _sfx = {
+      shake: new Audio('sfx/shake.mp3'),
+      stickDrop: new Audio('sfx/stick_drop.mp3'),
+      reveal: new Audio('sfx/reveal.mp3'),
+      reject: new Audio('sfx/reject.mp3')
+    };
+
+    function playSfx(name) {
+      const audio = _sfx[name];
+      if (!audio) return;
+      audio.currentTime = 0;
+      audio.play().catch(() => { });
+    }
+
+    function unlockAllAudio() {
+      Object.values(_sfx).forEach(a => {
+        a.volume = 0;
+        a.play().then(() => { a.pause(); a.currentTime = 0; a.volume = 1; }).catch(() => { });
+      });
+    }
+
+    // ═══════════════════════════════════════════
+    //  DOM 引用
+    // ═══════════════════════════════════════════
+    const $ = id => document.getElementById(id);
+    const tube = $('tube');
+    const flyingStick = $('flyingStick');
+    const stickHeads = $('stickHeads');
+    const diagnosisCard = $('diagnosisCard');
+    const hintText = $('hintText');
+    const sinScroll = $('sinScroll');
+    const sinBadge = $('sinBadge');
+    const sinList = $('sinList');
+    const sinModal = $('sinModal');
+    const letterModal = $('letterModal');
+    const letterInput = $('letterInput');
+    const letterMessage = $('letterMessage');
+    const strikeOverlay = $('strikeOverlay');
+    const moodIndicator = $('moodIndicator');
+    const godName = $('godName');
+    const templeTitle = $('templeTitle');
+    const toast = $('toast');
+    const cardFoodIcon = $('cardFoodIcon');
+    const cardFoodName = $('cardFoodName');
+    const cardCategory = $('cardCategory');
+    const cardTimeJudgement = $('cardTimeJudgement');
+    const cardDiagnosis = $('cardDiagnosis');
+    const cardMoodTag = $('cardMoodTag');
+    const foodCountBadge = $('foodCountBadge');
+
+    // ═══════════════════════════════════════════
+    //  初始化
+    // ═══════════════════════════════════════════
+    function init() {
+      loadState();
+      detectTimePeriod();
+      determineMood();
+      renderInitialUI();
+      generateStickHeads();
+      bindEvents();
+
+      if (state.mood.name === 'strike') showStrike();
+
+      if (state.timePeriod === 'night') {
+        const hour = new Date().getHours();
+        if (hour >= 23 || hour < 5) {
+          document.body.classList.add('night-mode');
+          godName.textContent = '—— 饿鬼道引路人 · 深夜审判 ——';
+          if (Math.random() < 0.3) setTimeout(spawnGhostFace, 3000 + Math.random() * 5000);
+        }
+      }
+
+      updateSinScroll();
+
+      if (state.godLetterName && state.consecutiveDays >= 1) {
+        setTimeout(() => {
+          showToast(`哦，你就是昨天那个非要给神写信的「${state.godLetterName}」对吧？神记住你了。`);
+        }, 1500);
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    //  localStorage 持久化
+    // ═══════════════════════════════════════════
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('food_oracle_state') || '{}');
+        state.antiCommandCount = saved.antiCommandCount || 0;
+        state.consecutiveDays = saved.consecutiveDays || 0;
+        state.lastVisitDate = saved.lastVisitDate || null;
+        state.godLetterName = saved.godLetterName || null;
+        state.sinRecords = saved.sinRecords || [];
+        state.poisonModeUnlocked = saved.poisonModeUnlocked || false;
+
+        const today = new Date().toDateString();
+        if (state.lastVisitDate) {
+          const yesterday = new Date(Date.now() - 86400000).toDateString();
+          if (state.lastVisitDate === yesterday) state.consecutiveDays++;
+          else if (state.lastVisitDate !== today) state.consecutiveDays = 1;
+        } else {
+          state.consecutiveDays = 1;
+        }
+        state.lastVisitDate = today;
+
+        if (state.consecutiveDays >= 3 && !state.poisonModeUnlocked) {
+          state.poisonModeUnlocked = true;
+          setTimeout(() => showToast('你诚意够了——「毒舌模式」已免费开放一周。想听真话吗？'), 2000);
+        }
+        saveState();
+      } catch (e) {
+        state.antiCommandCount = 0; state.sinRecords = [];
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem('food_oracle_state', JSON.stringify({
+        antiCommandCount: state.antiCommandCount,
+        consecutiveDays: state.consecutiveDays,
+        lastVisitDate: state.lastVisitDate,
+        godLetterName: state.godLetterName,
+        sinRecords: state.sinRecords,
+        poisonModeUnlocked: state.poisonModeUnlocked
+      }));
+    }
+
+    // ═══════════════════════════════════════════
+    //  时间检测（静默，不告知用户）
+    // ═══════════════════════════════════════════
+    function detectTimePeriod() {
+      const h = new Date().getHours();
+      if (h < 10) state.timePeriod = TIME_PERIODS.MORNING;
+      else if (h < 14) state.timePeriod = TIME_PERIODS.NOON;
+      else if (h < 20) state.timePeriod = TIME_PERIODS.EVENING;
+      else state.timePeriod = TIME_PERIODS.NIGHT;
+    }
+
+    // ═══════════════════════════════════════════
+    //  神明情绪（按日期种子确定，全天一致）
+    // ═══════════════════════════════════════════
+    function determineMood() {
+      const seed = new Date().toDateString().split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+      const r = (seed % 100) / 100;
+      if (r < 0.05) state.mood = MOODS.STRIKE;
+      else if (r < 0.18) state.mood = MOODS.ANGRY;
+      else if (r < 0.30) state.mood = MOODS.EMO;
+      else if (r < 0.40) state.mood = MOODS.CHUUNIBYOU;
+      else state.mood = MOODS.NORMAL;
+    }
+
+    // ═══════════════════════════════════════════
+    //  初始 UI 渲染
+    // ═══════════════════════════════════════════
+    function renderInitialUI() {
+      moodIndicator.textContent = state.mood.label;
+      foodCountBadge.textContent = `签筒中共有 ${FOOD_DATABASE.length} 种食物等待审判你`;
+
+      if (state.mood.name === 'angry') {
+        moodIndicator.style.borderColor = '#c42b2b'; moodIndicator.style.color = '#c42b2b';
+      } else if (state.mood.name === 'emo') {
+        moodIndicator.style.borderColor = '#6a8abf'; moodIndicator.style.color = '#6a8abf';
+      } else if (state.mood.name === 'chuunibyou') {
+        moodIndicator.style.borderColor = '#c97a2e'; moodIndicator.style.color = '#c97a2e';
+      }
+    }
+
+    function generateStickHeads() {
+      stickHeads.innerHTML = '';
+      for (let i = 0; i < 28; i++) {
+        const s = document.createElement('div');
+        s.className = 'stick-head';
+        s.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg)`;
+        stickHeads.appendChild(s);
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    //  事件绑定（含 iOS 13+ DeviceOrientation 权限）
+    // ═══════════════════════════════════════════
+    let _shakeBound = false;
+
+    function attachShakeListener() {
+      if (_shakeBound) return;
+      _shakeBound = true;
+      let lastShake = 0, lx = 0, ly = 0, lz = 0;
+      window.addEventListener('devicemotion', (e) => {
+        const a = e.accelerationIncludingGravity;
+        if (!a) return;
+        const d = Math.abs(a.x - lx) + Math.abs(a.y - ly) + Math.abs(a.z - lz);
+        if (d > 30 && Date.now() - lastShake > 2000 && !state.isDrawing && state.mood.name !== 'strike') {
+          lastShake = Date.now(); drawFortune();
+        }
+        lx = a.x; ly = a.y; lz = a.z;
+      });
+    }
+
+    function unlockIOSAudio() {
+      unlockAllAudio();
+    }
+
+
+    function bindEvents() {
+      tube.addEventListener('click', () => {
+        if (state.isDrawing || state.mood.name === 'strike') return;
+        unlockAllAudio();
+        drawFortune();
+      });
+
+      const needsPermission = (
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function'
+      );
+
+      if (needsPermission) {
+        // iOS 13+：需要用户显式授权
+        const btn = document.getElementById('shakePermissionBtn');
+        if (btn) {
+          btn.style.display = 'inline-block';
+          btn.addEventListener('click', async () => {
+            try {
+              const perm = await DeviceOrientationEvent.requestPermission();
+              if (perm === 'granted') {
+                attachShakeListener();
+                unlockIOSAudio();
+                btn.classList.add('removing');
+                setTimeout(() => { btn.style.display = 'none'; btn.classList.remove('removing'); }, 400);
+                showToast('签筒已开启——摇晃手机求签吧');
+              } else {
+                showToast('食神无法感知你的动作……请点击签筒求签');
+              }
+            } catch (e) {
+              showToast('叩拜失败……请直接点击签筒求签吧');
+            }
+          });
+        }
+      } else {
+        // 安卓 / 旧 iOS / 桌面端：直接绑定
+        if (window.DeviceMotionEvent) {
+          attachShakeListener();
+        }
+      }
+    }
+
+
+    // ═══════════════════════════════════════════
+    //  核心：求签
+    // ═══════════════════════════════════════════
+    function drawFortune() {
+      if (state.isDrawing) return;
+      state.isDrawing = true;
+
+      diagnosisCard.classList.remove('revealed');
+      hintText.style.opacity = '0.3';
+      tube.classList.add('shaking');
+      playSfx('shake');
+
+
+
+      const food = FOOD_DATABASE[Math.floor(Math.random() * FOOD_DATABASE.length)];
+      state.currentFood = food;
+
+      setTimeout(() => {
+        tube.classList.remove('shaking');
+        flyingStick.classList.add('active');
+        playSfx('stickDrop');
+
+        setTimeout(() => {
+          flyingStick.classList.remove('active');
+
+
+          revealDiagnosis(food);
+          state.isDrawing = false;
+          hintText.style.opacity = '0.7';
+        }, 1000);
+      }, 600);
+    }
+
+    // ═══════════════════════════════════════════
+    //  揭示诊断书
+    // ═══════════════════════════════════════════
+    function revealDiagnosis(food) {
+      const timeJudge = food.time_judgement[state.timePeriod];
+      let diagnosis = food.diagnosis;
+      let moodTag = '';
+
+      // 情绪滤镜
+      if (state.mood.name === 'angry') {
+        diagnosis = '💢 ' + food.angry_bonus + '\n\n' + diagnosis;
+        moodTag = '⚡ 暴躁日特别版';
+      } else if (state.mood.name === 'emo') {
+        diagnosis = '（食神今日心情低落，但依然为你解签……）\n\n' + diagnosis;
+        moodTag = '🌧️ emo日 · 温柔版';
+      } else if (state.mood.name === 'chuunibyou') {
+        diagnosis = '哼，凡人，这就是你的宿命之食！解开它的封印，你将获得下午摸鱼三小时的秘奥义！\n\n' + diagnosis;
+        moodTag = '🔥 中二病发作版';
+      }
+
+      // 深夜鬼食模式
+      if (state.timePeriod === 'night') {
+        const h = new Date().getHours();
+        if (h >= 23 || h < 5) {
+          diagnosis = '这个时辰还在找吃的，你不是饿，你是心里有一个填不满的洞。来吧，无论抽到什么，今晚它都是你的灵魂镇痛剂，不是食物。\n\n' + diagnosis;
+        }
+      }
+
+      // 署名用户彩蛋
+      if (state.godLetterName && Math.random() < 0.5) {
+        diagnosis = `（食神瞥了一眼签筒旁的卷轴——「${state.godLetterName}」，又是你。）\n\n` + diagnosis;
+      }
+
+      // 毒舌模式彩蛋
+      if (state.poisonModeUnlocked && Math.random() < 0.4) {
+        diagnosis += '\n\n🔥 毒舌模式附赠：「说真的，你抽签之前心里已经有答案了吧？你只是想找个人替你背锅。行，本神背了。」';
+      }
+
+      // 记仇文案：上次抗旨的后果
+      if (state.lastRejectedFood) {
+        const grudgeTemplates = [
+          `⚡ 上次你拒绝了「{food}」，神记着呢。这次给神老实点。`,
+          `📜 神的案卷上写着：此人曾拒「{food}」。你还有一次赎罪的机会。`,
+          `💢 想起你上次拒绝「{food}」，神的手还在抖。今天别再犯。`,
+          `🔮 本神掐指一算——你上次拒了「{food}」，罪业未消。这签是给你赎罪的。`,
+          `⚔️ 上次「{food}」你不吃，这次神换了一个。但别以为神忘了——罪状还在卷轴上。`,
+          `😤 「{food}」事件尚未翻篇。食神虽然宽宏大量，但这笔账还没销。`,
+          `🪷 抗旨一次情有可原，但上次拒绝「{food}」这件事——神今天要你补回来。`,
+          `🔥 食神翻开记仇小本本：第1条就是拒绝「{food}」。今天这签你若再拒——后果自负。`
+        ];
+        const grudge = grudgeTemplates[Math.floor(Math.random() * grudgeTemplates.length)]
+          .replace('{food}', state.lastRejectedFood);
+        diagnosis = grudge + '\n\n' + diagnosis;
+        state.lastRejectedFood = null;
+        saveState();
+      }
+
+
+      // 填充 DOM
+      cardFoodIcon.textContent = food.icon;
+      cardFoodName.textContent = food.name;
+      cardCategory.textContent = food.category;
+      cardTimeJudgement.textContent = timeJudge;
+      cardDiagnosis.textContent = diagnosis;
+      cardMoodTag.textContent = moodTag;
+
+      setTimeout(() => {
+        diagnosisCard.classList.add('revealed');
+        const saveBtn = document.getElementById('btnSave');
+        if (saveBtn) saveBtn.disabled = false;
+
+        playSfx('reveal');
+      }, 100);
+
+    }
+    // ═══════════════════════════════════════════
+    //  截图分享
+    // ═══════════════════════════════════════════
+    async function saveFortuneAsImage() {
+      const card = document.getElementById('diagnosisCard');
+      const btn = document.getElementById('btnSave');
+      if (!card || !card.classList.contains('revealed')) return;
+
+      btn.disabled = true;
+      btn.textContent = '⏳ 渲染中...';
+
+      try {
+        const canvas = await html2canvas(card, {
+          backgroundColor: '#14141f',
+          scale: 2,
+          useCORS: true,
+          allowTaint: true
+        });
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([blob], '食神签.png', { type: 'image/png' });
+
+        // 移动端：系统分享面板
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            title: '食神签 · 今日诊断',
+            text: '食神签 · 今日诊断',
+            files: [file]
+          });
+          showToast('📋 签文已分享！');
+        } else {
+          // 桌面端 & 不支持 share 的移动端：下载
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '食神签.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('📋 签文已保存！');
+        }
+      } catch (e) {
+        if (e.name !== 'AbortError') {
+          showToast('⚠️ 保存失败，请手动截图');
+          console.error('saveFortuneAsImage:', e);
+        }
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '📋 保存签文';
+      }
+    }
+
+    // ═══════════════════════════════════════════
+    //  从命
+    // ═══════════════════════════════════════════
+    function acceptFortune() {
+      const food = state.currentFood;
+      if (!food) return;
+
+
+      const praises = [
+        `🙏 你从了食神的旨意。去吃${food.name}吧，神会保佑你的胃。`,
+        `🙏 明智的选择。${food.name}已经在等你了——别让它等太久。`,
+        `🙏 食神点头：识时务者为俊杰。今天这顿${food.name}，神给你免辣。`
+      ];
+      showToast(praises[Math.floor(Math.random() * praises.length)]);
+
+      setTimeout(() => {
+        generateStickHeads();
+        diagnosisCard.classList.remove('revealed');
+      }, 800);
+    }
+
+    // ═══════════════════════════════════════════
+    //  抗旨
+    // ═══════════════════════════════════════════
+    function rejectFortune() {
+      const food = state.currentFood;
+      if (!food) return;
+      playSfx('reject');
+      state.lastRejectedFood = food.name;
+
+
+
+      state.antiCommandCount++;
+      state.sinRecords.push({
+        food: food.name, icon: food.icon,
+        time: new Date().toLocaleString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+        mood: state.mood.label
+      });
+      saveState();
+      updateSinScroll();
+
+      let msg;
+      if (state.mood.name === 'angry') {
+        msg = '💢 大胆！！今日食神暴躁你还敢抗旨？！罪加一等！！';
+      } else if (state.mood.name === 'emo') {
+        msg = '😔 连你也拒绝神……也罢，神已经习惯了被辜负。';
+      } else if (state.mood.name === 'chuunibyou') {
+        msg = '⚔️ 哼！竟敢违抗本神之命！你的反叛意志已被记录在暗黑卷轴之上！';
+      } else {
+        const replies = [
+          `⚔️ 你拒绝了${food.name}。食神摇摇头，在小本本上记了一笔。`,
+          `⚔️ 抗旨！食神眉毛一挑：行，你有种。但神会记住的。`,
+          `⚔️ 竟敢抗旨？食神冷笑：你的罪状+1，凑满三条会有惊喜。`
+        ];
+        msg = replies[Math.floor(Math.random() * replies.length)];
+      }
+      showToast(msg);
+
+      // 锁定签筒 2 秒
+      const tubeEl = document.getElementById('tube');
+      const angerText = document.getElementById('angerText');
+      tubeEl.classList.add('locked');
+      if (angerText) {
+        angerText.textContent = '神生气了，稍等片刻……';
+        angerText.classList.add('show');
+      }
+
+      setTimeout(() => {
+        tubeEl.classList.remove('locked');
+        if (angerText) angerText.classList.remove('show');
+        generateStickHeads();
+        diagnosisCard.classList.remove('revealed');
+      }, 2000);
+
+    }
+
+    // ═══════════════════════════════════════════
+    //  记仇小本本
+    // ═══════════════════════════════════════════
+    function updateSinScroll() {
+      sinBadge.textContent = state.sinRecords.length;
+      sinScroll.classList.toggle('visible', state.sinRecords.length >= 3);
+    }
+
+    function openSinScroll() {
+      sinList.innerHTML = state.sinRecords.map((r, i) => `
+    <li class="sin-item">
+      <span>${r.icon} 第${i + 1}条：拒绝「${r.food}」</span>
+      <span class="sin-item-time">${r.time}</span>
+    </li>
+  `).reverse().join('');
+      sinModal.classList.add('open');
+    }
+
+    function closeSinScroll(e) {
+      if (e.target === sinModal) sinModal.classList.remove('open');
+    }
+
+    function closeSinScrollDirect() {
+      sinModal.classList.remove('open');
+    }
+
+    // ═══════════════════════════════════════════
+    //  食神的信
+    // ═══════════════════════════════════════════
+    function openLetterModal() {
+      letterMessage.textContent = state.godLetterName
+        ? `「${state.godLetterName}」——神认得你了。想换个名号吗？`
+        : '在此留下你的名号（不必是真名），食神会记住你。';
+      letterInput.value = '';
+      letterModal.classList.add('open');
+    }
+
+    function closeLetterModal(e) {
+      if (e.target === letterModal) letterModal.classList.remove('open');
+    }
+
+    function closeLetterModalDirect() {
+      letterModal.classList.remove('open');
+    }
+
+    function submitLetter() {
+      const name = letterInput.value.trim();
+      if (!name) { showToast('不写名号？神怎么记住你？'); return; }
+      state.godLetterName = name;
+      saveState();
+      letterModal.classList.remove('open');
+      showToast(`「${name}」——本神不识字，不会写信。但明天午时再来，心里默念你的名号，神会认出你。`);
+    }
+
+    // ═══════════════════════════════════════════
+    //  罢工日
+    // ═══════════════════════════════════════════
+    function showStrike() {
+      strikeOverlay.classList.add('active');
+    }
+
+    // ═══════════════════════════════════════════
+    //  深夜鬼脸彩蛋
+    // ═══════════════════════════════════════════
+    function spawnGhostFace() {
+      const ghost = document.createElement('div');
+      ghost.className = 'ghost-face';
+      ghost.textContent = ['👻', '💀', '🕯️', '😈'][Math.floor(Math.random() * 4)];
+      ghost.style.left = (10 + Math.random() * 80) + '%';
+      ghost.style.top = (55 + Math.random() * 35) + '%';
+      document.body.appendChild(ghost);
+      setTimeout(() => ghost.remove(), 3500);
+      if (Math.random() < 0.3) setTimeout(spawnGhostFace, 5000 + Math.random() * 8000);
+    }
+
+    // ═══════════════════════════════════════════
+    //  Toast 提示
+    // ═══════════════════════════════════════════
+    let toastTimer;
+    function showToast(msg) {
+      clearTimeout(toastTimer);
+      toast.textContent = msg;
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // ═══════════════════════════════════════════
+    //  启动
+    // ═══════════════════════════════════════════
+    init();
+
+    console.log('🥢 野生食神签 · 百味审判已就绪');
+    console.log('   签筒中共有', FOOD_DATABASE.length, '种食物');
+    console.log('   当前时段:', state.timePeriod);
+    console.log('   今日神谕:', state.mood.label);
+    console.log('   连续签到:', state.consecutiveDays, '天 | 抗旨次数:', state.antiCommandCount);
+    console.log('   📿 点击签筒或摇晃手机求签');
+  </script>
+</body>
+
+</html>
