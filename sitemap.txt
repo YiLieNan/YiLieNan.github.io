@@ -22,6 +22,7 @@ https://yileina.cyou/guestbook/index.html
 https://yileina.cyou/2026/06/04/Hello-World/
 https://yileina.cyou/circuit-tool/index.html
 https://yileina.cyou/
+https://yileina.cyou/tags/%E6%9D%82%E8%B0%88/
 https://yileina.cyou/tags/%E6%95%99%E7%A8%8B/
 https://yileina.cyou/tags/AI/
 https://yileina.cyou/tags/%E5%89%8D%E7%AB%AF/
@@ -30,12 +31,11 @@ https://yileina.cyou/tags/%E5%AD%A6%E4%B9%A0/
 https://yileina.cyou/tags/%E7%BC%96%E7%A8%8B/
 https://yileina.cyou/tags/Hexo/
 https://yileina.cyou/tags/%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/
-https://yileina.cyou/tags/%E6%9D%82%E8%B0%88/
 https://yileina.cyou/tags/%E5%B7%A5%E5%85%B7/
 https://yileina.cyou/tags/%E7%94%B5%E8%B7%AF/
-https://yileina.cyou/tags/%E6%9C%BA%E6%A2%B0%E8%AE%BE%E8%AE%A1/
 https://yileina.cyou/tags/Hermes-Agent/
 https://yileina.cyou/tags/DeepSeek/
 https://yileina.cyou/tags/Windows/
+https://yileina.cyou/tags/%E6%9C%BA%E6%A2%B0%E8%AE%BE%E8%AE%A1/
 https://yileina.cyou/categories/%E6%97%A5%E5%B8%B8/
 https://yileina.cyou/categories/%E5%AD%A6%E4%B9%A0/
