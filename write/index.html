@@ -753,8 +753,10 @@ body {
 <!-- ═══════════════════ Token 配置模态框 ═══════════════════ -->
 <div class="modal-overlay" id="token-modal">
   <div class="modal-box">
-    <h3>🔑 GitHub Token 配置</h3>
-    <p>发布文章需要 GitHub Token（classic 类型，勾选 <code>repo</code> 权限）</p>
+    <h3>🔑 后台配置</h3>
+    <p>源码仓库名（格式：用户名/仓库名）</p>
+    <input type="text" id="repo-input" placeholder="例如 yourname/your-repo" autocomplete="off">
+    <p>GitHub Token（classic 类型，勾选 <code>repo</code> 权限）</p>
     <ol>
       <li>打开 <a href="https://github.com/settings/tokens" target="_blank">github.com/settings/tokens</a></li>
       <li>点 <strong>Generate new token → Classic</strong></li>
@@ -784,10 +786,12 @@ body {
 // ═══════════════════ 配置 ═══════════════════
 var CONFIG = {
   pwdHash: 'N5qtvn5EtLtpgZC0k3pwvnVS5uzydc8UVKdQoDoWpTg=',
-  repo: 'YiLieNan/blog-source',
+  repo: '',
   branch: 'main',
-  storageKey: { token: 'gh_token', drafts: 'write_drafts', currentDraft: 'current_draft_id', pwdHash: 'custom_pwd_hash' }
+  storageKey: { token: 'gh_token', drafts: 'write_drafts', currentDraft: 'current_draft_id', pwdHash: 'custom_pwd_hash', repo: 'custom_repo_name' }
 };
+// 源码仓库名从本机设置读取（不写在页面里）；未配置时后台会提示去"设置"填写
+CONFIG.repo = localStorage.getItem(CONFIG.storageKey.repo) || CONFIG.repo;
 
 // ═══════════════════ 设备检测 ═══════════════════
 var IS_MOBILE = window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window;
@@ -833,6 +837,7 @@ async function doLogin() {
     document.getElementById('editor-app').style.display = 'block';
     initEditor();
     checkAllTokens();
+    if (!CONFIG.repo) { var ri = document.getElementById('repo-input'); if (ri) ri.value = ''; openModal('token-modal'); setStatus('⚠️ 请先填写源码仓库名', 'error'); }
     loadDraftList();
     loadCurrentDraft();
   } else {
@@ -862,7 +867,8 @@ function getToken() { return localStorage.getItem(CONFIG.storageKey.token) || ''
 function checkAllTokens() {
   var token = getToken();
   var ok = token && token.startsWith('ghp_');
-  var msg = ok ? '<span class="status-ok">✅ Token 已配置</span>'
+  var msg = !CONFIG.repo ? '<span class="status-missing">❌ 未配置源码仓库 — 点「设置」配置</span>'
+    : ok ? '<span class="status-ok">✅ Token 已配置</span>'
     : '<span class="status-missing">❌ 未配置 Token — 点「设置」配置</span>';
 
   var el = document.getElementById('manage-token-status');
@@ -872,6 +878,9 @@ function checkAllTokens() {
 function saveToken() {
   var val = document.getElementById('token-input').value.trim();
   if (val) localStorage.setItem(CONFIG.storageKey.token, val);
+  var repoEl = document.getElementById('repo-input');
+  var repoVal = repoEl ? repoEl.value.trim() : '';
+  if (repoVal) { localStorage.setItem(CONFIG.storageKey.repo, repoVal); CONFIG.repo = repoVal; }
   closeModal('token-modal');
   checkAllTokens();
   setStatus('Token 已保存 ✅', 'success');
@@ -981,7 +990,7 @@ function uploadImage(file) {
     var filename = 'post-' + Date.now() + '.' + ext;
     var path = 'source/images/posts/' + filename;
     var token = getToken();
-    if (!token) { openModal('token-modal'); setStatus('❌ 请先配置 Token', 'error'); btn.disabled = false; return; }
+    if (!token || !CONFIG.repo) { openModal('token-modal'); setStatus('❌ 请先配置源码仓库与 Token', 'error'); btn.disabled = false; return; }
 
     fetch('https://api.github.com/repos/' + CONFIG.repo + '/contents/' + path, {
       method: 'PUT',
