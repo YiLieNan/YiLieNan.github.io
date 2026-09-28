@@ -20,15 +20,6 @@
   </url>
   
   <url>
-    <loc>https://yileina.cyou/friend/data.json</loc>
-    
-    <lastmod>2026-09-15</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://yileina.cyou/intro/data.json</loc>
     
     <lastmod>2026-09-15</lastmod>
@@ -38,7 +29,7 @@
   </url>
   
   <url>
-    <loc>https://yileina.cyou/tags/posts-data.json</loc>
+    <loc>https://yileina.cyou/friend/data.json</loc>
     
     <lastmod>2026-09-15</lastmod>
     
@@ -56,7 +47,7 @@
   </url>
   
   <url>
-    <loc>https://yileina.cyou/data/upyun-stats.json</loc>
+    <loc>https://yileina.cyou/tags/posts-data.json</loc>
     
     <lastmod>2026-09-15</lastmod>
     
@@ -74,7 +65,7 @@
   </url>
   
   <url>
-    <loc>https://yileina.cyou/data/comments/2026_06_20_2026-06-20-%E5%8F%91%E7%8E%B0%E4%BA%86%E5%87%A0%E4%B8%AA%E5%A5%BD%E7%9A%84%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91.json</loc>
+    <loc>https://yileina.cyou/data/upyun-stats.json</loc>
     
     <lastmod>2026-09-15</lastmod>
     
@@ -84,6 +75,15 @@
   
   <url>
     <loc>https://yileina.cyou/data/comments/friend.json</loc>
+    
+    <lastmod>2026-09-15</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://yileina.cyou/data/comments/2026_06_20_2026-06-20-%E5%8F%91%E7%8E%B0%E4%BA%86%E5%87%A0%E4%B8%AA%E5%A5%BD%E7%9A%84%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91.json</loc>
     
     <lastmod>2026-09-15</lastmod>
     
@@ -325,14 +325,14 @@
   </url>
   
   <url>
-    <loc>https://yileina.cyou/tags/%E7%94%B5%E8%B7%AF/</loc>
+    <loc>https://yileina.cyou/tags/%E5%9B%BA%E4%BD%93%E7%89%A9%E7%90%86/</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://yileina.cyou/tags/%E5%9B%BA%E4%BD%93%E7%89%A9%E7%90%86/</loc>
+    <loc>https://yileina.cyou/tags/%E7%94%B5%E8%B7%AF/</loc>
     <lastmod>2026-09-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
