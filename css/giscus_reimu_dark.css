@@ -2,7 +2,7 @@
  * Copyright (c) 2018 GitHub Inc.
  * https://github.com/primer/primitives/blob/main/LICENSE
  */
-@import url("https://fonts.googleapis.com/css?family=Mulish:400,400italic,700,700italic|Noto Serif SC:400,400italic,700,700italic&display=swap");
+@import url("/css/gfonts.css");
 main {
   --red-0: #ff0000;
   --red-1: #ff5252;
@@ -108,7 +108,7 @@ main .gsc-loading-image {
 }
 main {
   cursor: var(--cursor-default);
-  font-family: 'Mulish','Noto Serif SC', '-apple-system','PingFang SC','Microsoft YaHei','sans-serif';
+  font-family: 'undefined',  '-apple-system','PingFang SC','Microsoft YaHei','sans-serif';
 }
 a,
 button {

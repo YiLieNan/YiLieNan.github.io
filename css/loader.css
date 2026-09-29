@@ -38,7 +38,7 @@
   top: calc(50% + 110px);
   left: 50%;
   transform: translate(-50%, -50%);
-  font: 700 1.2rem  'Mulish','Noto Serif SC', '-apple-system','PingFang SC','Microsoft YaHei','sans-serif';
+  font: 700 1.2rem 'undefined',  '-apple-system','PingFang SC','Microsoft YaHei','sans-serif';
 }
 #loader.loading .loading-left-bg {
   transform: translate(-100%, 0);
