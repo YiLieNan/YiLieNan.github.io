@@ -10,7 +10,28 @@
   <rights>All rights reserved 2026, YiLieNan</rights>
   <subtitle>一个技术小白的小窝</subtitle>
   <title>YiLieNan の 小屋</title>
-  <updated>2026-09-28T15:37:12.000Z</updated>
+  <updated>2026-09-29T10:35:14.000Z</updated>
+  <entry>
+    <author>
+      <name>YiLieNan</name>
+    </author>
+    <category term="学习" scheme="https://yileina.cyou/categories/%E5%AD%A6%E4%B9%A0/"/>
+    <category term="一生一芯" scheme="https://yileina.cyou/tags/%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF/"/>
+    <category term="Android" scheme="https://yileina.cyou/tags/Android/"/>
+    <category term="工具" scheme="https://yileina.cyou/tags/%E5%B7%A5%E5%85%B7/"/>
+    <content>
+      <![CDATA[<p>入坑一生一芯之后，我一直想找一个能跟这门课绑定的自律工具。</p><p>手机上的番茄钟 App 一大堆，但没有一个知道 PA 是什么、我学到第几讲了。课程打卡在官方网页上，讲义在浏览器里，B 站视频在另一个 App 里，番茄钟在第三个地方，坚持全靠自觉，数据各散各家。</p><p>于是我干脆自己写了一个，叫芯律。芯是芯片的芯，律是自律的律。从八月底动手磨到现在一个多月，Android 和 Windows 双端，都装在我自己手机和电脑上天天用。</p><div style="text-align:center;margin:18px 0"><img src="/images/xinlv/workbench.jpg" alt="芯律工作台首页" style="max-width:300px;border-radius:14px;box-shadow:0 2px 14px rgba(0,0,0,0.12)"></div><h2 id="打卡是按这门课的真实结构做的"><a href="#打卡是按这门课的真实结构做的" class="headerlink" title="打卡是按这门课的真实结构做的"></a>打卡是按这门课的真实结构做的</h2><p>我先把官方课程调研了一遍，按 v26.07 的大纲把 47 讲全部录进应用：F 入门、E 预学习、PA 编程任务、D 调试器与处理器、C 系统与 SoC、B 优化与流水线、A 进阶，一共 7 个阶段。</p><p>每一讲都带了真实的讲义链接、B 站视频和课件入口，点一下就到，不用再翻课程网页。学的时候有疑点，随手记进这一讲的笔记和踩坑本；离线知识卡把每讲的核心概念和常见的坑整理好了，等车排队的时候翻一翻正合适。</p><h2 id="番茄钟能”挂”在某一讲上"><a href="#番茄钟能”挂”在某一讲上" class="headerlink" title="番茄钟能”挂”在某一讲上"></a>番茄钟能”挂”在某一讲上</h2><p>这是我自己最得意的部分。</p><p>任何一次专注都可以关联到 47 讲里的具体一讲。讲详情页会显示这一讲已经投入了多少分钟，工作台上还有一个”继续上次”，一键续上最近在学的那讲：开讲义、起番茄、自动关联，三件事并成一下。</p><div style="text-align:center;margin:18px 0"><img src="/images/xinlv/lecture.jpg" alt="讲详情页：投入统计与关联专注" style="max-width:300px;border-radius:14px;box-shadow:0 2px 14px rgba(0,0,0,0.12)"></div><p>番茄钟本身该有的都有：25 分钟专注、5 分钟小憩、每 4 轮一次长休息，跨重启续跑，通知栏里能看到当前是本组第几个。</p><h2 id="AI-助教：不替你做题"><a href="#AI-助教：不替你做题" class="headerlink" title="AI 助教：不替你做题"></a>AI 助教：不替你做题</h2><p>接的是智谱免费的 flash 模型，跑在我自己的服务器上做代理，手机端填个账号就行，不用自己搞 API Key。</p><p>重点是它的脾气被我调教成了苏格拉底式：你问它一道题，它不会直接甩答案，而是先问你现象是什么、预期是什么、试过什么、怎么验证；你贴代码过来，它让你先说思路。它还内置了 47 讲的课程结构，知道你现在卡在哪一讲。</p><p>配合两种跟随式的用法：开无障碍权限后有个悬浮球，看讲义看到一半有问题，小球一点，助教面板直接带着当前讲的上下文弹出来；不喜欢悬浮球的话还有画中画小窗，缩在右下角陪着你看视频。</p><h2 id="其他模块和云同步"><a href="#其他模块和云同步" class="headerlink" title="其他模块和云同步"></a>其他模块和云同步</h2><p>计划支持每日循环和一次性待办，连续打卡天数自动算；背单词内置六千多词的 ECDICT 词库（带四六级考研标签），用莱特纳盒子安排复习间隔，带发音；记账管个日常收支。</p><p>手机和电脑用同一个账号登录，勾选状态、笔记、计划、专注记录全部互通。合并规则是”或”：任何一端勾了就算完成，永远不会把你的进度覆盖掉。还有排行榜，看看连续打卡和今日专注谁更卷。</p><h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><ul><li>Android（v0.20，APK 才 2.3MB）：<a href="http://121.36.104.169/xinlv/xinlv-latest.apk">http://121.36.104.169/xinlv/xinlv-latest.apk</a></li><li>Windows（v1.2，MSI 安装包）：<a href="http://121.36.104.169/xinlv/downloads/xinlv-desktop-1.2.1.msi">http://121.36.104.169/xinlv/downloads/xinlv-desktop-1.2.1.msi</a></li><li>官网和详细介绍：<a href="http://121.36.104.169/xinlv/">http://121.36.104.169/xinlv/</a></li></ul><p>应用内自带更新，出新版本点一下就能升。装了的话欢迎反馈，评论区或者应用里给 AI 助教提意见都行，我都会看。</p>]]>
+    </content>
+    <id>https://yileina.cyou/2026/09/29/%E5%81%9A%E4%BA%86%E4%B8%AA%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF%E5%AD%A6%E4%B9%A0%E5%8A%A9%E6%89%8B-%E8%8A%AF%E5%BE%8B/</id>
+    <link href="https://yileina.cyou/2026/09/29/%E5%81%9A%E4%BA%86%E4%B8%AA%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF%E5%AD%A6%E4%B9%A0%E5%8A%A9%E6%89%8B-%E8%8A%AF%E5%BE%8B/"/>
+    <published>2026-09-29T02:30:00.000Z</published>
+    <summary>
+      <![CDATA[<p>入坑一生一芯之后，我一直想找一个能跟这门课绑定的自律工具。</p>
+<p>手机上的番茄钟 App 一大堆，但没有一个知道 PA 是什么、我学到第几讲了。课程打卡在官方网页上，讲义在浏览器里，B 站视频在另一个 App 里，番茄钟在第三个地方，坚持全靠自觉，数据各散各家。</]]>
+    </summary>
+    <title>做了个一生一芯学习助手：芯律</title>
+    <updated>2026-09-29T10:35:14.000Z</updated>
+  </entry>
   <entry>
     <author>
       <name>YiLieNan</name>
