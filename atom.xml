@@ -10,7 +10,28 @@
   <rights>All rights reserved 2026, YiLieNan</rights>
   <subtitle>一个技术小白的小窝</subtitle>
   <title>YiLieNan の 小屋</title>
-  <updated>2026-09-29T10:55:38.000Z</updated>
+  <updated>2026-09-29T13:12:12.000Z</updated>
+  <entry>
+    <author>
+      <name>YiLieNan</name>
+    </author>
+    <category term="学习" scheme="https://yileina.cyou/categories/%E5%AD%A6%E4%B9%A0/"/>
+    <category term="教程" scheme="https://yileina.cyou/tags/%E6%95%99%E7%A8%8B/"/>
+    <category term="工具" scheme="https://yileina.cyou/tags/%E5%B7%A5%E5%85%B7/"/>
+    <category term="Node.js" scheme="https://yileina.cyou/tags/Node-js/"/>
+    <content>
+      <![CDATA[<p>学部要管的数据一直很散：学生成绩、微课程完成率、证书竞赛、实训设备运行、企业对毕业生的评价，各在各的地方，汇总一次要翻好几个表。产业政策发下来，落在哪件事上、谁负责、做完没有，也没个跟踪的地方。</p><p>于是我写了个轻量的数据管理小平台，按「策略 → 数据 → 执行 → 评估」的思路组织：政策登记入库，教学过程数据持续采集，异常指标一键转成带责任人的改进任务，任务完成后还能对比指标变化看效果。数据全部存在自己的服务器上，不经过任何第三方。</p><p>这里把使用方法整理成一篇教程。平台按角色分了四类账号，各管一摊：</p><table><thead><tr><th>角色</th><th>能做什么</th></tr></thead><tbody><tr><td>管理员</td><td>全部数据、账号管理、学期与能力体系设置</td></tr><tr><td>教师</td><td>录入数据、批量导入、处理改进任务、导出</td></tr><tr><td>企业</td><td>只能提交本企业的评价和岗位，看不到任何学生在校信息</td></tr><tr><td>只读</td><td>纯查看和导出，适合巡检和会议展示</td></tr></tbody></table><p>账号不开放注册，都由管理员在后台创建。</p><h2 id="教师端六步上手"><a href="#教师端六步上手" class="headerlink" title="教师端六步上手"></a>教师端六步上手</h2><p>第一次用跟着这条主线走一遍就会：录数据 → 查数据 → 看学生 → 做匹配 → 跑闭环 → 出报告。</p><p>**第一步，录数据。**只有几条，在「数据采集」页选类型后按表单填（红星必填，日期点选，百分比直接填数字）。成批的数据比如整班成绩、一批证书，用批量导入：下载模板，Excel 按列填，上传或直接粘贴。上传后先确认「归属学期」，再逐行看预览，绿色行才会导入；黄色行是课程名没匹配上能力矩阵的，照常入库但不参与能力计算，可以点「改为」采用系统建议的课程名。</p><p><strong>第二步，查数据。</strong>「记录查询」有三种视图：明细列表适合改错和删重（支持筛选、批量删除、导出 CSV）；成绩矩阵一行一个学生、一列一门课，颜色就是分数档；按学生视图先选人，右边把这名学生的成绩、微课程、证书、竞赛、实训全部摆在一起。</p><p><strong>第三步，看学生。</strong>「学生能力」页搜姓名或学号，每个学生有一张 11 维能力雷达图，灰线是同班均值，点进去能看到每一分的证据明细和成长趋势。被领导问”某个学生怎么样”，30 秒给出答案，个人报告还能打印存档。</p><p>**第四步，做匹配。**有具体招聘岗位时，在岗位卡片点「AI 分析能力」，系统会给出胜任学生排名，还能把学生曲线叠到岗位雷达上对比。没有具体岗位、只想按条件找人，用「AI 人才检索」：大白话描述需求（专业、能力侧重、证书要求、人数），AI 解析成条件后自动排序。</p><p>**第五步，跑闭环。**产业政策登记后可以一键「转为任务」，任务卡片上直接更新状态，完成后到「结果评估」登记效果，系统自动对比改进前后的指标变化。</p><p>**第六步，出报告。**看板右上角「AI 学期报告」，按当前学期自动起草报告，引用的都是真实数据，可以复制打印。</p><h2 id="企业账号只有两个功能"><a href="#企业账号只有两个功能" class="headerlink" title="企业账号只有两个功能"></a>企业账号只有两个功能</h2><p>企业账号登录后只会看到自己的工作台：提交毕业生满意度评价（按分档标准打分，企业名称自动带出），以及发布招聘岗位。服务端做了权限隔离，企业看不到任何学生在校信息，这不是没开放，是设计如此。</p><h2 id="管理员的四件事"><a href="#管理员的四件事" class="headerlink" title="管理员的四件事"></a>管理员的四件事</h2><p>账号管理（创建教师&#x2F;企业&#x2F;只读账号、重置密码，新密码只显示一次）；学期设置（全平台的统计口径，新增学期记得设为当前）；能力体系维护（课程对能力的支撑权重、证书库与竞赛目录，有 AI 辅助预填）；审计日志和回收站（谁删了什么都有记录，软删除的记录可恢复）。</p><h2 id="几个常见的坑"><a href="#几个常见的坑" class="headerlink" title="几个常见的坑"></a>几个常见的坑</h2><ul><li>连续 5 次密码错误会锁定 10 分钟，忘了密码找管理员重置；</li><li>批量导入提示”缺少必填列”，说明用的是旧模板，重新下载新模板再填；</li><li>模板第一行的列名不要改，改了类型识别会失败；</li><li>整批导入选错了学期，勾选删除后重导一遍就行，单条的在记录查询里改。</li></ul><h2 id="两个设计原则"><a href="#两个设计原则" class="headerlink" title="两个设计原则"></a>两个设计原则</h2><p>一个是数据不出门：库在自己服务器上，备份就是复制一个文件。一个是 AI 的边界：它只做语义理解（岗位画像、需求解析、报告起草、导入辅助），所有学生分数和排名一律由系统按能力证据计算，不掺任何模型的发挥。</p><p>用下来有什么不顺手的地方，欢迎跟我说，我会一直改下去。</p>]]>
+    </content>
+    <id>https://yileina.cyou/2026/09/29/%E7%BB%99%E5%AD%A6%E9%83%A8%E5%81%9A%E4%BA%86%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%B0%8F%E5%B9%B3%E5%8F%B0/</id>
+    <link href="https://yileina.cyou/2026/09/29/%E7%BB%99%E5%AD%A6%E9%83%A8%E5%81%9A%E4%BA%86%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%B0%8F%E5%B9%B3%E5%8F%B0/"/>
+    <published>2026-09-29T13:30:00.000Z</published>
+    <summary>
+      <![CDATA[<p>学部要管的数据一直很散：学生成绩、微课程完成率、证书竞赛、实训设备运行、企业对毕业生的评价，各在各的地方，汇总一次要翻好几个表。产业政策发下来，落在哪件事上、谁负责、做完没有，也没个跟踪的地方。</p>
+<p>于是我写了个轻量的数据管理小平台，按「策略 → 数据 → 执行]]>
+    </summary>
+    <title>给学部做了个数据管理小平台（附使用教程）</title>
+    <updated>2026-09-29T13:12:12.000Z</updated>
+  </entry>
   <entry>
     <author>
       <name>YiLieNan</name>
@@ -144,8 +165,8 @@
     </author>
     <category term="学习" scheme="https://yileina.cyou/categories/%E5%AD%A6%E4%B9%A0/"/>
     <category term="配置教程" scheme="https://yileina.cyou/tags/%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/"/>
-    <category term="AI" scheme="https://yileina.cyou/tags/AI/"/>
     <category term="Hermes Agent" scheme="https://yileina.cyou/tags/Hermes-Agent/"/>
+    <category term="AI" scheme="https://yileina.cyou/tags/AI/"/>
     <category term="DeepSeek" scheme="https://yileina.cyou/tags/DeepSeek/"/>
     <category term="Windows" scheme="https://yileina.cyou/tags/Windows/"/>
     <content>
@@ -205,25 +226,5 @@
     </summary>
     <title>Hexo 博客搭建指南</title>
     <updated>2026-06-06T09:02:35.534Z</updated>
-  </entry>
-  <entry>
-    <author>
-      <name>YiLieNan</name>
-    </author>
-    <category term="日常" scheme="https://yileina.cyou/categories/%E6%97%A5%E5%B8%B8/"/>
-    <category term="杂谈" scheme="https://yileina.cyou/tags/%E6%9D%82%E8%B0%88/"/>
-    <content>
-      <![CDATA[<p>欢迎来到我的博客！</p><p>这是我的第一篇文章，使用了 <strong>Hexo</strong> + <strong>Reimu 主题</strong> 构建。</p><h2 id="什么是-Hexo？"><a href="#什么是-Hexo？" class="headerlink" title="什么是 Hexo？"></a>什么是 Hexo？</h2><p><a href="https://hexo.io/">Hexo</a> 是一个快速、简洁且高效的静态博客框架。它基于 Node.js，支持 Markdown 写作，可以一键部署到 GitHub Pages、Vercel 等平台。</p><h2 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h2><ul><li>⚡ <strong>极速生成</strong> — Node.js 驱动，生成速度飞快</li><li>📝 <strong>Markdown 支持</strong> — 用最熟悉的 Markdown 语法写作</li><li>🎨 <strong>丰富的主题</strong> — 大量精美主题可供选择</li><li>🔧 <strong>插件生态</strong> — 丰富的插件支持扩展功能</li><li>🚀 <strong>一键部署</strong> — 支持 Git、FTP、Vercel 等多种部署方式</li></ul><h2 id="代码块示例"><a href="#代码块示例" class="headerlink" title="代码块示例"></a>代码块示例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">hello</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Hello, World!&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    hello()</span><br></pre></td></tr></table></figure><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Hello, World!&quot;</span>);</span><br></pre></td></tr></table></figure><h2 id="数学公式示例"><a href="#数学公式示例" class="headerlink" title="数学公式示例"></a>数学公式示例</h2><p>行内公式：$E &#x3D; mc^2$</p><p>行间公式：</p><p>$$<br>\frac{-b \pm \sqrt{b^2 - 4ac}}{2a}<br>$$</p><h2 id="图片"><a href="#图片" class="headerlink" title="图片"></a>图片</h2><p><img src="https://picsum.photos/800/400?random=3" alt="示例图片"></p><hr><p>更多的内容还在路上，敬请期待！(∠・ω&lt; )⌒☆</p>]]>
-    </content>
-    <id>https://yileina.cyou/2026/06/04/Hello-World/</id>
-    <link href="https://yileina.cyou/2026/06/04/Hello-World/"/>
-    <published>2026-06-04T09:20:00.000Z</published>
-    <summary>
-      <![CDATA[<p>欢迎来到我的博客！</p>
-<p>这是我的第一篇文章，使用了 <strong>Hexo</strong> + <strong>Reimu 主题</strong> 构建。</p>
-<h2 id="什么是-Hexo？"><a href="#什么是-Hexo？" class="h]]>
-    </summary>
-    <title>Hello World</title>
-    <updated>2026-06-05T12:00:33.457Z</updated>
   </entry>
 </feed>

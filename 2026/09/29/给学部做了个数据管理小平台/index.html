@@ -9,7 +9,7 @@
   
   <script>window.REIMU_CONFIG = {};window.REIMU_CONFIG.icon_font = '4552607_ex15nbittbh';window.REIMU_CONFIG.clipboard_tips = {"success":{"zh-CN":"复制成功 (*^▽^*)"},"fail":{"zh-CN":"复制失败 (ﾟ⊿ﾟ)ﾂ"},"copyright":{"enable":false,"count":50,"license_type":"by-nc-sa"}};window.REIMU_CONFIG.clipboard_tips.copyright.content = '本博客所有文章除特别声明外，均采用 BY-NC-SA 许可协议。转载请注明出处！';window.REIMU_CONFIG.code_block = {"expand":true};window.REIMU_CONFIG.base = 'https://yileina.cyou';window.REIMU_CONFIG.relative = '/';</script>
   <title>
-    归档: 2026/9 | YiLieNan の 小屋
+    给学部做了个数据管理小平台（附使用教程） | YiLieNan の 小屋
   </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="preload" as="style" href="/css/gfonts.css" onload="this.rel='stylesheet'" crossorigin>
@@ -17,18 +17,20 @@
     
 <link rel="stylesheet" href="/css/loader.css">
 
-    <meta name="description" content="YiLieNan 的个人博客，记录学习与生活">
-<meta property="og:type" content="website">
-<meta property="og:title" content="YiLieNan の 小屋">
-<meta property="og:url" content="https://yileina.cyou/archives/2026/09/index.html">
+    <meta name="description" content="学部要管的数据一直很散：学生成绩、微课程完成率、证书竞赛、实训设备运行、企业对毕业生的评价，各在各的地方，汇总一次要翻好几个表。产业政策发下来，落在哪件事上、谁负责、做完没有，也没个跟踪的地方。 于是我写了个轻量的数据管理小平台，按「策略 → 数据 → 执行 → 评估」的思路组织：政策登记入库，教学过程数据持续采集，异常指标一键转成带责任人的改进任务，任务完成后还能对比指标变化看效果。数据全部存在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="给学部做了个数据管理小平台（附使用教程）">
+<meta property="og:url" content="https://yileina.cyou/2026/09/29/%E7%BB%99%E5%AD%A6%E9%83%A8%E5%81%9A%E4%BA%86%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%B0%8F%E5%B9%B3%E5%8F%B0/index.html">
 <meta property="og:site_name" content="YiLieNan の 小屋">
-<meta property="og:description" content="YiLieNan 的个人博客，记录学习与生活">
+<meta property="og:description" content="学部要管的数据一直很散：学生成绩、微课程完成率、证书竞赛、实训设备运行、企业对毕业生的评价，各在各的地方，汇总一次要翻好几个表。产业政策发下来，落在哪件事上、谁负责、做完没有，也没个跟踪的地方。 于是我写了个轻量的数据管理小平台，按「策略 → 数据 → 执行 → 评估」的思路组织：政策登记入库，教学过程数据持续采集，异常指标一键转成带责任人的改进任务，任务完成后还能对比指标变化看效果。数据全部存在">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://yileina.cyou/images/banner.webp">
+<meta property="article:published_time" content="2026-09-29T13:30:00.000Z">
+<meta property="article:modified_time" content="2026-09-29T13:12:12.000Z">
 <meta property="article:author" content="YiLieNan">
-<meta property="article:tag" content="博客,技术,学习,编程,伊蕾娜">
+<meta property="article:tag" content="Node.js">
+<meta property="article:tag" content="工具">
+<meta property="article:tag" content="教程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://yileina.cyou/images/banner.webp">
       <meta name="keywords" content="博客,技术,学习,编程,伊蕾娜">
     <link rel="alternate" href="/atom.xml" title="YiLieNan の 小屋" type="application/atom+xml">
     <link rel="shortcut icon" href="/images/elaina-avatar.webp">
@@ -152,20 +154,14 @@
   </nav>
 </div>
 <header id="header" aria-label="Site header">
-      <picture>
-              <source media="(max-width: 479px)" srcset="/images/banner-600w.webp">
-              <source media="(max-width: 799px)" srcset="/images/banner-800w.webp">
-              <source media="(min-width: 800px)" srcset="/images/banner.webp">
-          <img  fetchpriority="high" src="/images/elaina-banner-desktop.webp" alt="">
-      </picture>
-        <img alt="" style="visibility: hidden;">
+    <picture></picture>
+    <img  fetchpriority="high" src="/images/covers/cover-24.webp" alt="给学部做了个数据管理小平台（附使用教程）">
   <div id="header-outer">
     <div id="header-title">
           <span id="logo">
-            <h1 data-aos="slide-up">归档</h1>
+            <h1 data-aos="slide-up">给学部做了个数据管理小平台（附使用教程）</h1>
           </span>
         <h2 id="subtitle-wrap" data-aos="slide-down">
-              <span id="subtitle">2026/9</span>
         </h2>
     </div>
   </div>
@@ -173,10 +169,15 @@
 
         <div id="content" aria-label="Page content"  class="sidebar-right" >
           <aside id="sidebar" aria-label="Sidebar">
-  <div class="sidebar-wrapper-container ">
+  <div class="sidebar-wrapper-container sticky">
   <div class="sidebar-wrapper">
     <div class="sidebar-wrap" data-aos="fade-up">
-        <div class="sidebar-author">
+          <div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%99%E5%B8%88%E7%AB%AF%E5%85%AD%E6%AD%A5%E4%B8%8A%E6%89%8B"><span class="toc-number">1.</span> <span class="toc-text">教师端六步上手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%81%E4%B8%9A%E8%B4%A6%E5%8F%B7%E5%8F%AA%E6%9C%89%E4%B8%A4%E4%B8%AA%E5%8A%9F%E8%83%BD"><span class="toc-number">2.</span> <span class="toc-text">企业账号只有两个功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%A1%E7%90%86%E5%91%98%E7%9A%84%E5%9B%9B%E4%BB%B6%E4%BA%8B"><span class="toc-number">3.</span> <span class="toc-text">管理员的四件事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E5%B8%B8%E8%A7%81%E7%9A%84%E5%9D%91"><span class="toc-number">4.</span> <span class="toc-text">几个常见的坑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E4%B8%AA%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="toc-number">5.</span> <span class="toc-text">两个设计原则</span></a></li></ol>
+</div>
+</div>
+          <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img data-src="/avatar/elaina-avatar.webp" data-sizes="auto" alt="YiLieNan" class="lazyload">
   <div class="sidebar-author-name">YiLieNan</div>
   <div class="sidebar-description">YiLieNan 的个人博客，记录学习与生活</div>
@@ -264,169 +265,100 @@
         <div class="sidebar-menu-link">工具箱</div>
       </div>
 </div>
-
+</div>
+          <div class="sidebar-btn-wrapper" style="position:static">
+            <div class="sidebar-toc-btn current"></div>
+            <div class="sidebar-common-btn"></div>
+          </div>
     </div>
   </div>
   <div class="sidebar-widget">
-        <div class="widget-wrapper">
-    <div class="widget-wrap" data-aos="fade-up">
-      <h3 class="widget-title">分类</h3>
-      <div class="widget">
-        <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0/" title="学习">学习</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%97%A5%E5%B8%B8/" title="日常">日常</a></li></ul>
-      </div>
-    </div>
-  </div>
-
-        <div class="widget-wrapper">
-    <div class="widget-wrap" data-aos="fade-up">
-      <h3 class="widget-title">标签</h3>
-      <div class="widget">
-        <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AI/" rel="tag" title="AI">AI</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Android/" rel="tag" title="Android">Android</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/DeepSeek/" rel="tag" title="DeepSeek">DeepSeek</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hermes-Agent/" rel="tag" title="Hermes Agent">Hermes Agent</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag" title="Hexo">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Node-js/" rel="tag" title="Node.js">Node.js</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Windows/" rel="tag" title="Windows">Windows</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF/" rel="tag" title="一生一芯">一生一芯</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%88%86%E4%BA%AB/" rel="tag" title="分享">分享</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/" rel="tag" title="前端">前端</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%9B%BA%E4%BD%93%E7%89%A9%E7%90%86/" rel="tag" title="固体物理">固体物理</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag" title="学习">学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag" title="工具">工具</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%99%E7%A8%8B/" rel="tag" title="教程">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9C%BA%E6%A2%B0%E8%AE%BE%E8%AE%A1/" rel="tag" title="机械设计">机械设计</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/" rel="tag" title="杂谈">杂谈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%94%B5%E8%B7%AF/" rel="tag" title="电路">电路</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B/" rel="tag" title="编程">编程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/" rel="tag" title="配置教程">配置教程</a></li></ul>
-      </div>
-    </div>
-  </div>
-
-        <div class="widget-wrapper">
-    <div class="widget-wrap" data-aos="fade-up">
-      <h3 class="widget-title">归档</h3>
-      <div class="widget">
-        <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/09/">九月 2026</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2026/06/">六月 2026</a></li></ul>
-      </div>
-    </div>
-  </div>
-
-        <div class="widget-wrapper">
-    <div class="widget-wrap" data-aos="fade-up">
-      <h3 class="widget-title">最新文章</h3>
-      <div class="widget">
-        <ul>
-            <li>
-              <a href="/2026/09/29/%E7%BB%99%E5%AD%A6%E9%83%A8%E5%81%9A%E4%BA%86%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%B0%8F%E5%B9%B3%E5%8F%B0/" title="给学部做了个数据管理小平台（附使用教程）">给学部做了个数据管理小平台（附使用教程）</a>
-            </li>
-            <li>
-              <a href="/2026/09/29/%E5%81%9A%E4%BA%86%E4%B8%AA%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF%E5%AD%A6%E4%B9%A0%E5%8A%A9%E6%89%8B-%E8%8A%AF%E5%BE%8B/" title="做了个一生一芯学习助手：芯律">做了个一生一芯学习助手：芯律</a>
-            </li>
-            <li>
-              <a href="/2026/09/28/%E7%BB%99%E8%87%AA%E5%B7%B1%E5%86%99%E4%BA%86%E4%B8%AA%E5%9B%BA%E4%BD%93%E7%89%A9%E7%90%86%E5%AD%A6%E4%B9%A0%E5%B7%A5%E5%85%B7/" title="给自己写了个固体物理学习工具">给自己写了个固体物理学习工具</a>
-            </li>
-            <li>
-              <a href="/2026/06/20/2026-06-20-%E5%8F%91%E7%8E%B0%E4%BA%86%E5%87%A0%E4%B8%AA%E5%A5%BD%E7%9A%84%E5%AD%A6%E4%B9%A0%E8%A7%86%E9%A2%91/" title="发现了几个好的学习视频">发现了几个好的学习视频</a>
-            </li>
-            <li>
-              <a href="/2026/06/08/%E5%B8%AE%E6%9C%8B%E5%8F%8B%E5%86%99%E4%BA%86%E4%B8%AA%E9%BD%BF%E8%BD%AE%E5%8F%82%E6%95%B0%E8%AE%A1%E7%AE%97%E5%99%A8/" title="帮朋友写了个齿轮参数计算器">帮朋友写了个齿轮参数计算器</a>
-            </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-
   </div>
   </div>
 </aside>
 
-          <section id="main" aria-label="Main content"><div class="archives-outer-wrap" data-aos="fade-up">
-    <div class="tag-wrap">
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/">杂谈</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Hexo/">Hexo</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E6%95%99%E7%A8%8B/">教程</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/">配置教程</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Hermes-Agent/">Hermes Agent</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/AI/">AI</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/DeepSeek/">DeepSeek</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Windows/">Windows</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E5%88%86%E4%BA%AB/">分享</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0/">学习</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B/">编程</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E6%9C%BA%E6%A2%B0%E8%AE%BE%E8%AE%A1/">机械设计</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E7%94%B5%E8%B7%AF/">电路</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Node-js/">Node.js</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E5%9B%BA%E4%BD%93%E7%89%A9%E7%90%86/">固体物理</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF/">一生一芯</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Android/">Android</a>
-    </div>
+          <section id="main" aria-label="Main content"><article id="post-给学部做了个数据管理小平台" class="h-entry article" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-inner" data-aos="fade-up">
+    <div class="article-meta">
+      <div class="article-date">
+  <span class="article-date-link icon-calendar" data-aos="zoom-in">
+    <time datetime="2026-09-29T13:30:00.000Z" itemprop="datePublished">2026-09-29</time>
+    <time style="display: none;" id="post-update-time">2026-09-29</time>
+  </span>
 </div>
-<div class="category-wrap">
-    <div class="archives-category-list-item" data-aos="zoom-in">
-      <a class="archives-category-list-link" href="/categories/%E6%97%A5%E5%B8%B8/">日常</a>
+
     </div>
-    <div class="archives-category-list-item" data-aos="zoom-in">
-      <a class="archives-category-list-link" href="/categories/%E5%AD%A6%E4%B9%A0/">学习</a>
+    
+    <div class="hr-line"></div>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+        <p>学部要管的数据一直很散：学生成绩、微课程完成率、证书竞赛、实训设备运行、企业对毕业生的评价，各在各的地方，汇总一次要翻好几个表。产业政策发下来，落在哪件事上、谁负责、做完没有，也没个跟踪的地方。</p>
+<p>于是我写了个轻量的数据管理小平台，按「策略 → 数据 → 执行 → 评估」的思路组织：政策登记入库，教学过程数据持续采集，异常指标一键转成带责任人的改进任务，任务完成后还能对比指标变化看效果。数据全部存在自己的服务器上，不经过任何第三方。</p>
+<p>这里把使用方法整理成一篇教程。平台按角色分了四类账号，各管一摊：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>能做什么</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>管理员</td>
+<td>全部数据、账号管理、学期与能力体系设置</td>
+</tr>
+<tr>
+<td>教师</td>
+<td>录入数据、批量导入、处理改进任务、导出</td>
+</tr>
+<tr>
+<td>企业</td>
+<td>只能提交本企业的评价和岗位，看不到任何学生在校信息</td>
+</tr>
+<tr>
+<td>只读</td>
+<td>纯查看和导出，适合巡检和会议展示</td>
+</tr>
+</tbody></table>
+<p>账号不开放注册，都由管理员在后台创建。</p>
+<h2 id="教师端六步上手"><a href="#教师端六步上手" class="headerlink" title="教师端六步上手"></a>教师端六步上手</h2><p>第一次用跟着这条主线走一遍就会：录数据 → 查数据 → 看学生 → 做匹配 → 跑闭环 → 出报告。</p>
+<p>**第一步，录数据。**只有几条，在「数据采集」页选类型后按表单填（红星必填，日期点选，百分比直接填数字）。成批的数据比如整班成绩、一批证书，用批量导入：下载模板，Excel 按列填，上传或直接粘贴。上传后先确认「归属学期」，再逐行看预览，绿色行才会导入；黄色行是课程名没匹配上能力矩阵的，照常入库但不参与能力计算，可以点「改为」采用系统建议的课程名。</p>
+<p><strong>第二步，查数据。</strong>「记录查询」有三种视图：明细列表适合改错和删重（支持筛选、批量删除、导出 CSV）；成绩矩阵一行一个学生、一列一门课，颜色就是分数档；按学生视图先选人，右边把这名学生的成绩、微课程、证书、竞赛、实训全部摆在一起。</p>
+<p><strong>第三步，看学生。</strong>「学生能力」页搜姓名或学号，每个学生有一张 11 维能力雷达图，灰线是同班均值，点进去能看到每一分的证据明细和成长趋势。被领导问”某个学生怎么样”，30 秒给出答案，个人报告还能打印存档。</p>
+<p>**第四步，做匹配。**有具体招聘岗位时，在岗位卡片点「AI 分析能力」，系统会给出胜任学生排名，还能把学生曲线叠到岗位雷达上对比。没有具体岗位、只想按条件找人，用「AI 人才检索」：大白话描述需求（专业、能力侧重、证书要求、人数），AI 解析成条件后自动排序。</p>
+<p>**第五步，跑闭环。**产业政策登记后可以一键「转为任务」，任务卡片上直接更新状态，完成后到「结果评估」登记效果，系统自动对比改进前后的指标变化。</p>
+<p>**第六步，出报告。**看板右上角「AI 学期报告」，按当前学期自动起草报告，引用的都是真实数据，可以复制打印。</p>
+<h2 id="企业账号只有两个功能"><a href="#企业账号只有两个功能" class="headerlink" title="企业账号只有两个功能"></a>企业账号只有两个功能</h2><p>企业账号登录后只会看到自己的工作台：提交毕业生满意度评价（按分档标准打分，企业名称自动带出），以及发布招聘岗位。服务端做了权限隔离，企业看不到任何学生在校信息，这不是没开放，是设计如此。</p>
+<h2 id="管理员的四件事"><a href="#管理员的四件事" class="headerlink" title="管理员的四件事"></a>管理员的四件事</h2><p>账号管理（创建教师&#x2F;企业&#x2F;只读账号、重置密码，新密码只显示一次）；学期设置（全平台的统计口径，新增学期记得设为当前）；能力体系维护（课程对能力的支撑权重、证书库与竞赛目录，有 AI 辅助预填）；审计日志和回收站（谁删了什么都有记录，软删除的记录可恢复）。</p>
+<h2 id="几个常见的坑"><a href="#几个常见的坑" class="headerlink" title="几个常见的坑"></a>几个常见的坑</h2><ul>
+<li>连续 5 次密码错误会锁定 10 分钟，忘了密码找管理员重置；</li>
+<li>批量导入提示”缺少必填列”，说明用的是旧模板，重新下载新模板再填；</li>
+<li>模板第一行的列名不要改，改了类型识别会失败；</li>
+<li>整批导入选错了学期，勾选删除后重导一遍就行，单条的在记录查询里改。</li>
+</ul>
+<h2 id="两个设计原则"><a href="#两个设计原则" class="headerlink" title="两个设计原则"></a>两个设计原则</h2><p>一个是数据不出门：库在自己服务器上，备份就是复制一个文件。一个是 AI 的边界：它只做语义理解（岗位画像、需求解析、报告起草、导入辅助），所有学生分数和排名一律由系统按能力证据计算，不掺任何模型的发挥。</p>
+<p>用下来有什么不顺手的地方，欢迎跟我说，我会一直改下去。</p>
+
     </div>
-</div>
-        <section class="archives-wrap" data-aos="fade-up">
-          <div class="archive-year-wrap">
-            <a href="/archives/2026" class="archive-year">2026</a>
-          </div>
-          <ul>
-            <li class="archive-article">
-  <div class="archive-article-date">
-    <span>
-      <time class="dt-published" datetime="2026-09-29T13:30:00.000Z" itemprop="datePublished">09-29</time>
-    </span>
-  </div>
-    <a class="archive-article-title" href="/2026/09/29/%E7%BB%99%E5%AD%A6%E9%83%A8%E5%81%9A%E4%BA%86%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%B0%8F%E5%B9%B3%E5%8F%B0/">给学部做了个数据管理小平台（附使用教程）</a>
-</li>
+    <footer class="article-footer">
+        <a class="article-category-link" href="/categories/%E5%AD%A6%E4%B9%A0/" title="学习" data-aos="zoom-in">学习</a>
 
-            <li class="archive-article">
-  <div class="archive-article-date">
-    <span>
-      <time class="dt-published" datetime="2026-09-29T02:30:00.000Z" itemprop="datePublished">09-29</time>
-    </span>
-  </div>
-    <a class="archive-article-title" href="/2026/09/29/%E5%81%9A%E4%BA%86%E4%B8%AA%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF%E5%AD%A6%E4%B9%A0%E5%8A%A9%E6%89%8B-%E8%8A%AF%E5%BE%8B/">做了个一生一芯学习助手：芯律</a>
-</li>
+        <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/Node-js/" rel="tag" title="Node.js">Node.js</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/" rel="tag" title="工具">工具</a></li><li class="article-tag-list-item" data-aos="zoom-in"><a class="article-tag-list-link" href="/tags/%E6%95%99%E7%A8%8B/" rel="tag" title="教程">教程</a></li></ul>
 
-            <li class="archive-article">
-  <div class="archive-article-date">
-    <span>
-      <time class="dt-published" datetime="2026-09-28T15:30:00.000Z" itemprop="datePublished">09-28</time>
-    </span>
+    </footer>
   </div>
-    <a class="archive-article-title" href="/2026/09/28/%E7%BB%99%E8%87%AA%E5%B7%B1%E5%86%99%E4%BA%86%E4%B8%AA%E5%9B%BA%E4%BD%93%E7%89%A9%E7%90%86%E5%AD%A6%E4%B9%A0%E5%B7%A5%E5%85%B7/">给自己写了个固体物理学习工具</a>
-</li>
+    <nav id="article-nav" aria-label="Article navigation" data-aos="fade-up">
+    <div class="article-nav-link-wrap right">
+        <img data-src="/images/covers/cover-30.webp" data-sizes="auto" alt="做了个一生一芯学习助手：芯律" class="lazyload">
+      <a href="/2026/09/29/%E5%81%9A%E4%BA%86%E4%B8%AA%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF%E5%AD%A6%E4%B9%A0%E5%8A%A9%E6%89%8B-%E8%8A%AF%E5%BE%8B/" aria-label="后一篇: 做了个一生一芯学习助手：芯律"  title="后一篇: 做了个一生一芯学习助手：芯律"></a>
+      <div class="article-nav-caption">后一篇</div>
+      <h3 class="article-nav-title">
+          做了个一生一芯学习助手：芯律
+      </h3>
+    </div>
+  </nav>
 
-          </ul>
-        </section>
-  </div>
+</article>
+
 
 </section>
         </div>
@@ -470,7 +402,12 @@
       </div>
       <nav id="mobile-nav" aria-label="Mobile navigation">
   <div class="sidebar-wrap">
-      <div class="sidebar-author">
+        <div class="sidebar-toc-sidebar"><h3 class="toc-title">文章目录</h3>
+<div class="sidebar-toc-wrapper toc-div-class" >
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%99%E5%B8%88%E7%AB%AF%E5%85%AD%E6%AD%A5%E4%B8%8A%E6%89%8B"><span class="toc-number">1.</span> <span class="toc-text">教师端六步上手</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%81%E4%B8%9A%E8%B4%A6%E5%8F%B7%E5%8F%AA%E6%9C%89%E4%B8%A4%E4%B8%AA%E5%8A%9F%E8%83%BD"><span class="toc-number">2.</span> <span class="toc-text">企业账号只有两个功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%A1%E7%90%86%E5%91%98%E7%9A%84%E5%9B%9B%E4%BB%B6%E4%BA%8B"><span class="toc-number">3.</span> <span class="toc-text">管理员的四件事</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E5%B8%B8%E8%A7%81%E7%9A%84%E5%9D%91"><span class="toc-number">4.</span> <span class="toc-text">几个常见的坑</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E4%B8%AA%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="toc-number">5.</span> <span class="toc-text">两个设计原则</span></a></li></ol>
+</div>
+</div>
+        <div class="sidebar-common-sidebar hidden"><div class="sidebar-author">
   <img data-src="/avatar/elaina-avatar.webp" data-sizes="auto" alt="YiLieNan" class="lazyload">
   <div class="sidebar-author-name">YiLieNan</div>
   <div class="sidebar-description">YiLieNan 的个人博客，记录学习与生活</div>
@@ -558,8 +495,12 @@
         <div class="sidebar-menu-link">工具箱</div>
       </div>
 </div>
-
+</div>
   </div>
+      <div class="sidebar-btn-wrapper">
+        <div class="sidebar-toc-btn current"></div>
+        <div class="sidebar-common-btn"></div>
+      </div>
 </nav>
 
     </div>
@@ -651,6 +592,49 @@
 
 <div id="lazy-script">
   <div>
+      
+      
+      <script data-pjax>
+        window.REIMU_POST = {
+          author: "YiLieNan",
+          title: "给学部做了个数据管理小平台（附使用教程）",
+          url: "https://yileina.cyou/2026/09/29/%E7%BB%99%E5%AD%A6%E9%83%A8%E5%81%9A%E4%BA%86%E4%B8%AA%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%90%86%E5%B0%8F%E5%B9%B3%E5%8F%B0/",
+          excerpt: "",
+          description: "",
+          stripContent: "学部要管的数据一直很散：学生成绩、微课程完成率、证书竞赛、实训设备运行、企业对毕业生的评价，各在各的地方，汇总一次要翻好几个表。产业政策发下来，落在哪件事上、谁负责、做完没有，也没个跟踪的地方。 于是我写了个轻量的数据管理小平台，按「策略 → 数据 → 执行 → 评估」的思路组织：政策登记入库，教学过程数据持续采集，异常指标一键转成带责任人的改进任务，任务完成后还能对比指标变化看效果。数据全部存在自己的服务器上，不经过任何第三方。 这里把使用方法整理成一篇教程。平台按角色分了四类账号，各管一摊：",
+          date: "Tue Sep 29 2026 21:30:00 GMT+0800",
+          updated: "Tue Sep 29 2026 21:12:12 GMT+0800",
+          cover: "/images/covers/cover-24.webp",
+        };
+      </script>
+        
+<script src="/js/insert_highlight.js" data-pjax></script>
+
+      
+<script src="/js/tabs.js" data-pjax defer></script>
+
+      <script type="module" data-pjax>
+        (async () => {
+          const PhotoSwipeLightbox = (await safeImport("/lib/photoswipe@5.4.4/dist/photoswipe-lightbox.esm.min.js", "sha384-DiL6M/gG+wmTxmCRZyD1zee6lIhawn5TGvED0FOh7fXcN9B0aZ9dexSF/N6lrZi/")).default;
+          const initPswp = (gallery, children) => {
+            if (_$$(`${gallery} ${children}`).length > 0) {
+              new PhotoSwipeLightbox({
+                gallery,
+                children,
+                pswpModule: () => safeImport("/lib/photoswipe@5.4.4/dist/photoswipe.esm.min.js", "sha384-WkkO3GCmgkC3VQWpaV8DqhKJqpzpF9JoByxDmnV8+oTJ7m3DfYEWX1fu1scuS4+s")
+              }).init();
+            }
+          }
+          const pswp = () => {
+            initPswp('.article-entry', 'a.article-gallery-item');
+            initPswp('.article-gallery', 'a.article-gallery-item');
+          }
+          pswp();
+        })();
+      </script>
+        
+
+
   </div>
 </div>
 
