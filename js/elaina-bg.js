@@ -19,17 +19,21 @@
   var playOrder=shuffle(bgList)  // 乱序播放顺序
   var idx=0,interval=8000,fade=800
 
-  // 预加载图片
-  function preload(){
-    bgList.forEach(function(src){
+  // 预加载图片：首屏只加载前两张（正在显示+下一张），其余等页面加载完且空闲后再悄悄缓存，
+  // 避免一进页面就把 46 张壁纸(约1.9MB)全部拉下来挤占首屏资源
+  function preloadRest(){
+    playOrder.slice(2).forEach(function(src){
       var img=new Image()
       img.src=src
     })
   }
+  function idlePreload(){
+    setTimeout(preloadRest, 5000)
+  }
+  if(document.readyState==='complete') idlePreload()
+  else window.addEventListener('load', idlePreload)
 
   function init(){
-    preload()
-
     // 两层背景交替 - 避免白闪
     var bg1=document.createElement('div')
     var bg2=document.createElement('div')
