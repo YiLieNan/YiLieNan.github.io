@@ -12,6 +12,13 @@
   gsap.registerPlugin(ScrollTrigger);
 
   var styleInjected = false;
+  var refreshTimer = null;
+
+  /* 懒加载图片落位会撑高页面布局，触发点需重算（节流） */
+  function scheduleRefresh() {
+    if (refreshTimer) clearTimeout(refreshTimer);
+    refreshTimer = setTimeout(function () { ScrollTrigger.refresh(); }, 200);
+  }
 
   function injectStyle() {
     if (styleInjected) return;
@@ -41,16 +48,16 @@
     cleanup();
     injectStyle();
 
-    /* ① 首页文章卡片逐张浮现 */
+    /* ① 首页文章卡片逐张浮现（显式初始态 + batch 回调，refresh 后可靠触发） */
     var cards = document.querySelectorAll('article.post-article');
     if (cards.length) {
-      cards.forEach(function (card) {
-        gsap.fromTo(card,
-          { opacity: 0, y: 36 },
-          {
-            opacity: 1, y: 0, duration: 0.7, ease: 'power2.out',
-            scrollTrigger: { trigger: card, start: 'top 88%', once: true }
-          });
+      gsap.set(cards, { opacity: 0, y: 36 });
+      ScrollTrigger.batch(cards, {
+        start: 'top 88%',
+        once: true,
+        onEnter: function (batch) {
+          gsap.to(batch, { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out', stagger: 0.08 });
+        }
       });
     }
 
@@ -82,6 +89,9 @@
 
     ScrollTrigger.refresh();
   }
+
+  /* 懒加载图片落位 → 布局变化 → 触发点重算 */
+  document.addEventListener('lazyloaded', scheduleRefresh);
 
   /* pjax 无刷新切页：旧页清理 → 新页重建 */
   document.addEventListener('pjax:send', cleanup);
