@@ -1,26 +1,18 @@
 /**
- * 匿名评论系统 v2 — 底部白框风格
- * 
- * 读取：先从当前站点加载评论JSON，失败则从 GitHub raw 加载
- * 写入：通过 GitHub Contents API（需要 Token）
- * 
- * ⚠️ 请替换下方的 GH_TOKEN 为你自己的 fine-grained token
- * 创建：GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens
- * 仓库：YiLieNan/YiLieNan.github.io
- * 权限：Contents → Read and write
+ * 匿名评论系统 v3 — 服务器端提交
+ *
+ * 读取：当前站点 /data/comments/*.json，失败则从 GitHub raw 加载
+ * 写入：POST /api/comment → 服务器校验/限流后落盘并尽力同步 GitHub
+ *       （v2 的前端直写 GitHub + 硬编码 Token 已废弃：Token 只存服务器）
  */
 ;(function() {
   'use strict';
 
   // ======== 配置 ========
-  // Token 优先级：1. 硬编码（匿名访客） 2. localStorage（写作后台用户）
-  var GH_TOKEN = 'ghp' + '_P5XEk30KB9m1oQ8oKqjZED7jiX2HgF2843dZ';
-
   var CONFIG = {
     owner: 'YiLieNan',
     repo: 'YiLieNan.github.io',
     branch: 'main',
-    // 评论文件路径（仓库中）
     basePath: 'data/comments/'
   };
 
@@ -44,10 +36,6 @@
 
   function getPublicUrl() {
     return '/' + getCommentFilePath();
-  }
-
-  function getApiUrl() {
-    return 'https://api.github.com/repos/' + CONFIG.owner + '/' + CONFIG.repo + '/contents/' + getCommentFilePath();
   }
 
   function getGithubRawUrl() {
@@ -150,112 +138,19 @@
 
   // ======== 提交评论 ========
   async function submitComment(name, content) {
-    // 优先用 localStorage 中的 gh_token（写作后台用户）
-    var token = localStorage.getItem('gh_token') || GH_TOKEN;
+    var res = await request({
+      method: 'POST',
+      url: '/api/comment',
+      timeout: 15000,
+      headers: { 'Content-Type': 'application/json' },
+      data: { path: getPagePath(), name: name, content: content }
+    });
 
-    if (!token || token === 'PLEASE_REPLACE_ME') {
-      throw new Error('评论功能暂未开放，请联系站长配置。');
+    var body = res.body || {};
+    if (res.status === 200 && body.ok && body.comment) {
+      return body.comment;
     }
-
-    // 1. 获取当前文件 SHA
-    var sha = '';
-    try {
-      var res = await request({
-        url: getApiUrl(),
-        timeout: 10000,
-        headers: {
-          'Authorization': 'token ' + token,
-          'Accept': 'application/vnd.github.v3+json'
-        }
-      });
-      if (res.status === 200) {
-        sha = res.body.sha;
-        var existingContent = decodeURIComponent(escape(atob(res.body.content.replace(/\n/g, ''))));
-        var existingData = JSON.parse(existingContent);
-        var existingComments = existingData.comments || [];
-        // 合并
-        var newComment = {
-          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-          name: name.trim() || '匿名',
-          content: content.trim(),
-          date: new Date().toISOString()
-        };
-        existingComments.push(newComment);
-        var updatedContent = JSON.stringify({ comments: existingComments }, null, 2);
-
-        // 2. 写入文件
-        var putRes = await request({
-          method: 'PUT',
-          url: getApiUrl(),
-          timeout: 15000,
-          headers: {
-            'Authorization': 'token ' + token,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          data: {
-            message: '💬 评论: ' + getPagePath(),
-            content: btoa(unescape(encodeURIComponent(updatedContent))),
-            sha: sha,
-            branch: CONFIG.branch
-          }
-        });
-
-        if (putRes.status === 200 || putRes.status === 201) {
-          return newComment;
-        } else if (putRes.status === 409) {
-          throw new Error('提交冲突：有人同时评论了，请刷新后重试');
-        } else if (putRes.status === 403) {
-          throw new Error('Token 权限不足，请联系站长');
-        } else if (putRes.status === 401) {
-          throw new Error('Token 已失效，请联系站长');
-        } else {
-          throw new Error('提交失败 (HTTP ' + putRes.status + ')');
-        }
-      } else if (res.status === 404) {
-        // 文件不存在，创建新文件
-        var newComment = {
-          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-          name: name.trim() || '匿名',
-          content: content.trim(),
-          date: new Date().toISOString()
-        };
-        var newContent = JSON.stringify({ comments: [newComment] }, null, 2);
-
-        var putRes = await request({
-          method: 'PUT',
-          url: getApiUrl(),
-          timeout: 15000,
-          headers: {
-            'Authorization': 'token ' + token,
-            'Accept': 'application/vnd.github.v3+json',
-            'Content-Type': 'application/json'
-          },
-          data: {
-            message: '💬 评论: ' + getPagePath(),
-            content: btoa(unescape(encodeURIComponent(newContent))),
-            branch: CONFIG.branch
-          }
-        });
-
-        if (putRes.status === 200 || putRes.status === 201) {
-          return newComment;
-        } else if (putRes.status === 403) {
-          throw new Error('Token 权限不足，请联系站长');
-        } else if (putRes.status === 401) {
-          throw new Error('Token 已失效，请联系站长');
-        } else {
-          throw new Error('提交失败 (HTTP ' + putRes.status + ')');
-        }
-      } else {
-        throw new Error('读取评论文件失败 (HTTP ' + res.status + ')');
-      }
-    } catch(e) {
-      if (e.message && (e.message.startsWith('提交') || e.message.startsWith('Token') || e.message.startsWith('读取'))) {
-        throw e;
-      }
-      throw new Error('网络错误，请稍后重试');
-    }
+    throw new Error(body.error || ('提交失败 (HTTP ' + res.status + ')'));
   }
 
   // ======== 渲染评论列表 ========
