@@ -46,7 +46,7 @@
       color: var(--paper);
       font-family: var(--sans);
       line-height: 1.7;
-      overflow-x: hidden;
+      overflow-x: clip;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -404,26 +404,6 @@
       cursor: default;
     }
 
-    .recall-btn {
-      margin-top: 12px;
-      appearance: none;
-      background: none;
-      border: 0;
-      color: rgba(247, 240, 223, .5);
-      font: inherit;
-      font-size: .74rem;
-      letter-spacing: .08em;
-      padding: 6px;
-      cursor: pointer;
-      text-decoration: underline;
-      text-underline-offset: 4px;
-      text-decoration-color: rgba(247, 240, 223, .25);
-    }
-
-    .recall-btn:hover {
-      color: var(--paper);
-    }
-
     /* ── 空签 ───────────────────────────── */
     .empty-note {
       width: 100%;
@@ -451,6 +431,7 @@
       width: 100%;
       margin-top: 40px;
       perspective: 1200px;
+      scroll-margin-top: 16px;
     }
 
     .ticket {
@@ -534,7 +515,7 @@
     }
 
     .ticket-body {
-      padding: 4px 24px 26px;
+      padding: 4px 24px 104px;
     }
 
     .ticket-head {
@@ -702,8 +683,8 @@
 
     .stamp {
       position: absolute;
-      right: 18px;
-      bottom: 46px;
+      right: 22px;
+      bottom: 12px;
       width: 62px;
       height: 76px;
       display: grid;
@@ -742,7 +723,7 @@
       }
 
       100% {
-        opacity: .84;
+        opacity: .92;
         transform: rotate(-9deg) scale(1);
       }
     }
@@ -1052,7 +1033,6 @@
 
       <p class="hint" id="hint">摇一摇，或者点一下签筒</p>
       <button class="draw-btn" id="drawBtn" type="button">摇 一 签</button>
-      <button class="recall-btn" id="recallBtn" type="button" hidden>今天已经得了一签，看看</button>
     </section>
 
     <section class="empty-note" id="emptyNote">
@@ -2327,7 +2307,7 @@
     const $ = id => document.getElementById(id);
     const el = {
       sticks: $('sticks'), tube: $('tube'), hint: $('hint'), drawBtn: $('drawBtn'),
-      recall: $('recallBtn'), empty: $('emptyNote'), stage: $('ticketStage'),
+      empty: $('emptyNote'), stage: $('ticketStage'),
       ticket: $('ticket'), no: $('ticketNo'), icon: $('dishIcon'), name: $('dishName'),
       cat: $('dishCat'), period: $('dishPeriod'), moodLine: $('moodLine'),
       timeTitle: $('timeTitle'), timeJudge: $('timeJudge'), verdict: $('verdict'),
@@ -2581,7 +2561,6 @@
       state.busy = true;
       state.reviewing = isReview;
       el.drawBtn.disabled = true;
-      el.recall.hidden = true;
       el.hint.style.opacity = '.35';
       el.empty.hidden = true;
 
@@ -2628,10 +2607,12 @@
       el.hint.style.opacity = '';
       el.hint.textContent = isReview ? '这是今天的那一签' : '签已出，趁热看';
       el.drawBtn.disabled = false;
+      el.drawBtn.hidden = true;
       state.busy = false;
       state.reviewing = false;
 
-      el.stage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // 签纸很长，抽出后直接把视口带到签纸顶部；瞬时滚动比平滑更不容易被忽略
+      requestAnimationFrame(() => el.stage.scrollIntoView({ block: 'start' }));
     }
 
     // ═══════════════════════════════════════════
@@ -2663,30 +2644,18 @@
       });
     }
 
+    function startDraw() {
+      if (!el.stage.hidden) return;
+      unlockAudio();
+      requestMotionPermission().then(() => {
+        const hasDaily = state.daily && state.daily.date === dateKey();
+        draw(hasDaily ? { review: true } : {});
+      });
+    }
+
     function bind() {
-      el.tube.addEventListener('click', () => {
-        unlockAudio();
-        requestMotionPermission().then(() => {
-          if (state.daily && state.daily.date === dateKey() && !state.reviewing) {
-            draw({ review: true });
-          } else {
-            draw();
-          }
-        });
-      });
-
-      el.drawBtn.addEventListener('click', () => {
-        unlockAudio();
-        requestMotionPermission().then(() => {
-          if (state.daily && state.daily.date === dateKey() && !state.reviewing) {
-            draw({ review: true });
-          } else {
-            draw();
-          }
-        });
-      });
-
-      el.recall.addEventListener('click', () => draw({ review: true }));
+      el.tube.addEventListener('click', startDraw);
+      el.drawBtn.addEventListener('click', startDraw);
 
       el.again.addEventListener('click', () => {
         if (state.busy) return;
@@ -2703,11 +2672,10 @@
       el.accept.addEventListener('click', () => {
         if (!state.current || state.current.accepted) return;
         state.current.accepted = true;
-        if (state.daily && state.daily.date === dateKey() && state.daily.id === state.current.id) {
-          state.daily.accepted = true;
-        }
-        const last = state.history[0];
-        if (last && last.id === state.current.id && !last.accepted) last.accepted = true;
+        // 最终吃的那一份就是今天的签，换过签也以采纳的为准
+        state.daily = { date: dateKey(), id: state.current.id, accepted: true };
+        const item = state.history.find(h => h.id === state.current.id && !h.accepted);
+        if (item) item.accepted = true;
         el.stamp.textContent = '已领';
         el.stamp.classList.add('accepted');
         el.accept.disabled = true;
@@ -2774,12 +2742,42 @@
     }
 
     function saveAsImage(food) {
-      const W = 1080, H = 1640;
+      const W = 1080;
+      const period = periodNow();
+      const picks = dosDonts(food);
+      const bodyFont = '30px "PingFang SC","Microsoft YaHei",sans-serif';
+      const lineH = 50;
+
+      // 先量一遍文字行数，决定签纸图的高度
+      const measure = document.createElement('canvas').getContext('2d');
+      const countLines = (text, font, maxWidth) => {
+        measure.font = font;
+        let lines = 1;
+        let line = '';
+        for (const ch of String(text)) {
+          if (measure.measureText(line + ch).width > maxWidth && line) {
+            lines++;
+            line = ch;
+          } else {
+            line += ch;
+          }
+        }
+        return lines;
+      };
+
+      const timeLines = countLines(food.time_judgement[period], bodyFont, W - 180);
+      const verdictLines = countLines(food.diagnosis, bodyFont, W - 180);
+
+      // 与下方绘制相同的纵向排布
+      const y1 = 570 + 48 + (timeLines - 1) * lineH;
+      const y2 = y1 + 56 + 48 + (verdictLines - 1) * lineH;
+      const contentBottom = y2 + 56 + 110;
+      const H = Math.max(1420, Math.min(2100, contentBottom + 330));
+
       const canvas = document.createElement('canvas');
       canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext('2d');
-      const period = periodNow();
 
       // 纸底
       ctx.fillStyle = '#f7f0df';
@@ -2858,8 +2856,8 @@
       y += 48;
 
       ctx.fillStyle = '#4a4337';
-      ctx.font = '30px "PingFang SC","Microsoft YaHei",sans-serif';
-      y = wrapText(ctx, food.time_judgement[period], 90, y, W - 180, 50);
+      ctx.font = bodyFont;
+      y = wrapText(ctx, food.time_judgement[period], 90, y, W - 180, lineH);
       y += 56;
 
       // 断语
@@ -2869,12 +2867,11 @@
       y += 48;
 
       ctx.fillStyle = '#4a4337';
-      ctx.font = '30px "PingFang SC","Microsoft YaHei",sans-serif';
-      y = wrapText(ctx, food.diagnosis, 90, y, W - 180, 50);
+      ctx.font = bodyFont;
+      y = wrapText(ctx, food.diagnosis, 90, y, W - 180, lineH);
       y += 56;
 
       // 宜忌
-      const picks = dosDonts(food);
       ctx.strokeStyle = 'rgba(28,25,20,.16)';
       ctx.beginPath();
       ctx.moveTo(90, y - 16);
@@ -2964,13 +2961,10 @@
       el.soundBtn.setAttribute('aria-pressed', String(state.sound));
 
       if (state.daily && state.daily.date === dateKey()) {
-        el.recall.hidden = false;
         const food = byId(state.daily.id);
+        el.drawBtn.textContent = state.daily.accepted ? '看 今 天 的 签' : '看 今 日 签';
         if (food) el.hint.textContent = '今天神已经给过你答案了';
-      }
-
-      if (state.daily && state.daily.accepted) {
-        el.recall.textContent = '今天的签已经领了，再看看';
+        el.empty.innerHTML = '<span class="big">今天的签已经出了</span>点上面，看看神怎么说。';
       }
 
       bind();
