@@ -157,6 +157,41 @@
       transform: rotate(1.2deg);
     }
 
+    /* ── 模式切换 ───────────────────────── */
+    .mode-switch {
+      display: flex;
+      margin-top: 4px;
+      border: 3px solid var(--black);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .mode-btn {
+      appearance: none;
+      background: var(--cream);
+      color: var(--black);
+      border: 0;
+      font-family: var(--sans);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      padding: 7px 18px;
+      cursor: pointer;
+    }
+
+    .mode-btn + .mode-btn {
+      border-left: 3px solid var(--black);
+    }
+
+    .mode-btn.on {
+      background: var(--black);
+      color: var(--cream);
+    }
+
+    .mode-btn:focus-visible {
+      outline: 3px solid var(--black);
+      outline-offset: 2px;
+    }
+
     /* ── 签筒 ───────────────────────────── */
     .oracle {
       display: flex;
@@ -347,6 +382,15 @@
       flex-wrap: wrap;
       gap: 7px;
       justify-content: center;
+    }
+
+    .diet-chips {
+      margin-top: 7px;
+    }
+
+    .diet-chips .chip.on {
+      background: var(--black);
+      color: var(--cream);
     }
 
     .chip {
@@ -715,6 +759,166 @@
       color: var(--black);
     }
 
+    /* ── 打卡评价 ───────────────────────── */
+    .rating-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 9px 10px;
+      background: var(--cream);
+      border: 3px solid var(--black);
+      box-shadow: 4px 4px 0 var(--black);
+    }
+
+    .rating-title {
+      font-size: .66rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .rating-options {
+      display: flex;
+      gap: 6px;
+    }
+
+    .rate-btn {
+      appearance: none;
+      background: var(--yellow);
+      color: var(--black);
+      border: 2px solid var(--black);
+      font-family: var(--sans);
+      font-size: .64rem;
+      font-weight: 900;
+      padding: 4px 9px;
+      cursor: pointer;
+    }
+
+    .rate-btn:active {
+      translate: 1px 1px;
+    }
+
+    .rate-btn[data-r="good"] { background: var(--mint); }
+    .rate-btn[data-r="bad"] { background: var(--pink); }
+
+    .rate-btn:focus-visible {
+      outline: 3px solid var(--black);
+      outline-offset: 2px;
+    }
+
+    .rating-done {
+      font-size: .66rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+
+    /* ── 两个人的签 ─────────────────────── */
+    .duo-stage {
+      width: 100%;
+      margin-top: 34px;
+      scroll-margin-top: 16px;
+    }
+
+    .duo-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .duo-title {
+      font-family: var(--display);
+      font-size: .86rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+
+    .duo-hint {
+      font-size: .6rem;
+      font-weight: 700;
+      color: rgba(17, 17, 17, .55);
+    }
+
+    .duo-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .duo-card {
+      appearance: none;
+      background: var(--cream);
+      color: var(--black);
+      border: 4px solid var(--black);
+      box-shadow: 6px 6px 0 var(--black);
+      padding: 12px 11px 14px;
+      text-align: left;
+      font-family: var(--sans);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: background .15s, transform .08s, box-shadow .08s;
+    }
+
+    .duo-card:active {
+      transform: translate(3px, 3px);
+      box-shadow: 3px 3px 0 var(--black);
+    }
+
+    .duo-card.on {
+      background: var(--yellow);
+      box-shadow: 8px 8px 0 var(--black);
+    }
+
+    .duo-card.done {
+      opacity: .75;
+    }
+
+    .duo-owner {
+      font-size: .58rem;
+      font-weight: 900;
+      letter-spacing: .18em;
+      color: var(--red);
+    }
+
+    .duo-icon {
+      font-size: 2.1rem;
+      line-height: 1;
+    }
+
+    .duo-name {
+      font-family: var(--display);
+      font-size: 1.32rem;
+      font-weight: 900;
+      letter-spacing: -.01em;
+      line-height: 1.15;
+    }
+
+    .duo-no {
+      font-size: .54rem;
+      font-weight: 900;
+      color: rgba(17, 17, 17, .55);
+      letter-spacing: .06em;
+    }
+
+    .duo-judge {
+      font-size: .66rem;
+      line-height: 1.6;
+      color: rgba(17, 17, 17, .7);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .duo-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
     /* ── 页脚 ───────────────────────────── */
     .dock {
       width: 100%;
@@ -857,6 +1061,41 @@
       background: var(--mint);
     }
 
+    .log-rate {
+      appearance: none;
+      background: var(--yellow);
+      color: var(--black);
+      border: 2px solid var(--black);
+      font-family: var(--sans);
+      font-size: .56rem;
+      font-weight: 900;
+      padding: 1px 5px;
+      cursor: pointer;
+    }
+
+    .inline-rate {
+      margin-left: auto;
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .inline-rate button {
+      appearance: none;
+      background: var(--cream);
+      color: var(--black);
+      border: 2px solid var(--black);
+      font-family: var(--sans);
+      font-size: .56rem;
+      font-weight: 900;
+      padding: 1px 5px;
+      cursor: pointer;
+    }
+
+    .inline-rate button[data-r="good"] { background: var(--mint); }
+    .inline-rate button[data-r="bad"] { background: var(--pink); }
+
     .log-time {
       margin-left: auto;
       font-size: .58rem;
@@ -871,6 +1110,68 @@
       font-size: .78rem;
       font-weight: 700;
       color: rgba(17, 17, 17, .55);
+    }
+
+    /* ── 口味档案 ───────────────────────── */
+    .profile-body {
+      padding: 12px 0 4px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .profile-stat {
+      border: 3px solid var(--black);
+      padding: 8px 10px;
+      background: var(--cream);
+    }
+
+    .profile-stat b {
+      display: block;
+      font-family: var(--display);
+      font-size: 1.55rem;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .profile-stat span {
+      font-size: .6rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      color: rgba(17, 17, 17, .6);
+    }
+
+    .profile-line {
+      margin-top: 10px;
+      padding: 7px 9px;
+      border: 3px solid var(--black);
+      background: var(--yellow);
+      font-size: .72rem;
+      font-weight: 700;
+      line-height: 1.65;
+    }
+
+    .profile-empty {
+      padding: 22px 4px;
+      text-align: center;
+      font-size: .78rem;
+      font-weight: 700;
+      line-height: 1.9;
+      color: rgba(17, 17, 17, .6);
+    }
+
+    .profile-weekly {
+      width: 100%;
+      margin-top: 14px;
+      padding: 12px 0;
+    }
+
+    .profile-weekly:disabled {
+      opacity: .55;
+      cursor: default;
     }
 
     /* ── Toast ──────────────────────────── */
@@ -1022,6 +1323,11 @@
       <p class="sub">后厨出的单子，比你自己拿主意准</p>
     </header>
 
+    <div class="mode-switch" role="group" aria-label="几个人吃">
+      <button class="mode-btn on" type="button" data-mode="solo">一个人</button>
+      <button class="mode-btn" type="button" data-mode="duo">两个人</button>
+    </div>
+
     <section class="oracle" aria-label="求签">
       <div class="tube-wrap">
         <button class="tube hint-pulse" id="tube" type="button" aria-label="摇一签">
@@ -1040,6 +1346,7 @@
           <span class="filters-count" id="filterCount">全部 100 道</span>
         </div>
         <div class="chips" id="chips" role="group" aria-label="按分类筛选"></div>
+        <div class="chips diet-chips" id="dietChips" role="group" aria-label="忌口与预算"></div>
       </div>
 
       <button class="draw-btn" id="drawBtn" type="button">摇 一 签</button>
@@ -1106,10 +1413,33 @@
         <button class="btn primary" id="acceptBtn" type="button">就吃这个</button>
         <button class="btn ghost" id="againBtn" type="button">换一签</button>
       </div>
+
+      <div class="rating-bar" id="ratingBar" hidden>
+        <span class="rating-title">吃完了？</span>
+        <div class="rating-options" id="ratingOptions">
+          <button class="rate-btn" type="button" data-r="good">好吃</button>
+          <button class="rate-btn" type="button" data-r="meh">一般</button>
+          <button class="rate-btn" type="button" data-r="bad">踩雷</button>
+        </div>
+        <span class="rating-done" id="ratingDone" hidden></span>
+      </div>
+    </section>
+
+    <section class="duo-stage" id="duoStage" hidden>
+      <div class="duo-head">
+        <span class="duo-title">两个人的签</span>
+        <span class="duo-hint">点一张选它</span>
+      </div>
+      <div class="duo-cards" id="duoCards"></div>
+      <div class="duo-actions">
+        <button class="btn primary" id="duoAccept" type="button">就这个</button>
+        <button class="btn ghost" id="duoAgain" type="button">再来一轮</button>
+      </div>
     </section>
 
     <footer class="dock">
       <button id="historyBtn" type="button">求签簿 <span class="count" id="historyCount">0</span></button>
+      <button id="profileBtn" type="button">我的口味</button>
       <button id="saveBtn" type="button">存为图片</button>
     </footer>
   </main>
@@ -1121,6 +1451,17 @@
         <button class="drawer-close" id="drawerClose" type="button" aria-label="关闭">✕</button>
       </div>
       <ul class="log-list" id="logList"></ul>
+    </div>
+  </div>
+
+  <div class="drawer" id="profileDrawer" role="dialog" aria-modal="true" aria-label="我的口味">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h2>我的口味</h2>
+        <button class="drawer-close" id="profileClose" type="button" aria-label="关闭">✕</button>
+      </div>
+      <div class="profile-body" id="profileBody"></div>
+      <button class="btn primary profile-weekly" id="weeklyBtn" type="button">生成本周小结图</button>
     </div>
   </div>
 
@@ -2400,7 +2741,7 @@
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
         if (saved.daily) state.daily = saved.daily;
-        if (Array.isArray(saved.history)) state.history = saved.history.slice(0, 20);
+        if (Array.isArray(saved.history)) state.history = saved.history.slice(0, 100);
         if (typeof saved.rejects === 'number') state.rejects = saved.rejects;
         if (typeof saved.sound === 'boolean') state.sound = saved.sound;
       } catch (e) { /* 存储损坏时从空白开始 */ }
@@ -2537,7 +2878,7 @@
         id: food.id, name: food.name, icon: food.icon,
         ts: Date.now(), accepted: false
       });
-      state.history = state.history.slice(0, 20);
+      state.history = state.history.slice(0, 100);
       renderHistoryCount();
       saveState();
     }
@@ -2988,19 +3329,159 @@
       }
     }
 
-    init();
+// 100 道菜的标签：[辣度, 素食, 价位]
+// 辣度 0 不辣 / 1 可选辣或微辣 / 2 辣
+// 素食 1 蛋奶素 / 0 含肉或海鲜
+// 价位 1 省着点(<20) / 2 正常(20-50) / 3 吃好点(50+)
+const FOOD_TAGS = {
+  doujiang_youtiao: [0, 1, 1],
+  jianbingguozi: [0, 1, 1],
+  xiaolongbao: [0, 0, 2],
+  shengjianbao: [0, 0, 2],
+  roubaozi: [0, 0, 1],
+  doufunao: [0, 1, 1],
+  huntun: [0, 0, 1],
+  changfen: [0, 1, 2],
+  jidan_guanbing: [0, 1, 1],
+  cifantuan: [0, 0, 1],
+  shaobing: [0, 1, 1],
+  congyoubing: [0, 1, 1],
+  chaye_dan: [0, 1, 1],
+  xiaomizhou: [0, 1, 1],
+  sanmingzhi: [0, 0, 2],
+  niunai_maipian: [0, 1, 1],
+  shuizhu_dan: [0, 1, 1],
+  mantou: [0, 1, 1],
+
+  lanzhou_lamian: [0, 0, 2],
+  chongqing_xiaomian: [2, 0, 1],
+  zhajiangmian: [0, 0, 2],
+  reganmian: [0, 1, 1],
+  daoxiaomian: [0, 0, 2],
+  dandanmian: [1, 0, 2],
+  yangchunmian: [0, 1, 1],
+  youpo_mian: [1, 1, 2],
+  congyou_banmian: [0, 1, 1],
+  niurou_mian: [0, 0, 2],
+  liangpi: [1, 1, 1],
+  chaofen: [0, 0, 2],
+  mifen: [0, 0, 2],
+  suanlafen: [2, 0, 1],
+  tongxu_mian: [0, 1, 2],
+  guoqiao_mixian: [0, 0, 3],
+  banchuan: [1, 0, 2],
+  lengmian: [1, 0, 2],
+
+  huangmenji: [0, 0, 2],
+  baozai_fan: [0, 0, 2],
+  danchaofan: [0, 1, 1],
+  lurou_fan: [0, 0, 2],
+  galifan: [1, 0, 2],
+  yangzhou_chaofan: [0, 0, 2],
+  manyu_fan: [0, 0, 3],
+  jipai_fan: [0, 0, 2],
+  pai_gu_fan: [0, 0, 2],
+  suan_cai_yu: [1, 0, 3],
+  hongshao_rou: [0, 0, 2],
+  gongbao_jiding: [1, 0, 2],
+  mabo_doufu: [2, 0, 1],
+  fanqie_chao_dan: [0, 1, 1],
+  yuxiang_rousi: [1, 0, 2],
+
+  huoguo: [1, 0, 3],
+  kaorou: [0, 0, 3],
+  shaokao: [1, 0, 3],
+  malatang: [1, 0, 2],
+  chuanchuan_xiang: [2, 0, 3],
+  mala_xiangguo: [2, 0, 3],
+  shuizhu_yu: [2, 0, 3],
+  kaoya: [0, 0, 3],
+  tangcu_liji: [0, 0, 3],
+  dongpo_rou: [0, 0, 3],
+  duojiao_yutou: [2, 0, 3],
+  xiaolongxia: [1, 0, 3],
+  dazhaxie: [0, 0, 3],
+  yangshai_zi: [0, 0, 3],
+  sheng_jian_niurou: [0, 0, 3],
+  tieban_niuwa: [1, 0, 3],
+
+  hanbao: [0, 0, 1],
+  shutiao: [0, 1, 1],
+  pizza: [0, 0, 2],
+  zhaji: [0, 0, 2],
+  luosifen: [2, 0, 1],
+  choudoufu: [1, 1, 1],
+  roujiamo: [0, 0, 1],
+  jiaozi: [0, 0, 1],
+  guotie: [0, 0, 1],
+  kao_hongshu: [0, 1, 1],
+  kao_lengmian: [1, 0, 1],
+  shouzhua_bing: [0, 1, 1],
+  zhangyu_xiaowanzi: [0, 0, 2],
+  zhachuan: [1, 0, 1],
+
+  shala: [0, 1, 2],
+  suan_nai_wan: [0, 1, 2],
+  bowl_guwu: [0, 1, 2],
+  juanshi_lingshi: [0, 0, 2],
+  boqi_fan: [0, 0, 3],
+  sushi_sushi: [0, 0, 3],
+
+  naicha: [0, 1, 1],
+  kafei: [0, 1, 1],
+  guozhi: [0, 1, 1],
+  bingqilin: [0, 1, 1],
+  dangao: [0, 1, 2],
+  buding: [0, 1, 1],
+  shuangpi_nai: [0, 1, 2],
+  yangzhi_ganlu: [0, 1, 2],
+  douhua_tian: [0, 1, 1],
+  bingfen: [0, 1, 1],
+  shaoxiancao: [0, 1, 1],
+  naicha_baobing: [0, 1, 1],
+  bingtiang_ningmeng: [0, 1, 1]
+};
+
 
     // ═══════════════════════════════════════════
-    //  分类筛选：先圈范围，再让食神在范围里抽
+    //  筛选：先圈范围，再让食神在范围里抽
     // ═══════════════════════════════════════════
     const CATEGORIES = ['早餐经典', '面食江湖', '米饭正餐', '硬菜盛宴', '快餐小吃', '沙拉轻食', '甜品饮品'];
+    const DIETS = [
+      { key: 'noSpicy', label: '不吃辣' },
+      { key: 'veg', label: '只吃素' },
+      { key: 'cheap', label: '省着点' }
+    ];
+
+    // 把标签合并进食物数据，缺省的按「可辣、含肉、正常价」处理
+    FOOD_DATABASE.forEach(f => {
+      const t = FOOD_TAGS[f.id] || [1, 0, 2];
+      f.spicy = t[0];
+      f.veg = t[1];
+      f.price = t[2];
+    });
 
     el.chips = document.getElementById('chips');
+    el.dietChips = document.getElementById('dietChips');
     el.filterCount = document.getElementById('filterCount');
 
+    function defaultFilters() {
+      return { cats: [], noSpicy: false, veg: false, cheap: false };
+    }
+
     function poolOf(filters) {
-      if (!Array.isArray(filters) || !filters.length) return FOOD_DATABASE;
-      return FOOD_DATABASE.filter(f => filters.includes(f.category));
+      const f = filters || defaultFilters();
+      const cats = Array.isArray(f.cats) ? f.cats : [];
+
+      let pool = cats.length
+        ? FOOD_DATABASE.filter(x => cats.includes(x.category))
+        : FOOD_DATABASE.slice();
+
+      if (f.noSpicy) pool = pool.filter(x => x.spicy === 0);
+      if (f.veg) pool = pool.filter(x => x.veg === 1);
+      if (f.cheap) pool = pool.filter(x => x.price === 1);
+
+      return pool;
     }
 
     // 覆盖原版：抽签只从当前筛选池里取
@@ -3025,21 +3506,36 @@
     }
 
     function loadFilters() {
+      const d = defaultFilters();
       try {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-        return Array.isArray(saved.filters)
-          ? saved.filters.filter(c => CATEGORIES.includes(c))
-          : [];
-      } catch (e) {
-        return [];
-      }
+        if (Array.isArray(saved.filters)) {
+          // 旧版只存了分类数组
+          d.cats = saved.filters.filter(c => CATEGORIES.includes(c));
+        } else if (saved.filters && typeof saved.filters === 'object') {
+          d.cats = Array.isArray(saved.filters.cats)
+            ? saved.filters.cats.filter(c => CATEGORIES.includes(c))
+            : [];
+          d.noSpicy = !!saved.filters.noSpicy;
+          d.veg = !!saved.filters.veg;
+          d.cheap = !!saved.filters.cheap;
+        }
+      } catch (e) { /* 存储损坏时回到默认 */ }
+      return d;
+    }
+
+    function activeFilterCount() {
+      const f = state.filters;
+      return (Array.isArray(f.cats) ? f.cats.length : 0) +
+        (f.noSpicy ? 1 : 0) + (f.veg ? 1 : 0) + (f.cheap ? 1 : 0);
     }
 
     function buildFilterChips() {
-      if (!el.chips) return;
+      if (!el.chips || !el.dietChips) return;
       el.chips.innerHTML = '';
+      el.dietChips.innerHTML = '';
 
-      const make = (label, cat) => {
+      const makeCat = (label, cat) => {
         const b = document.createElement('button');
         b.type = 'button';
         b.className = 'chip';
@@ -3047,11 +3543,11 @@
         b.textContent = label;
         b.addEventListener('click', () => {
           if (!cat) {
-            state.filters = [];
+            state.filters.cats = [];
           } else {
-            const i = state.filters.indexOf(cat);
-            if (i >= 0) state.filters.splice(i, 1);
-            else state.filters.push(cat);
+            const i = state.filters.cats.indexOf(cat);
+            if (i >= 0) state.filters.cats.splice(i, 1);
+            else state.filters.cats.push(cat);
           }
           saveState();
           syncFilters();
@@ -3059,31 +3555,56 @@
         return b;
       };
 
-      el.chips.appendChild(make('不限', ''));
-      CATEGORIES.forEach(c => el.chips.appendChild(make(c, c)));
+      el.chips.appendChild(makeCat('不限', ''));
+      CATEGORIES.forEach(c => el.chips.appendChild(makeCat(c, c)));
+
+      DIETS.forEach(diet => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'chip';
+        b.dataset.diet = diet.key;
+        b.textContent = diet.label;
+        b.addEventListener('click', () => {
+          state.filters[diet.key] = !state.filters[diet.key];
+          saveState();
+          syncFilters();
+        });
+        el.dietChips.appendChild(b);
+      });
     }
 
     function syncFilters() {
-      if (!el.chips) return;
+      if (!el.chips || !el.dietChips) return;
 
       el.chips.querySelectorAll('.chip').forEach(b => {
         const cat = b.dataset.cat;
-        const on = cat ? state.filters.includes(cat) : state.filters.length === 0;
+        const on = cat ? state.filters.cats.includes(cat) : state.filters.cats.length === 0;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+
+      el.dietChips.querySelectorAll('.chip').forEach(b => {
+        const on = !!state.filters[b.dataset.diet];
         b.classList.toggle('on', on);
         b.setAttribute('aria-pressed', String(on));
       });
 
       const n = poolOf(state.filters).length;
+      const parts = [];
+      if (state.filters.cats.length) parts.push(state.filters.cats.length + ' 类');
+      const dietN = (state.filters.noSpicy ? 1 : 0) + (state.filters.veg ? 1 : 0) + (state.filters.cheap ? 1 : 0);
+      if (dietN) parts.push(dietN + ' 个忌口');
+
       if (el.filterCount) {
-        el.filterCount.textContent = state.filters.length
-          ? state.filters.length + ' 类 · ' + n + ' 道'
+        el.filterCount.textContent = parts.length
+          ? parts.join(' + ') + ' · ' + n + ' 道'
           : '全部 ' + n + ' 道';
       }
 
       if (el.empty && !el.empty.hidden) {
         const big = el.empty.querySelector('.big');
         if (big) {
-          big.textContent = state.filters.length ? '筛完还剩 ' + n + ' 道' : '签筒里备着一百道菜';
+          big.textContent = parts.length ? '筛完还剩 ' + n + ' 道' : '签筒里备着一百道菜';
         }
       }
     }
@@ -3093,6 +3614,572 @@
     syncFilters();
 
 
+    // ═══════════════════════════════════════════
+    //  打卡评价：吃了就记一笔
+    // ═══════════════════════════════════════════
+    const RATING_LABEL = { good: '好吃', meh: '一般', bad: '踩雷' };
+    const RATING_TOAST = {
+      good: '记住了，这道菜进你的常点清单。',
+      meh: '一般。神下次少推它。',
+      bad: '踩雷了。神记仇，下次绕开。'
+    };
+
+    el.ratingBar = document.getElementById('ratingBar');
+    el.ratingOptions = document.getElementById('ratingOptions');
+    el.ratingDone = document.getElementById('ratingDone');
+
+    function findRatingItem() {
+      if (!state.current) return null;
+      const same = state.history.filter(h => h.id === state.current.id && h.accepted);
+      return same.find(h => !h.rating) || same[0] || null;
+    }
+
+    function renderRatingBar() {
+      if (!el.ratingBar) return;
+      if (!state.current || !state.current.accepted) {
+        el.ratingBar.hidden = true;
+        return;
+      }
+      el.ratingBar.hidden = false;
+      const item = findRatingItem();
+      if (item && item.rating) {
+        if (el.ratingOptions) el.ratingOptions.hidden = true;
+        if (el.ratingDone) {
+          el.ratingDone.hidden = false;
+          el.ratingDone.textContent = '记下了：' + RATING_LABEL[item.rating];
+        }
+      } else {
+        if (el.ratingOptions) el.ratingOptions.hidden = false;
+        if (el.ratingDone) el.ratingDone.hidden = true;
+      }
+    }
+
+    function rateCurrent(rating) {
+      const item = findRatingItem();
+      if (!item) {
+        // 极端情况下历史里没有这条，补一条
+        state.history.unshift({
+          id: state.current.id,
+          name: state.current.name,
+          icon: state.current.icon,
+          ts: Date.now(),
+          accepted: true,
+          rating: rating
+        });
+      } else {
+        item.rating = rating;
+      }
+      saveState();
+      renderRatingBar();
+      renderLog();
+      showToast(RATING_TOAST[rating]);
+    }
+
+    if (el.ratingOptions) {
+      el.ratingOptions.querySelectorAll('.rate-btn').forEach(b => {
+        b.addEventListener('click', () => rateCurrent(b.dataset.r));
+      });
+    }
+
+    // 采纳后（印章 class 变化）同步评价条
+    if (el.stamp) {
+      new MutationObserver(() => renderRatingBar())
+        .observe(el.stamp, { attributes: true, attributeFilter: ['class'] });
+    }
+    el.accept.addEventListener('click', () => setTimeout(renderRatingBar, 0));
+
+    // 覆盖原版：求签簿里显示评价，并支持补评
+    function renderLog() {
+      if (!el.logList) return;
+      if (!state.history.length) {
+        el.logList.innerHTML = '<li class="log-empty">还没有求过签。</li>';
+        return;
+      }
+      const p = n => String(n).padStart(2, '0');
+      el.logList.innerHTML = state.history.map((item, i) => {
+        const t = new Date(item.ts);
+        const time = `${p(t.getMonth() + 1)}-${p(t.getDate())} ${p(t.getHours())}:${p(t.getMinutes())}`;
+        const rating = item.rating ? RATING_LABEL[item.rating] : '';
+        const tag = item.accepted ? (rating || '吃了') : '没吃';
+        const canRate = item.accepted && !item.rating;
+        return `<li class="log-item">
+          <span class="log-icon">${item.icon}</span>
+          <span class="log-name">${item.name}</span>
+          <span class="log-tag ${item.accepted ? 'accepted' : ''}">${tag}</span>
+          ${canRate ? `<button class="log-rate" type="button" data-i="${i}">评一下</button>` : ''}
+          <span class="log-time">${time}</span>
+        </li>`;
+      }).join('');
+
+      el.logList.querySelectorAll('.log-rate').forEach(b => {
+        b.addEventListener('click', () => openRateSheet(Number(b.dataset.i)));
+      });
+    }
+
+    function openRateSheet(i) {
+      const item = state.history[i];
+      const li = el.logList.querySelectorAll('.log-item')[i];
+      if (!item || !li) return;
+      li.innerHTML = `<span class="log-icon">${item.icon}</span>
+        <span class="log-name">${item.name}</span>
+        <span class="inline-rate">
+          <button type="button" data-r="good">好吃</button>
+          <button type="button" data-r="meh">一般</button>
+          <button type="button" data-r="bad">踩雷</button>
+        </span>`;
+      li.querySelectorAll('.inline-rate button').forEach(b => {
+        b.addEventListener('click', () => {
+          item.rating = b.dataset.r;
+          saveState();
+          renderLog();
+          showToast(RATING_TOAST[b.dataset.r]);
+        });
+      });
+    }
+
+    renderRatingBar();
+    renderLog();
+
+
+    // ═══════════════════════════════════════════
+    //  口味档案 + 本周小结
+    // ═══════════════════════════════════════════
+    const STREAK_KEY = 'food_oracle_streak';
+
+    el.profileBtn = document.getElementById('profileBtn');
+    el.profileDrawer = document.getElementById('profileDrawer');
+    el.profileClose = document.getElementById('profileClose');
+    el.profileBody = document.getElementById('profileBody');
+    el.weeklyBtn = document.getElementById('weeklyBtn');
+
+    function touchStreak() {
+      const today = dateKey();
+      let s = { last: null, days: 0 };
+      try {
+        s = JSON.parse(localStorage.getItem(STREAK_KEY) || 'null') || s;
+      } catch (e) { }
+
+      if (s.last === today) {
+        state.streak = s.days || 1;
+        return;
+      }
+
+      const yesterday = dateKey(new Date(Date.now() - 86400000));
+      s.days = s.last === yesterday ? (s.days || 0) + 1 : 1;
+      s.last = today;
+      try { localStorage.setItem(STREAK_KEY, JSON.stringify(s)); } catch (e) { }
+      state.streak = s.days;
+    }
+
+    function tallyCats(list) {
+      const cats = {};
+      list.forEach(x => {
+        const food = byId(x.id);
+        if (food) cats[food.category] = (cats[food.category] || 0) + 1;
+      });
+      return Object.entries(cats).sort((a, b) => b[1] - a[1]);
+    }
+
+    function profileStats() {
+      const h = state.history;
+      const accepted = h.filter(x => x.accepted);
+      const rated = accepted.filter(x => x.rating);
+      const good = rated.filter(x => x.rating === 'good').length;
+      const bad = rated.filter(x => x.rating === 'bad').length;
+      return {
+        draws: h.length,
+        accepted: accepted.length,
+        rated: rated.length,
+        good: good,
+        bad: bad,
+        goodRate: rated.length ? Math.round(good / rated.length * 100) : null,
+        topCats: tallyCats(accepted).slice(0, 2),
+        unique: new Set(accepted.map(x => x.id)).size,
+        streak: state.streak || 0
+      };
+    }
+
+    function weeklyStats() {
+      const cut = Date.now() - 7 * 86400000;
+      const recent = state.history.filter(h => h.ts >= cut);
+      const accepted = recent.filter(x => x.accepted);
+      const rated = accepted.filter(x => x.rating);
+      const good = rated.filter(x => x.rating === 'good').length;
+      const bad = rated.filter(x => x.rating === 'bad').length;
+      return {
+        draws: recent.length,
+        accepted: accepted.length,
+        rated: rated.length,
+        good: good,
+        bad: bad,
+        goodRate: rated.length ? Math.round(good / rated.length * 100) : null,
+        topCats: tallyCats(accepted).slice(0, 3)
+      };
+    }
+
+    function weeklyLine(s) {
+      if (!s.rated) return '这周还没给过评价，神不知道你满不满意。';
+      if (s.bad >= 2) return '踩了 ' + s.bad + ' 次雷，你的嘴比胃挑。';
+      if (s.goodRate >= 80) return '这周吃得挺满意，神的推荐没白给。';
+      if (s.topCats.length) return '这周你主要吃' + s.topCats[0][0] + '，换来换去还是那几样。';
+      return '吃得不多，但都在点上。';
+    }
+
+    function renderProfile() {
+      if (!el.profileBody) return;
+      const s = profileStats();
+
+      if (!s.draws) {
+        el.profileBody.innerHTML = '<div class="profile-empty">还没求过签。<br>先摇两次，再来看看你的口味。</div>';
+        if (el.weeklyBtn) el.weeklyBtn.disabled = true;
+        return;
+      }
+
+      const rateText = s.goodRate === null ? '—' : s.goodRate + '%';
+      const topLine = s.topCats.length
+        ? '最常吃：' + s.topCats.map(c => c[0] + ' ' + c[1] + ' 次').join(' · ')
+        : '还没正经吃过几顿。';
+
+      el.profileBody.innerHTML = `
+        <div class="profile-grid">
+          <div class="profile-stat"><b>${s.draws}</b><span>次求签</span></div>
+          <div class="profile-stat"><b>${s.accepted}</b><span>顿吃了</span></div>
+          <div class="profile-stat"><b>${rateText}</b><span>好评率</span></div>
+          <div class="profile-stat"><b>${s.streak}</b><span>连续天数</span></div>
+        </div>
+        <div class="profile-line">${topLine}</div>
+        <div class="profile-line">吃过 ${s.unique} 种不同的菜${s.bad ? '，踩雷 ' + s.bad + ' 次' : ''}。</div>
+      `;
+      if (el.weeklyBtn) el.weeklyBtn.disabled = false;
+    }
+
+    function openProfile() {
+      renderProfile();
+      el.profileDrawer.classList.add('open');
+    }
+
+    el.profileBtn.addEventListener('click', openProfile);
+    el.profileClose.addEventListener('click', () => el.profileDrawer.classList.remove('open'));
+    el.profileDrawer.addEventListener('click', e => {
+      if (e.target === el.profileDrawer) el.profileDrawer.classList.remove('open');
+    });
+
+    function drawWeekly(s) {
+      const W = 1080;
+      const H = 1560;
+      const paper = { x: 56, y: 92, w: 968, h: 1290 };
+      const inner = paper.x + 44;
+      const p = n => String(n).padStart(2, '0');
+
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+
+      ctx.fillStyle = '#ffd84d';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = 'rgba(17,17,17,.16)';
+      for (let py = 12; py < H; py += 24) {
+        for (let px = 12; px < W; px += 24) {
+          ctx.beginPath();
+          ctx.arc(px, py, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(paper.x + 16, paper.y + 16, paper.w, paper.h);
+      ctx.fillStyle = '#fffdf5';
+      ctx.fillRect(paper.x, paper.y, paper.w, paper.h);
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 10;
+      ctx.strokeRect(paper.x, paper.y, paper.w, paper.h);
+
+      // 标题
+      ctx.fillStyle = '#111111';
+      ctx.textAlign = 'left';
+      ctx.font = '900 78px "Arial Black","Microsoft YaHei",sans-serif';
+      ctx.fillText('本周口味', inner, 208);
+
+      const now = new Date();
+      const start = new Date(Date.now() - 6 * 86400000);
+      ctx.fillStyle = 'rgba(17,17,17,.6)';
+      ctx.font = '900 22px "Courier New",monospace';
+      ctx.fillText(
+        start.getFullYear() + '.' + p(start.getMonth() + 1) + '.' + p(start.getDate()) +
+        ' — ' + now.getFullYear() + '.' + p(now.getMonth() + 1) + '.' + p(now.getDate()),
+        inner, 254
+      );
+
+      // 分隔
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(inner, 292);
+      ctx.lineTo(paper.x + paper.w - 44, 292);
+      ctx.stroke();
+
+      // 四个数字
+      const items = [
+        [String(s.draws), '求签'],
+        [String(s.accepted), '吃了'],
+        [s.goodRate === null ? '—' : s.goodRate + '%', '好评率'],
+        [String(s.bad), '踩雷']
+      ];
+      const colW = (paper.w - 88) / 4;
+      items.forEach((item, i) => {
+        const x = inner + i * colW;
+        const size = String(item[0]).length > 3 ? 62 : 82;
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 ' + size + 'px "Arial Black","Microsoft YaHei",sans-serif';
+        ctx.fillText(item[0], x, 420);
+        ctx.fillStyle = 'rgba(17,17,17,.6)';
+        ctx.font = '900 22px "Microsoft YaHei",sans-serif';
+        ctx.fillText(item[1], x, 458);
+      });
+
+      // 分类排行
+      ctx.fillStyle = '#111111';
+      ctx.font = '900 28px "Microsoft YaHei",sans-serif';
+      ctx.fillText('这周主要吃', inner, 560);
+
+      const maxN = s.topCats.length ? s.topCats[0][1] : 1;
+      s.topCats.forEach((item, i) => {
+        const y = 606 + i * 96;
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 26px "Microsoft YaHei",sans-serif';
+        ctx.fillText(item[0], inner, y + 30);
+
+        const barX = inner + 260;
+        const barMax = 520;
+        const barW = Math.max(70, Math.round(barMax * item[1] / maxN));
+        ctx.fillStyle = i === 0 ? '#ff4d2e' : (i === 1 ? '#23c9a0' : '#ff8f7a');
+        ctx.fillRect(barX, y, barW, 40);
+        ctx.strokeStyle = '#111111';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(barX, y, barW, 40);
+
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 24px "Courier New",monospace';
+        ctx.fillText(item[1] + ' 次', barX + barW + 14, y + 29);
+      });
+
+      if (!s.topCats.length) {
+        ctx.fillStyle = 'rgba(17,17,17,.55)';
+        ctx.font = '700 24px "Microsoft YaHei",sans-serif';
+        ctx.fillText('还没吃过什么，神不好总结。', inner, 640);
+      }
+
+      // 一句话
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(inner, 930, 150, 36);
+      ctx.fillStyle = '#fffdf5';
+      ctx.font = '900 20px "Microsoft YaHei",sans-serif';
+      ctx.fillText('食神批注', inner + 14, 956);
+
+      ctx.fillStyle = '#111111';
+      ctx.font = '500 34px "PingFang SC","Microsoft YaHei",sans-serif';
+      wrapText(ctx, weeklyLine(s), inner, 1020, paper.w - 88, 56);
+
+      // 印章
+      ctx.save();
+      ctx.translate(paper.x + paper.w - 118, paper.y + paper.h - 150);
+      ctx.rotate(-9 * Math.PI / 180);
+      ctx.strokeStyle = '#ff4d2e';
+      ctx.lineWidth = 7;
+      ctx.strokeRect(-58, -64, 116, 128);
+      ctx.fillStyle = '#ff4d2e';
+      ctx.textAlign = 'center';
+      ctx.font = '900 46px "Arial Black","Microsoft YaHei",sans-serif';
+      ctx.fillText('本', 0, -6);
+      ctx.fillText('周', 0, 52);
+      ctx.restore();
+
+      // 底部
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(17,17,17,.6)';
+      ctx.font = '900 20px "Courier New",monospace';
+      ctx.fillText('yileina.cyou/tools/food-oracle', inner, paper.y + paper.h - 30);
+
+      canvas.toBlob(blob => {
+        if (!blob) { showToast('生成图片失败，试试直接截图。'); return; }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '本周口味.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        showToast('小结图存好了，发出去馋人。', 3000);
+      }, 'image/png');
+    }
+
+    el.weeklyBtn.addEventListener('click', () => {
+      const s = weeklyStats();
+      if (!s.draws) {
+        showToast('这周还没求过签，先摇一签。');
+        return;
+      }
+      drawWeekly(s);
+    });
+
+    touchStreak();
+    renderProfile();
+
+
+    // ═══════════════════════════════════════════
+    //  两个人一起摇
+    // ═══════════════════════════════════════════
+    el.duoStage = document.getElementById('duoStage');
+    el.duoCards = document.getElementById('duoCards');
+    el.duoAccept = document.getElementById('duoAccept');
+    el.duoAgain = document.getElementById('duoAgain');
+    el.modeBtns = document.querySelectorAll('.mode-btn');
+
+    const MODE_KEY = 'food_oracle_mode';
+    const duoState = { cards: [], picked: 0 };
+
+    function loadMode() {
+      try {
+        return localStorage.getItem(MODE_KEY) === 'duo' ? 'duo' : 'solo';
+      } catch (e) {
+        return 'solo';
+      }
+    }
+
+    function syncMode() {
+      el.modeBtns.forEach(b => {
+        const on = b.dataset.mode === state.mode;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+
+      if (state.mode === 'duo') {
+        el.stage.hidden = true;
+        el.duoStage.hidden = true;
+        el.empty.hidden = false;
+        el.drawBtn.textContent = '摇 两 个 人 的 签';
+        el.hint.textContent = '一人一签，摇完再选';
+      } else {
+        el.duoStage.hidden = true;
+        const hasDaily = state.daily && state.daily.date === dateKey();
+        el.drawBtn.textContent = hasDaily
+          ? (state.daily.accepted ? '看 今 天 的 签' : '看 今 日 签')
+          : '摇 一 签';
+        el.hint.textContent = hasDaily ? '今天神已经给过你答案了' : '摇一摇，或者点一下';
+        if (!hasDaily) el.empty.hidden = false;
+      }
+    }
+
+    function setMode(mode) {
+      state.mode = mode;
+      try { localStorage.setItem(MODE_KEY, mode); } catch (e) { }
+      syncMode();
+    }
+
+    function renderDuo() {
+      const period = periodNow();
+      el.duoCards.innerHTML = duoState.cards.map((f, i) => {
+        const judge = f.time_judgement[period] || '';
+        return `<button class="duo-card ${i === duoState.picked ? 'on' : ''}" type="button" data-i="${i}">
+          <span class="duo-owner">${i === 0 ? '你 的 签' : 'TA 的 签'}</span>
+          <span class="duo-icon" aria-hidden="true">${f.icon}</span>
+          <span class="duo-name">${f.name}</span>
+          <span class="duo-no">第 ${ticketNumber(f)} 签 · ${f.category}</span>
+          <span class="duo-judge">${judge}</span>
+        </button>`;
+      }).join('');
+
+      el.duoCards.querySelectorAll('.duo-card').forEach(card => {
+        card.addEventListener('click', () => {
+          duoState.picked = Number(card.dataset.i);
+          el.duoCards.querySelectorAll('.duo-card').forEach(c => {
+            c.classList.toggle('on', c === card);
+          });
+        });
+      });
+    }
+
+    function drawDuo() {
+      if (state.busy || state.mode !== 'duo') return;
+      state.busy = true;
+      el.drawBtn.disabled = true;
+      play('shake');
+      el.tube.classList.add('shaking');
+
+      const pool = poolOf(state.filters);
+      const first = pool[Math.floor(Math.random() * pool.length)];
+      const rest = pool.filter(f => f.id !== first.id);
+      const second = rest.length ? rest[Math.floor(Math.random() * rest.length)] : first;
+
+      setTimeout(() => {
+        el.tube.classList.remove('shaking');
+        play('drop');
+
+        duoState.cards = [first, second];
+        duoState.picked = 0;
+        state.current = null;
+
+        recordHistory(first);
+        if (second.id !== first.id) recordHistory(second);
+
+        renderDuo();
+        el.duoStage.hidden = false;
+        el.stage.hidden = true;
+        el.empty.hidden = true;
+        el.duoAccept.disabled = false;
+        el.duoAccept.textContent = '就这个';
+        play('reveal');
+
+        state.busy = false;
+        el.drawBtn.disabled = false;
+        checkDrawnHint(2);
+        requestAnimationFrame(() => el.duoStage.scrollIntoView({ block: 'start' }));
+      }, 560);
+    }
+
+    function checkDrawnHint(n) {
+      if (state.mode !== 'duo') return;
+      el.hint.textContent = n > 1 ? '签都摇完了，挑一张' : '再摇一张';
+    }
+
+    function acceptDuo() {
+      const food = duoState.cards[duoState.picked];
+      if (!food) return;
+      const item = state.history.find(h => h.id === food.id && !h.accepted);
+      if (item) item.accepted = true;
+      saveState();
+      renderLog();
+
+      el.duoAccept.disabled = true;
+      el.duoAccept.textContent = '已经定了';
+      el.duoCards.querySelectorAll('.duo-card').forEach(c => c.classList.add('done'));
+      showToast('就吃' + food.name + '。两个人别再争了。', 3200);
+    }
+
+    function interceptSolo(e) {
+      if (state.mode !== 'duo') return;
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      drawDuo();
+    }
+
+    el.drawBtn.addEventListener('click', interceptSolo, true);
+    el.tube.addEventListener('click', interceptSolo, true);
+
+    el.modeBtns.forEach(b => {
+      b.addEventListener('click', () => setMode(b.dataset.mode));
+    });
+
+    el.duoAccept.addEventListener('click', acceptDuo);
+    el.duoAgain.addEventListener('click', drawDuo);
+
+    state.mode = loadMode();
+    setTimeout(syncMode, 0);
+
+
+    init();
     console.log('%c食神签 · 一百道菜等你摇', 'color:#a92f22;font-size:14px');
   
   </script>
