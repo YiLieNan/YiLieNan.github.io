@@ -3,1026 +3,1144 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>食神签 · 百味审判</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>食神签 · 今天吃什么</title>
+  <meta name="description" content="食神签：摇一摇签筒，从一百道菜里得一张后厨出的单子。今天吃什么，不用再想。">
+  <meta name="theme-color" content="#1e2a24">
   <style>
     :root {
-      --bg-deep: #0d0d14;
-      --bg-temple: #14141f;
-      --gold: #c9a96e;
-      --gold-light: #dfc28a;
-      --gold-dim: #8a7040;
-      --text-primary: #e8e0d0;
-      --text-secondary: #a09888;
-      --red-seal: #8b1a1a;
-      --red-bright: #c42b2b;
-      --ghost-green: #3a5a3a;
-      --shadow-soft: 0 4px 24px rgba(0, 0, 0, 0.5);
-      --shadow-gold: 0 0 40px rgba(201, 169, 110, 0.15);
-      --transition-slow: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
-      --transition-medium: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+      --wall: #1e2a24;
+      --wall-deep: #141d18;
+      --paper: #f7f0df;
+      --paper-deep: #eadfc7;
+      --ink: #1c1914;
+      --ink-soft: #4a4337;
+      --ink-faint: #7a7161;
+      --cinnabar: #a92f22;
+      --cinnabar-deep: #7c2017;
+      --celadon: #9db3a0;
+      --gold: #b08a45;
+      --line: rgba(28, 25, 20, .16);
+      --serif: "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
+      --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      --ease-out: cubic-bezier(.16, 1, .3, 1);
+      --ease-stamp: cubic-bezier(.2, 1.5, .4, 1);
     }
 
-    * {
+    *,
+    *::before,
+    *::after {
       margin: 0;
       padding: 0;
-      box-sizing: border-box
+      box-sizing: border-box;
     }
 
-    html,
-    body {
-      height: 100%;
-      overflow-x: hidden
+    html {
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
-      font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
-      background: var(--bg-deep);
-      color: var(--text-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
       min-height: 100vh;
-      transition: background var(--transition-slow);
-      position: relative;
+      min-height: 100svh;
+      background: var(--wall-deep);
+      color: var(--paper);
+      font-family: var(--sans);
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    body::before {
-      content: '';
+    /* 食堂的墙：深松绿瓷砖 + 顶灯光斑 */
+    .wall {
       position: fixed;
       inset: 0;
-      background: radial-gradient(ellipse at 50% 30%, rgba(201, 169, 110, 0.06) 0%, transparent 60%),
-        radial-gradient(ellipse at 30% 70%, rgba(139, 26, 26, 0.04) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 60%, rgba(201, 169, 110, 0.03) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: 0;
+      z-index: -2;
+      background:
+        linear-gradient(rgba(255, 255, 255, .022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .022) 1px, transparent 1px),
+        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(247, 240, 223, .16), transparent 62%),
+        linear-gradient(180deg, #24312a 0%, var(--wall) 42%, var(--wall-deep) 100%);
+      background-size: 46px 46px, 46px 46px, 100% 100%, 100% 100%;
     }
 
-    body::after {
-      content: '';
-      position: fixed;
+    .wall::after {
+      content: "";
+      position: absolute;
       inset: 0;
-      background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(201, 169, 110, 0.015) 2px, rgba(201, 169, 110, 0.015) 3px);
-      pointer-events: none;
-      z-index: 0;
+      background: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 45%, rgba(6, 10, 8, .55) 100%);
     }
 
-    body.night-mode {
-      background: #0a0a12
-    }
-
-    body.night-mode::before {
-      background: radial-gradient(ellipse at 50% 30%, rgba(58, 90, 58, 0.12) 0%, transparent 60%),
-        radial-gradient(ellipse at 30% 70%, rgba(58, 42, 74, 0.1) 0%, transparent 50%);
-    }
-
-    body.night-mode .temple-title {
-      color: #8ab88a
-    }
-
-    body.night-mode .god-name {
-      color: #8ab88a
-    }
-
-    .app-container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 500px;
-      padding: 24px 20px;
+    .counter {
+      width: min(100%, 480px);
+      margin: 0 auto;
+      padding: 22px 20px calc(40px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 4px
-    }
-
-    .temple-title {
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', 'SimSun', serif;
-      font-size: 2rem;
-      color: var(--gold);
-      letter-spacing: .15em;
-      text-shadow: 0 0 30px rgba(201, 169, 110, .3);
-      user-select: none
-    }
-
-    .god-name {
-      font-size: .85rem;
-      color: var(--gold-dim);
-      letter-spacing: .2em;
-      margin-top: 4px;
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif
-    }
-
-    .mood-indicator {
-      display: inline-block;
-      font-size: .75rem;
-      padding: 3px 14px;
-      border: 1px solid var(--gold-dim);
-      border-radius: 20px;
-      color: var(--gold-dim);
-      margin-top: 8px;
-      opacity: .7;
-      letter-spacing: .1em
-    }
-
-    .tube-stage {
-      position: relative;
-      width: 200px;
-      height: 280px;
+    /* ── 顶栏 ───────────────────────────── */
+    .topbar {
+      width: 100%;
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      margin-bottom: 26px;
+    }
+
+    .brand-mark {
+      font-family: var(--serif);
+      font-size: .8rem;
+      letter-spacing: .3em;
+      color: var(--celadon);
+      border: 1px solid rgba(157, 179, 160, .35);
+      padding: 4px 3px 4px 8px;
+      line-height: 1;
+      user-select: none;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .period {
+      font-size: .74rem;
+      letter-spacing: .18em;
+      color: rgba(247, 240, 223, .55);
+    }
+
+    .sound-btn {
+      appearance: none;
+      background: none;
+      border: 0;
+      color: rgba(247, 240, 223, .55);
+      font: inherit;
+      font-size: .74rem;
+      letter-spacing: .1em;
+      cursor: pointer;
+      padding: 6px 4px;
+      transition: color .2s;
+    }
+
+    .sound-btn:hover,
+    .sound-btn:focus-visible {
+      color: var(--paper);
+    }
+
+    .sound-btn[data-on="false"] {
+      color: rgba(247, 240, 223, .3);
+    }
+
+    /* ── 页眉 ───────────────────────────── */
+    .masthead {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .masthead h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 11vw, 3.15rem);
+      font-weight: 700;
+      letter-spacing: .28em;
+      margin-left: .28em;
+      line-height: 1.1;
+      color: var(--paper);
+      text-shadow: 0 2px 30px rgba(0, 0, 0, .45);
+    }
+
+    .masthead .sub {
+      margin-top: 14px;
+      font-size: .82rem;
+      letter-spacing: .06em;
+      color: rgba(247, 240, 223, .5);
+    }
+
+    /* ── 签筒 ───────────────────────────── */
+    .oracle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .tube-wrap {
+      position: relative;
+      width: 190px;
+      height: 214px;
+      display: flex;
       justify-content: center;
-      perspective: 600px
+      align-items: flex-end;
     }
 
     .tube {
       position: relative;
-      width: 100px;
-      height: 220px;
-      background: linear-gradient(180deg, #1a1a2e, #1f1f35 50%, #1a1a2e);
-      border: 2px solid var(--gold-dim);
-      border-radius: 12px 12px 20px 20px;
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, .5), 0 4px 20px rgba(0, 0, 0, .5), 0 0 0 6px rgba(10, 10, 20, .8), 0 0 0 8px rgba(138, 112, 64, .3);
+      width: 158px;
+      height: 200px;
+      background: none;
+      border: 0;
+      padding: 0;
       cursor: pointer;
-      transition: transform .1s ease, box-shadow var(--transition-medium);
-      user-select: none;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding-top: 12px;
-      overflow: hidden
+      -webkit-tap-highlight-color: transparent;
+      filter: drop-shadow(0 18px 22px rgba(0, 0, 0, .45));
+      transition: transform .2s var(--ease-out);
     }
 
     .tube:hover {
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, .5), 0 4px 20px rgba(0, 0, 0, .5), 0 0 0 6px rgba(10, 10, 20, .8), 0 0 0 8px rgba(138, 112, 64, .5), 0 0 50px rgba(201, 169, 110, .15)
+      transform: translateY(-3px);
+    }
+
+    .tube:active {
+      transform: translateY(0) scale(.985);
+    }
+
+    .tube:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 10px;
+      border-radius: 20px;
     }
 
     .tube.locked {
-      opacity: .45;
       pointer-events: none;
-      filter: grayscale(.3);
-      transition: all .3s ease;
+      opacity: .72;
     }
 
-    .anger-text {
+    /* 筒口露出的签头 */
+    .sticks {
       position: absolute;
-      bottom: -36px;
       left: 50%;
+      bottom: 158px;
+      width: 118px;
+      height: 74px;
       transform: translateX(-50%);
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-      font-size: .8rem;
-      color: var(--red-bright);
-      opacity: 0;
-      transition: opacity .4s ease;
-      pointer-events: none;
-      white-space: nowrap;
-      letter-spacing: .08em;
+      z-index: 1;
     }
 
-    .anger-text.show {
-      opacity: 1;
-      animation: angerFloat 2s ease-out forwards;
-    }
-
-    @keyframes angerFloat {
-      0% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(6px);
-      }
-
-      20% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-
-      80% {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateX(-50%) translateY(-12px);
-      }
-    }
-
-
-    .tube::before {
-      content: '';
+    .stick {
       position: absolute;
-      top: 18px;
-      left: -4px;
-      right: -4px;
-      height: 3px;
-      background: var(--gold);
-      border-radius: 2px;
-      box-shadow: 0 0 8px rgba(201, 169, 110, .4);
-      z-index: 2
-    }
-
-    .tube::after {
-      content: '';
-      position: absolute;
-      bottom: 30px;
-      left: -4px;
-      right: -4px;
-      height: 3px;
-      background: var(--gold);
-      border-radius: 2px;
-      box-shadow: 0 0 8px rgba(201, 169, 110, .4);
-      z-index: 2
-    }
-
-    .tube-base {
-      position: absolute;
-      bottom: -8px;
-      width: 120px;
-      height: 16px;
-      background: linear-gradient(180deg, #2a2a3a, #1a1a2a);
-      border: 2px solid var(--gold-dim);
-      border-radius: 50%;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, .5)
-    }
-
-    .stick-heads {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3px 6px;
-      justify-content: center;
-      padding: 2px 8px;
-      z-index: 1
-    }
-
-    .stick-head {
+      bottom: 0;
+      left: 50%;
       width: 6px;
-      height: 22px;
-      background: linear-gradient(180deg, #e8d5b0, #c9a96e, #8a7040);
+      height: var(--h, 62px);
+      margin-left: -3px;
       border-radius: 3px 3px 1px 1px;
-      box-shadow: 0 0 4px rgba(201, 169, 110, .3)
+      background: linear-gradient(180deg, #e6d7b6 0%, #d9c69f 55%, #c4ad82 100%);
+      transform-origin: 50% 100%;
+      transform: translateX(var(--x, 0)) rotate(var(--r, 0deg));
+      box-shadow: inset -1px 0 0 rgba(90, 70, 40, .35);
     }
 
-    body.night-mode .stick-head {
-      box-shadow: 0 0 8px rgba(58, 180, 120, .5);
-      background: linear-gradient(180deg, #c8e8c8, #8ab88a, #4a7a4a)
-    }
-
-    .tube.shaking {
-      animation: tubeShake .6s ease-in-out
-    }
-
-    @keyframes tubeShake {
-
-      0%,
-      100% {
-        transform: translateX(0) rotate(0deg)
-      }
-
-      10% {
-        transform: translateX(-8px) rotate(-3deg)
-      }
-
-      20% {
-        transform: translateX(8px) rotate(3deg)
-      }
-
-      30% {
-        transform: translateX(-12px) rotate(-5deg)
-      }
-
-      40% {
-        transform: translateX(12px) rotate(5deg)
-      }
-
-      50% {
-        transform: translateX(-8px) rotate(-3deg)
-      }
-
-      60% {
-        transform: translateX(6px) rotate(2deg)
-      }
-
-      70% {
-        transform: translateX(-4px) rotate(-1deg)
-      }
-
-      80% {
-        transform: translateX(3px) rotate(1deg)
-      }
-
-      90% {
-        transform: translateX(-1px) rotate(0deg)
-      }
-    }
-
-    .flying-stick {
+    .stick::before {
+      content: "";
       position: absolute;
-      width: 8px;
-      height: 80px;
-      background: linear-gradient(180deg, #f0d8a0, #c9a96e, #a08050);
-      border-radius: 4px;
-      box-shadow: 0 0 20px rgba(201, 169, 110, .6);
-      z-index: 10;
-      pointer-events: none;
-      opacity: 0
+      top: 7px;
+      left: 1px;
+      right: 1px;
+      height: 2px;
+      border-radius: 1px;
+      background: var(--cinnabar);
+      opacity: .75;
     }
 
-    .flying-stick.active {
-      animation: stickFlyOut 1.2s cubic-bezier(.25, .46, .45, .94) forwards
+    .stick.fly {
+      animation: stick-fly .62s var(--ease-out) forwards;
     }
 
-    @keyframes stickFlyOut {
+    @keyframes stick-fly {
       0% {
-        opacity: 1;
-        transform: translateY(0) rotate(0deg) scale(1)
+        transform: translateX(var(--x, 0)) translateY(0) rotate(var(--r, 0deg));
       }
 
-      30% {
-        opacity: 1;
-        transform: translateY(-60px) rotate(180deg) scale(1.1)
-      }
-
-      60% {
-        opacity: 1;
-        transform: translateY(-100px) rotate(360deg) scale(.9)
-      }
-
-      80% {
-        opacity: 1;
-        transform: translateY(-40px) rotate(540deg) scale(1)
+      45% {
+        transform: translateX(var(--x, 0)) translateY(-96px) rotate(14deg);
       }
 
       100% {
+        transform: translateX(calc(var(--x, 0px) + 26px)) translateY(-150px) rotate(58deg);
         opacity: 0;
-        transform: translateY(20px) rotate(720deg) scale(.3)
       }
     }
 
-    .hint-text {
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-      font-size: .9rem;
-      color: var(--text-secondary);
-      letter-spacing: .1em;
-      text-align: center;
-      opacity: .7;
-      transition: opacity var(--transition-medium)
-    }
-
-    .diagnosis-card {
-      width: 100%;
-      max-width: 440px;
-      background: linear-gradient(180deg, #1f1f30, #181825);
-      border: 1px solid var(--gold-dim);
-      border-radius: 8px;
-      padding: 28px 24px;
-      position: relative;
-      box-shadow: var(--shadow-soft), var(--shadow-gold);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all .5s cubic-bezier(.23, 1, .32, 1);
-      pointer-events: none
-    }
-
-    .diagnosis-card.revealed {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto
-    }
-
-    .diagnosis-card::after {
-      content: '食神御判';
+    /* 筒身：竹青，上宽下收 */
+    .tube-body {
       position: absolute;
-      top: 16px;
-      right: 20px;
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-      font-size: .85rem;
-      color: var(--red-seal);
-      border: 2px solid var(--red-seal);
-      padding: 4px 8px;
-      transform: rotate(12deg);
+      left: 50%;
+      bottom: 0;
+      width: 144px;
+      height: 168px;
+      transform: translateX(-50%);
+      border-radius: 6px 6px 52px 52px / 6px 6px 26px 26px;
+      background:
+        linear-gradient(90deg, #55684b 0%, #7d9068 16%, #93a67c 38%, #7b8e66 62%, #4f6145 100%);
+      box-shadow:
+        inset 0 6px 10px rgba(0, 0, 0, .45),
+        inset 0 -14px 24px rgba(0, 0, 0, .3);
+      overflow: hidden;
+    }
+
+    .tube-body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 27%, rgba(58, 72, 48, .55) 27.8%, transparent 28.6%),
+        linear-gradient(180deg, transparent 62%, rgba(58, 72, 48, .45) 62.8%, transparent 63.6%);
+    }
+
+    .tube-body::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 12px;
+      width: 10px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .05));
+      border-radius: 6px;
+      filter: blur(1px);
+    }
+
+    /* 筒口内壁 */
+    .tube-mouth {
+      position: absolute;
+      left: 50%;
+      bottom: 160px;
+      width: 144px;
+      height: 34px;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 35%, #0d1611 0%, #1b2a21 55%, #354536 100%);
+      box-shadow:
+        inset 0 5px 10px rgba(0, 0, 0, .9),
+        0 -2px 0 rgba(120, 140, 105, .55);
+      z-index: 2;
+    }
+
+    .tube-label {
+      position: absolute;
+      left: 50%;
+      bottom: 34px;
+      transform: translateX(-50%);
+      writing-mode: vertical-rl;
+      padding: 9px 5px;
+      background: linear-gradient(180deg, #3c3023, #2a2118);
+      color: #d9c8a4;
+      font-family: var(--serif);
+      font-size: .78rem;
+      letter-spacing: .22em;
+      border: 1px solid rgba(0, 0, 0, .5);
+      border-radius: 2px;
+      box-shadow: inset 0 0 0 1px rgba(217, 200, 164, .12);
+      z-index: 3;
+    }
+
+    .tube-shadow {
+      position: absolute;
+      left: 50%;
+      bottom: -12px;
+      width: 150px;
+      height: 24px;
+      transform: translateX(-50%);
+      background: radial-gradient(ellipse, rgba(0, 0, 0, .55), transparent 70%);
+      filter: blur(4px);
+      z-index: 0;
+    }
+
+    /* 摇晃 */
+    .tube.shaking {
+      animation: tube-shake .1s linear 6;
+    }
+
+    @keyframes tube-shake {
+      0% {
+        transform: translateX(0) rotate(0);
+      }
+
+      25% {
+        transform: translateX(-4px) rotate(-1.6deg);
+      }
+
+      75% {
+        transform: translateX(4px) rotate(1.6deg);
+      }
+
+      100% {
+        transform: translateX(0) rotate(0);
+      }
+    }
+
+    .hint {
+      margin-top: 22px;
+      font-size: .78rem;
+      letter-spacing: .14em;
+      color: rgba(247, 240, 223, .42);
+      transition: opacity .3s;
+    }
+
+    .draw-btn {
+      margin-top: 14px;
+      appearance: none;
+      background: none;
+      border: 1px solid rgba(157, 179, 160, .4);
+      color: var(--celadon);
+      font: inherit;
+      font-size: .8rem;
+      letter-spacing: .2em;
+      padding: 9px 26px 9px 28px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background .25s, color .25s, border-color .25s;
+    }
+
+    .draw-btn:hover,
+    .draw-btn:focus-visible {
+      background: rgba(157, 179, 160, .12);
+      color: var(--paper);
+      border-color: rgba(157, 179, 160, .7);
+    }
+
+    .draw-btn:disabled {
+      opacity: .4;
+      cursor: default;
+    }
+
+    .recall-btn {
+      margin-top: 12px;
+      appearance: none;
+      background: none;
+      border: 0;
+      color: rgba(247, 240, 223, .5);
+      font: inherit;
+      font-size: .74rem;
+      letter-spacing: .08em;
+      padding: 6px;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-color: rgba(247, 240, 223, .25);
+    }
+
+    .recall-btn:hover {
+      color: var(--paper);
+    }
+
+    /* ── 空签 ───────────────────────────── */
+    .empty-note {
+      width: 100%;
+      margin-top: 42px;
+      padding: 30px 26px;
+      border: 1px dashed rgba(247, 240, 223, .18);
       border-radius: 3px;
-      opacity: .8
+      text-align: center;
+      color: rgba(247, 240, 223, .34);
+      font-size: .82rem;
+      line-height: 2.1;
     }
 
-    body.night-mode .diagnosis-card::after {
-      color: #5a8a5a;
-      border-color: #5a8a5a
+    .empty-note .big {
+      display: block;
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      letter-spacing: .18em;
+      color: rgba(247, 240, 223, .5);
+      margin-bottom: 6px;
     }
 
-    .card-header {
+    /* ── 签纸 ───────────────────────────── */
+    .ticket-stage {
+      width: 100%;
+      margin-top: 40px;
+      perspective: 1200px;
+    }
+
+    .ticket {
+      position: relative;
+      width: 100%;
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 3px;
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, .5) inset,
+        0 26px 54px rgba(0, 0, 0, .52),
+        0 3px 8px rgba(0, 0, 0, .3);
+      /* 纸纹 */
+      background-image:
+        repeating-linear-gradient(0deg, rgba(120, 96, 54, .028) 0 1px, transparent 1px 3px),
+        radial-gradient(circle at 82% 76%, rgba(120, 96, 54, .09) 0 26px, transparent 27px);
+    }
+
+    /* 两侧票据缺口 */
+    .ticket::before,
+    .ticket::after {
+      content: "";
+      position: absolute;
+      top: 74px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--wall);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, .55);
+      z-index: 3;
+    }
+
+    .ticket::before {
+      left: -9px;
+    }
+
+    .ticket::after {
+      right: -9px;
+    }
+
+    .ticket.play {
+      animation: ticket-out .82s var(--ease-out) both;
+    }
+
+    @keyframes ticket-out {
+      0% {
+        clip-path: inset(100% 0 0 0);
+        transform: translateY(26px);
+      }
+
+      100% {
+        clip-path: inset(0 0 0 0);
+        transform: translateY(0);
+      }
+    }
+
+    .ticket-tear {
+      margin: 0 18px;
+      padding-top: 20px;
+      border-top: 2px dashed rgba(28, 25, 20, .2);
+      position: relative;
+    }
+
+    .ticket-tear::before,
+    .ticket-tear::after {
+      content: "";
+      position: absolute;
+      top: -6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--wall);
+    }
+
+    .ticket-tear::before {
+      left: -24px;
+    }
+
+    .ticket-tear::after {
+      right: -24px;
+    }
+
+    .ticket-body {
+      padding: 4px 24px 26px;
+    }
+
+    .ticket-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .ticket-no {
+      font-family: "Courier New", monospace;
+      font-size: .72rem;
+      letter-spacing: .16em;
+      color: var(--ink-faint);
+    }
+
+    .ticket-brand {
+      writing-mode: vertical-rl;
+      font-family: var(--serif);
+      font-size: .68rem;
+      letter-spacing: .3em;
+      color: var(--cinnabar);
+      opacity: .85;
+      line-height: 1;
+    }
+
+    .dish {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dish-icon {
+      font-size: 2.9rem;
+      line-height: 1;
+      filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .12));
+    }
+
+    .dish-text {
+      min-width: 0;
+    }
+
+    .dish-name {
+      font-family: var(--serif);
+      font-size: clamp(1.75rem, 8vw, 2.1rem);
+      font-weight: 700;
+      letter-spacing: .06em;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+
+    .dish-meta {
+      margin-top: 5px;
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(201, 169, 110, .2)
+      font-size: .72rem;
+      letter-spacing: .1em;
+      color: var(--ink-faint);
     }
 
-    .card-food-icon {
-      font-size: 2rem
-    }
-
-    .card-food-name {
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-      font-size: 1.4rem;
-      color: var(--gold-light);
-      letter-spacing: .1em
-    }
-
-    .card-category {
-      font-size: .7rem;
-      color: var(--text-secondary);
-      opacity: .5;
-      margin-left: auto;
-      letter-spacing: .1em
-    }
-
-    .card-time-judgement {
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-      font-size: .95rem;
-      color: var(--red-bright);
-      line-height: 1.8;
-      margin-bottom: 16px;
-      padding: 12px 16px;
-      background: rgba(139, 26, 26, .06);
-      border-left: 3px solid rgba(139, 26, 26, .4);
-      border-radius: 0 4px 4px 0
-    }
-
-    body.night-mode .card-time-judgement {
-      color: #8ab88a;
-      background: rgba(58, 90, 58, .1);
-      border-left-color: rgba(58, 90, 58, .5)
-    }
-
-    .card-diagnosis {
-      font-size: .9rem;
-      color: var(--text-primary);
-      line-height: 1.9;
-      margin-bottom: 8px;
-      white-space: pre-wrap
-    }
-
-    .card-mood-tag {
-      display: inline-block;
-      font-size: .7rem;
-      padding: 2px 10px;
-      border-radius: 12px;
-      margin-bottom: 8px;
+    .dish-meta .dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: var(--ink-faint);
       opacity: .6;
-      letter-spacing: .1em
     }
 
-    .card-actions {
+    .mood-line {
+      margin-top: 18px;
+      padding-left: 11px;
+      border-left: 2px solid rgba(169, 47, 34, .35);
+      font-size: .76rem;
+      line-height: 1.8;
+      color: var(--cinnabar-deep);
+      opacity: .85;
+    }
+
+    .block {
+      margin-top: 22px;
+    }
+
+    .block h3,
+    .dos h3 {
+      font-family: var(--sans);
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .26em;
+      color: var(--cinnabar);
+      margin-bottom: 7px;
+    }
+
+    .block p {
+      font-size: .9rem;
+      line-height: 1.95;
+      color: var(--ink-soft);
+      text-align: justify;
+    }
+
+    .block p + p {
+      margin-top: 10px;
+    }
+
+    .dos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .dos > div {
+      padding-right: 14px;
+    }
+
+    .dos > div + div {
+      padding-right: 0;
+      padding-left: 16px;
+      border-left: 1px solid var(--line);
+    }
+
+    .dos p {
+      font-size: .82rem;
+      line-height: 1.9;
+      color: var(--ink-soft);
+    }
+
+    .dos .good h3 {
+      color: #4f6b4a;
+    }
+
+    .ticket-foot {
       display: flex;
-      gap: 12px;
-      margin-top: 20px
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 26px;
+      padding-top: 16px;
+      border-top: 1px dashed rgba(28, 25, 20, .22);
+      font-family: "Courier New", monospace;
+      font-size: .58rem;
+      letter-spacing: .06em;
+      color: var(--ink-faint);
+    }
+
+    .barcode {
+      width: 92px;
+      height: 22px;
+      background: repeating-linear-gradient(90deg,
+          var(--ink) 0 2px, transparent 2px 4px,
+          var(--ink) 4px 5px, transparent 5px 8px,
+          var(--ink) 8px 11px, transparent 11px 13px);
+      opacity: .55;
+      flex-shrink: 0;
+    }
+
+    .foot-meta {
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    .stamp {
+      position: absolute;
+      right: 18px;
+      bottom: 46px;
+      width: 62px;
+      height: 76px;
+      display: grid;
+      place-items: center;
+      border: 3px solid var(--cinnabar);
+      border-radius: 4px;
+      color: var(--cinnabar);
+      font-family: var(--serif);
+      font-size: 1.32rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      writing-mode: vertical-rl;
+      line-height: 1.15;
+      transform: rotate(-9deg) scale(1.2);
+      opacity: 0;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+    }
+
+    .stamp::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border: 1px solid rgba(169, 47, 34, .55);
+      border-radius: 2px;
+    }
+
+    .stamp.down {
+      animation: stamp-drop .34s var(--ease-stamp) .12s forwards;
+    }
+
+    @keyframes stamp-drop {
+      0% {
+        opacity: 0;
+        transform: rotate(-9deg) scale(1.7);
+      }
+
+      100% {
+        opacity: .84;
+        transform: rotate(-9deg) scale(1);
+      }
+    }
+
+    .stamp.accepted {
+      color: #4f6b4a;
+      border-color: #4f6b4a;
+      opacity: .8;
+    }
+
+    .stamp.accepted::after {
+      border-color: rgba(79, 107, 74, .5);
+    }
+
+    /* ── 签纸下方按钮 ───────────────────── */
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
     }
 
     .btn {
       flex: 1;
-      padding: 12px 16px;
-      border: 1px solid var(--gold-dim);
-      border-radius: 6px;
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-      font-size: .95rem;
+      appearance: none;
+      font: inherit;
+      font-size: .88rem;
+      letter-spacing: .16em;
+      padding: 14px 10px 14px calc(10px + .16em);
+      border-radius: 2px;
       cursor: pointer;
-      letter-spacing: .1em;
-      transition: all var(--transition-medium);
-      background: transparent;
-      color: var(--gold);
-      text-align: center
+      transition: background .22s, color .22s, border-color .22s, transform .12s;
     }
 
-    .btn:hover {
-      background: rgba(201, 169, 110, .08);
-      border-color: var(--gold)
+    .btn:active {
+      transform: translateY(1px);
     }
 
     .btn.primary {
-      background: rgba(201, 169, 110, .12);
-      border-color: var(--gold)
+      background: var(--cinnabar);
+      color: var(--paper);
+      border: 1px solid var(--cinnabar);
     }
 
-    .btn.primary:hover {
-      background: rgba(201, 169, 110, .2)
+    .btn.primary:hover,
+    .btn.primary:focus-visible {
+      background: var(--cinnabar-deep);
+      border-color: var(--cinnabar-deep);
     }
 
-    .btn.danger {
-      border-color: rgba(139, 26, 26, .5);
-      color: var(--red-bright)
+    .btn.primary:disabled {
+      background: #6f6a5c;
+      border-color: #6f6a5c;
+      color: rgba(247, 240, 223, .75);
+      cursor: default;
     }
 
-    .btn.danger:hover {
-      background: rgba(139, 26, 26, .08);
-      border-color: var(--red-bright)
+    .btn.ghost {
+      background: transparent;
+      color: rgba(247, 240, 223, .78);
+      border: 1px solid rgba(247, 240, 223, .28);
     }
 
-    .btn.save {
-      flex: 0 1 auto;
-      min-width: 110px;
-      border-color: rgba(201, 169, 110, .35);
-      color: var(--gold-light);
+    .btn.ghost:hover,
+    .btn.ghost:focus-visible {
+      background: rgba(247, 240, 223, .08);
+      border-color: rgba(247, 240, 223, .55);
+      color: var(--paper);
+    }
+
+    /* ── 页脚工具 ───────────────────────── */
+    .dock {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      gap: 26px;
+      margin-top: 34px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(247, 240, 223, .1);
+    }
+
+    .dock button {
+      appearance: none;
+      background: none;
+      border: 0;
+      color: rgba(247, 240, 223, .45);
+      font: inherit;
+      font-size: .76rem;
+      letter-spacing: .1em;
+      padding: 6px 2px;
+      cursor: pointer;
+      transition: color .2s;
+    }
+
+    .dock button:hover,
+    .dock button:focus-visible {
+      color: var(--paper);
+    }
+
+    .dock .count {
+      color: rgba(157, 179, 160, .8);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ── 抽屉 ───────────────────────────── */
+    .drawer {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      background: rgba(8, 12, 10, 0);
+      visibility: hidden;
+      transition: background .28s, visibility .28s;
+    }
+
+    .drawer.open {
+      background: rgba(8, 12, 10, .62);
+      visibility: visible;
+    }
+
+    .drawer-panel {
+      width: min(100%, 480px);
+      max-height: 72vh;
+      overflow-y: auto;
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 4px 4px 0 0;
+      padding: 22px 22px calc(24px + env(safe-area-inset-bottom));
+      transform: translateY(102%);
+      transition: transform .34s var(--ease-out);
+    }
+
+    .drawer.open .drawer-panel {
+      transform: translateY(0);
+    }
+
+    .drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 6px;
+    }
+
+    .drawer-head h2 {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+    }
+
+    .drawer-close {
+      appearance: none;
+      background: none;
+      border: 0;
+      font: inherit;
+      font-size: 1.1rem;
+      line-height: 1;
+      color: var(--ink-faint);
+      cursor: pointer;
+      padding: 6px 8px;
+    }
+
+    .log-list {
+      list-style: none;
+    }
+
+    .log-item {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(28, 25, 20, .08);
+      font-size: .84rem;
+    }
+
+    .log-item .log-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .log-item .log-name {
+      font-family: var(--serif);
+      font-size: .95rem;
+      flex-shrink: 0;
+    }
+
+    .log-item .log-time {
+      margin-left: auto;
+      font-family: "Courier New", monospace;
+      font-size: .64rem;
+      color: var(--ink-faint);
       white-space: nowrap;
     }
 
-    .btn.save:hover {
-      background: rgba(201, 169, 110, .1);
-      border-color: var(--gold);
+    .log-item .log-tag {
+      font-size: .64rem;
+      letter-spacing: .08em;
+      color: var(--ink-faint);
+      border: 1px solid rgba(28, 25, 20, .18);
+      padding: 1px 5px;
+      border-radius: 2px;
+      white-space: nowrap;
     }
 
-    .btn.save:disabled {
-      opacity: .4;
-      pointer-events: none;
+    .log-item .log-tag.accepted {
+      color: #4f6b4a;
+      border-color: rgba(79, 107, 74, .4);
     }
 
-    /* Food count badge */
-    .food-count-badge {
-      font-size: .65rem;
-      color: var(--text-secondary);
-      opacity: .4;
+    .log-empty {
+      padding: 26px 0;
       text-align: center;
-      letter-spacing: .1em;
-      margin-top: -8px
+      color: var(--ink-faint);
+      font-size: .82rem;
     }
 
-    /* Sin Scroll */
-    .sin-scroll {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(30, 30, 40, .9);
-      border: 1px solid rgba(139, 26, 26, .4);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 20;
-      opacity: 0;
-      transform: scale(0);
-      transition: all .5s cubic-bezier(.175, .885, .32, 1.275);
-      box-shadow: 0 0 20px rgba(139, 26, 26, .2)
-    }
-
-    .sin-scroll.visible {
-      opacity: 1;
-      transform: scale(1)
-    }
-
-    .sin-scroll:hover {
-      border-color: var(--red-bright);
-      box-shadow: 0 0 30px rgba(139, 26, 26, .4)
-    }
-
-    .sin-scroll-icon {
-      font-size: 1.2rem
-    }
-
-    .sin-badge {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      width: 20px;
-      height: 20px;
-      background: var(--red-bright);
-      border-radius: 50%;
-      font-size: .65rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: bold
-    }
-
-    .sin-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .8);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--transition-medium)
-    }
-
-    .sin-modal.open {
-      opacity: 1;
-      pointer-events: auto
-    }
-
-    .sin-modal-content {
-      background: #1a1a28;
-      border: 2px solid var(--red-seal);
-      border-radius: 8px;
-      padding: 32px 24px;
-      max-width: 400px;
-      width: 90%;
-      max-height: 70vh;
-      overflow-y: auto;
-      position: relative
-    }
-
-    .sin-modal-title {
-      font-family: 'STKaiti', 'KaiTi', serif;
-      font-size: 1.3rem;
-      color: var(--red-bright);
-      text-align: center;
-      margin-bottom: 20px;
-      letter-spacing: .15em
-    }
-
-    .sin-list {
-      list-style: none
-    }
-
-    .sin-item {
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, .06);
-      font-size: .85rem;
-      color: var(--text-secondary);
-      display: flex;
-      justify-content: space-between;
-      align-items: center
-    }
-
-    .sin-item-time {
-      font-size: .7rem;
-      opacity: .5
-    }
-
-    .sin-close {
-      position: absolute;
-      top: 12px;
-      right: 16px;
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 1.2rem;
-      cursor: pointer
-    }
-
-    /* Letter */
-    .letter-trigger {
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(30, 30, 40, .9);
-      border: 1px solid rgba(201, 169, 110, .3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      z-index: 20;
-      transition: all var(--transition-medium)
-    }
-
-    .letter-trigger:hover {
-      border-color: var(--gold);
-      box-shadow: 0 0 30px rgba(201, 169, 110, .25)
-    }
-
-    .letter-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .8);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--transition-medium)
-    }
-
-    .letter-modal.open {
-      opacity: 1;
-      pointer-events: auto
-    }
-
-    .letter-content {
-      background: #1a1a28;
-      border: 1px solid var(--gold-dim);
-      border-radius: 8px;
-      padding: 32px 24px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center
-    }
-
-    .letter-input {
-      width: 100%;
-      padding: 10px 14px;
-      background: rgba(255, 255, 255, .05);
-      border: 1px solid var(--gold-dim);
-      border-radius: 4px;
-      color: var(--text-primary);
-      font-size: .95rem;
-      text-align: center;
-      margin: 16px 0;
-      outline: none
-    }
-
-    .letter-input:focus {
-      border-color: var(--gold)
-    }
-
-    /* Strike */
-    .strike-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .9);
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity var(--transition-slow)
-    }
-
-    .strike-overlay.active {
-      opacity: 1;
-      pointer-events: auto
-    }
-
-    .strike-note {
-      text-align: center;
-      padding: 40px
-    }
-
-    .strike-note h2 {
-      font-family: 'STKaiti', 'KaiTi', serif;
-      font-size: 1.5rem;
-      color: var(--gold);
-      margin-bottom: 12px
-    }
-
-    .strike-note p {
-      color: var(--text-secondary);
-      font-size: 1rem;
-      line-height: 1.8
-    }
-
-    .strike-note .emoji {
-      font-size: 3rem;
-      display: block;
-      margin-bottom: 20px
-    }
-
-    /* Toast */
+    /* ── Toast ──────────────────────────── */
     .toast {
       position: fixed;
-      top: 20px;
       left: 50%;
-      transform: translateX(-50%) translateY(-120px);
-      background: #1a1a28;
-      border: 1px solid var(--gold-dim);
-      border-radius: 6px;
-      padding: 12px 24px;
-      z-index: 200;
-      pointer-events: none;
+      bottom: calc(30px + env(safe-area-inset-bottom));
+      z-index: 60;
+      transform: translate(-50%, 16px);
+      max-width: min(88vw, 400px);
+      padding: 10px 18px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: .8rem;
+      line-height: 1.6;
+      text-align: center;
+      border-radius: 2px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .4);
       opacity: 0;
-      transition: all .4s cubic-bezier(.175, .885, .32, 1.275);
-      font-family: 'STKaiti', 'KaiTi', serif;
-      font-size: .9rem;
-      color: var(--gold-light);
-      box-shadow: var(--shadow-gold);
-      max-width: 90vw
+      pointer-events: none;
+      transition: opacity .25s, transform .25s var(--ease-out);
     }
 
     .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1
+      opacity: 1;
+      transform: translate(-50%, 0);
     }
 
-    /* Ghost face */
-    .ghost-face {
-      position: fixed;
-      pointer-events: none;
-      z-index: 5;
-      font-size: 2rem;
-      opacity: 0;
-      animation: ghostFloat 3s ease-in-out forwards
-    }
-
-    @keyframes ghostFloat {
-      0% {
-        opacity: 0;
-        transform: translateY(0) scale(.5)
+    /* ── 响应式与可访问性 ───────────────── */
+    @media (max-width: 370px) {
+      .counter {
+        padding-left: 14px;
+        padding-right: 14px;
       }
 
-      15% {
-        opacity: .7;
-        transform: translateY(-20px) scale(1)
+      .ticket-body {
+        padding-left: 18px;
+        padding-right: 18px;
       }
 
-      30% {
-        opacity: 1;
-        transform: translateY(-40px) scale(1.1)
-      }
-
-      70% {
-        opacity: .6;
-        transform: translateY(-80px) scale(.9)
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateY(-120px) scale(.3)
+      .dish-icon {
+        font-size: 2.4rem;
       }
     }
 
-    /* iOS 摇签权限按钮 */
-    .shake-permission-btn {
-      display: inline-block;
-      padding: 14px 32px;
-      border: 1px solid var(--gold-dim);
-      border-radius: 8px;
-      background: rgba(30, 30, 40, 0.85);
-      color: var(--gold);
-      font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', serif;
-      font-size: 1rem;
-      letter-spacing: 0.12em;
-      cursor: pointer;
-      text-align: center;
-      transition: all var(--transition-medium);
-      box-shadow: 0 0 24px rgba(201, 169, 110, 0.12);
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
+    @media (prefers-reduced-motion: reduce) {
 
-    .shake-permission-btn:hover,
-    .shake-permission-btn:active {
-      background: rgba(201, 169, 110, 0.1);
-      border-color: var(--gold);
-      box-shadow: 0 0 36px rgba(201, 169, 110, 0.25);
-    }
-
-    .shake-permission-btn.removing {
-      opacity: 0;
-      transform: translateY(10px);
-      pointer-events: none;
-    }
-
-
-    /* Responsive */
-    @media(max-width:420px) {
-      .app-container {
-        padding: 16px 12px;
-        gap: 16px
-      }
-
-      .temple-title {
-        font-size: 1.6rem
-      }
-
-      .tube-stage {
-        width: 160px;
-        height: 240px
-      }
-
-      .tube {
-        width: 80px;
-        height: 180px
-      }
-
-      .tube-base {
-        width: 100px
-      }
-
-      .diagnosis-card {
-        padding: 20px 16px
-      }
-
-      .card-actions {
-        flex-direction: column
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
       }
     }
 
-    ::-webkit-scrollbar {
-      width: 4px
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(201, 169, 110, .2);
-      border-radius: 2px
+    ::selection {
+      background: rgba(169, 47, 34, .2);
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
 </head>
 
 <body>
+  <div class="wall" aria-hidden="true"></div>
 
-  <div class="app-container" id="appContainer">
-    <div class="header">
-      <h1 class="temple-title" id="templeTitle">食 神 签</h1>
-      <p class="god-name" id="godName">—— 野生食神 · 百味审判 ——</p>
-      <div class="mood-indicator" id="moodIndicator">今日神谕：待启</div>
-    </div>
-    <div class="shake-permission-btn" id="shakePermissionBtn" style="display:none;">🙏 叩拜食神，开启签筒</div>
-
-
-    <p class="food-count-badge" id="foodCountBadge"></p>
-
-    <div class="tube-stage" id="tubeStage">
-      <div class="tube" id="tube">
-        <div class="stick-heads" id="stickHeads"></div>
-      </div>
-      <div class="tube-base"></div>
-      <div class="flying-stick" id="flyingStick"></div>
-      <span class="anger-text" id="angerText"></span>
-
-    </div>
-
-    <p class="hint-text" id="hintText">晃动签筒，求一支食签</p>
-
-    <div class="diagnosis-card" id="diagnosisCard">
-      <div class="card-header">
-        <span class="card-food-icon" id="cardFoodIcon"></span>
-        <span class="card-food-name" id="cardFoodName"></span>
-        <span class="card-category" id="cardCategory"></span>
-      </div>
-      <div class="card-time-judgement" id="cardTimeJudgement"></div>
-      <div class="card-diagnosis" id="cardDiagnosis"></div>
-      <span class="card-mood-tag" id="cardMoodTag"></span>
-      <div class="card-actions">
-        <button class="btn primary" onclick="acceptFortune()">🙏 从命</button>
-        <button class="btn danger" onclick="rejectFortune()">⚔️ 抗旨</button>
-        <button class="btn save" id="btnSave" onclick="saveFortuneAsImage()" disabled>📋 保存签文</button>
-
+  <main class="counter">
+    <div class="topbar">
+      <span class="brand-mark" aria-hidden="true">食神</span>
+      <div class="top-right">
+        <span class="period" id="periodLabel">午时</span>
+        <button class="sound-btn" id="soundBtn" type="button" data-on="true" aria-pressed="true">声音 开</button>
       </div>
     </div>
-  </div>
 
-  <div class="sin-scroll" id="sinScroll" onclick="openSinScroll()">
-    <span class="sin-scroll-icon">📜</span><span class="sin-badge" id="sinBadge">0</span>
-  </div>
-  <div class="letter-trigger" id="letterTrigger" onclick="openLetterModal()">✉️</div>
+    <header class="masthead">
+      <h1>食神签</h1>
+      <p class="sub">后厨出的单子，比你自己拿主意准。</p>
+    </header>
 
-  <div class="sin-modal" id="sinModal" onclick="closeSinScroll(event)">
-    <div class="sin-modal-content" onclick="event.stopPropagation()">
-      <button class="sin-close" onclick="closeSinScrollDirect()">✕</button>
-      <h3 class="sin-modal-title">📜 记仇小本本 · 抗旨罪状录</h3>
-      <ul class="sin-list" id="sinList"></ul>
+    <section class="oracle" aria-label="求签">
+      <div class="tube-wrap">
+        <button class="tube" id="tube" type="button" aria-label="摇一签">
+          <span class="sticks" id="sticks" aria-hidden="true"></span>
+          <span class="tube-mouth" aria-hidden="true"></span>
+          <span class="tube-body" aria-hidden="true"></span>
+          <span class="tube-label" aria-hidden="true">食神</span>
+        </button>
+        <span class="tube-shadow" aria-hidden="true"></span>
+      </div>
+
+      <p class="hint" id="hint">摇一摇，或者点一下签筒</p>
+      <button class="draw-btn" id="drawBtn" type="button">摇 一 签</button>
+      <button class="recall-btn" id="recallBtn" type="button" hidden>今天已经得了一签，看看</button>
+    </section>
+
+    <section class="empty-note" id="emptyNote">
+      <span class="big">签筒里备着一百道菜</span>
+      摇一摇，今天就不用再想了。
+    </section>
+
+    <section class="ticket-stage" id="ticketStage" hidden>
+      <article class="ticket" id="ticket" aria-live="polite">
+        <div class="ticket-tear" aria-hidden="true"></div>
+        <div class="ticket-body">
+          <div class="ticket-head">
+            <span class="ticket-no" id="ticketNo">第 001 签</span>
+            <span class="ticket-brand" aria-hidden="true">食神签</span>
+          </div>
+
+          <div class="dish">
+            <span class="dish-icon" id="dishIcon" aria-hidden="true">🍜</span>
+            <div class="dish-text">
+              <h2 class="dish-name" id="dishName">—</h2>
+              <p class="dish-meta">
+                <span id="dishCat">—</span>
+                <span class="dot" aria-hidden="true"></span>
+                <span id="dishPeriod">—</span>
+              </p>
+            </div>
+          </div>
+
+          <p class="mood-line" id="moodLine" hidden></p>
+
+          <div class="block">
+            <h3 id="timeTitle">午时判词</h3>
+            <p id="timeJudge"></p>
+          </div>
+
+          <div class="block">
+            <h3>食神断语</h3>
+            <p id="verdict"></p>
+          </div>
+
+          <div class="dos">
+            <div class="good">
+              <h3>宜</h3>
+              <p id="dosList"></p>
+            </div>
+            <div>
+              <h3>忌</h3>
+              <p id="dontsList"></p>
+            </div>
+          </div>
+
+          <div class="ticket-foot">
+            <span class="barcode" aria-hidden="true"></span>
+            <span class="foot-meta">
+              <span id="ticketDate">—</span><br>
+              <span>yileina.cyou</span>
+            </span>
+          </div>
+
+          <div class="stamp" id="stamp" aria-hidden="true">天意</div>
+        </div>
+      </article>
+
+      <div class="actions">
+        <button class="btn primary" id="acceptBtn" type="button">就吃这个</button>
+        <button class="btn ghost" id="againBtn" type="button">换一签</button>
+      </div>
+    </section>
+
+    <footer class="dock">
+      <button id="historyBtn" type="button">求签簿 <span class="count" id="historyCount">0</span></button>
+      <button id="saveBtn" type="button">存为图片</button>
+    </footer>
+  </main>
+
+  <div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="求签簿">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h2>求签簿</h2>
+        <button class="drawer-close" id="drawerClose" type="button" aria-label="关闭">✕</button>
+      </div>
+      <ul class="log-list" id="logList"></ul>
     </div>
   </div>
 
-  <div class="letter-modal" id="letterModal" onclick="closeLetterModal(event)">
-    <div class="letter-content" onclick="event.stopPropagation()">
-      <button class="sin-close" onclick="closeLetterModalDirect()">✕</button>
-      <h3 style="font-family:'STKaiti','KaiTi',serif;color:var(--gold);margin-bottom:8px">✉️ 食神的信</h3>
-      <p style="color:var(--text-secondary);font-size:.85rem" id="letterMessage"></p>
-      <input class="letter-input" id="letterInput" placeholder="留下你的名号…" maxlength="12">
-      <button class="btn primary" style="width:100%" onclick="submitLetter()">投递信笺</button>
-    </div>
-  </div>
-
-  <div class="strike-overlay" id="strikeOverlay">
-    <div class="strike-note">
-      <span class="emoji">🏳️</span>
-      <h2>食神今日罢工</h2>
-      <p>去天上跟人吵架了<br>你自己抛硬币吧<br><br><span style="font-size:.8rem;opacity:.5">明天再来，神或许就回来了</span></p>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    // ═══════════════════════════════════════════
-    //  野生食神签 · 百味审判 (100+ 食物)
-    // ═══════════════════════════════════════════
-
-    const TIME_PERIODS = { MORNING: 'morning', NOON: 'noon', EVENING: 'evening', NIGHT: 'night' };
-
-    const MOODS = {
-      NORMAL: { name: 'normal', label: '今日神谕：平和' },
-      ANGRY: { name: 'angry', label: '今日神谕：暴躁日 ⚡' },
-      EMO: { name: 'emo', label: '今日神谕：emo日 🌧️' },
-      CHUUNIBYOU: { name: 'chuunibyou', label: '今日神谕：中二病发 🔥' },
-      STRIKE: { name: 'strike', label: '食神罢工' }
-    };
-
-    // ═══════════════════════════════════════════
-    //  签文库 — 100+ 种食物
-    //  结构: {id,name,icon,category,time_judgement:{morning,noon,evening,night},diagnosis,angry_bonus}
-    // ═══════════════════════════════════════════
     const FOOD_DATABASE = [
 
       // ── 早餐经典 (18) ──────────────────────
@@ -2141,604 +2259,731 @@
     ];
 
     // ═══════════════════════════════════════════
-    //  应用状态
+    //  常量与文案
     // ═══════════════════════════════════════════
-    let state = {
-      currentFood: null,
-      timePeriod: null,
-      mood: null,
-      antiCommandCount: 0,
-      consecutiveDays: 0,
-      lastVisitDate: null,
-      godLetterName: null,
-      sinRecords: [],
-      isDrawing: false,
-      poisonModeUnlocked: false,
-      lastRejectedFood: null
+    const STORAGE_KEY = 'food_oracle_v2';
+    const PERIOD_LABEL = { morning: '卯时', noon: '午时', evening: '酉时', night: '子时' };
 
+    const MOODS = [
+      { key: 'calm', label: '平和', weight: 58, line: '' },
+      { key: 'grumpy', label: '暴躁', weight: 14, line: '食神今天在后厨跟人吵了一架，说话不太好听，你担待。' },
+      { key: 'low', label: '低落', weight: 14, line: '食神今天没什么精神，这一签是撑着头给你解的。' },
+      { key: 'chuuni', label: '中二', weight: 14, line: '哼，凡人的口腹之欲。这一签，本神勉强替你窥了天机。' }
+    ];
 
+    // 按分类给「宜 / 忌」，用食物 id 做稳定取值
+    const DOS_DONTS = {
+      '早餐经典': {
+        good: ['加个蛋', '配碗热豆浆', '趁热吃完', '早起十分钟'],
+        bad: ['放凉了再吃', '边走边吃', '配冰饮']
+      },
+      '面食江湖': {
+        good: ['加辣', '加个蛋', '多要一份面', '配瓣蒜'],
+        bad: ['泡到坨了再吃', '汤剩一半', '一边回消息一边吃']
+      },
+      '米饭正餐': {
+        good: ['加饭', '配碗汤', '堂食', '慢慢吃完'],
+        bad: ['隔夜再热', '配冰可乐', '站着扒两口']
+      },
+      '硬菜盛宴': {
+        good: ['叫上人一起吃', '配点酒', '吃不完打包', '先喝口汤'],
+        bad: ['一个人硬撑', '浪费', '吃完立刻躺下']
+      },
+      '快餐小吃': {
+        good: ['现炸现吃', '多要一包酱', '加杯热茶', '趁脆'],
+        bad: ['放软了再吃', '配冰可乐', '边走边吃']
+      },
+      '沙拉轻食': {
+        good: ['加份鸡胸', '酱少一点', '现拌现吃', '配杯温水'],
+        bad: ['拌好放半天', '假装吃饱', '配奶茶']
+      },
+      '甜品饮品': {
+        good: ['少糖', '喝冰的', '分着吃', '饭后半小时'],
+        bad: ['空腹吃', '睡前吃', '再来第二杯']
+      }
     };
 
+    const TAUNTS = [
+      '神没说话，又扔了一张。',
+      '后厨传来一声叹气。',
+      '食神把勺子放下了，你最好是真的不想吃。',
+      '这是第几次了？神没数，但神都记着。',
+      '行，你来做，神看你做。'
+    ];
+
     // ═══════════════════════════════════════════
-    //  音效管理
+    //  状态
     // ═══════════════════════════════════════════
-    const _sfx = {
-      shake: new Audio('sfx/shake.mp3'),
-      stickDrop: new Audio('sfx/stick_drop.mp3'),
-      reveal: new Audio('sfx/reveal.mp3'),
-      reject: new Audio('sfx/reject.mp3')
+    const state = {
+      daily: null,      // { date, id, accepted }
+      history: [],      // [{ id, name, icon, ts, accepted }]
+      rejects: 0,       // 今天换了几次
+      sound: true,
+      current: null,
+      busy: false,
+      reviewing: false  // 正在回看今日签
     };
 
-    function playSfx(name) {
-      const audio = _sfx[name];
-      if (!audio) return;
-      audio.currentTime = 0;
-      audio.play().catch(() => { });
-    }
-
-    function unlockAllAudio() {
-      Object.values(_sfx).forEach(a => {
-        a.volume = 0;
-        a.play().then(() => { a.pause(); a.currentTime = 0; a.volume = 1; }).catch(() => { });
-      });
-    }
-
-    // ═══════════════════════════════════════════
-    //  DOM 引用
-    // ═══════════════════════════════════════════
     const $ = id => document.getElementById(id);
-    const tube = $('tube');
-    const flyingStick = $('flyingStick');
-    const stickHeads = $('stickHeads');
-    const diagnosisCard = $('diagnosisCard');
-    const hintText = $('hintText');
-    const sinScroll = $('sinScroll');
-    const sinBadge = $('sinBadge');
-    const sinList = $('sinList');
-    const sinModal = $('sinModal');
-    const letterModal = $('letterModal');
-    const letterInput = $('letterInput');
-    const letterMessage = $('letterMessage');
-    const strikeOverlay = $('strikeOverlay');
-    const moodIndicator = $('moodIndicator');
-    const godName = $('godName');
-    const templeTitle = $('templeTitle');
-    const toast = $('toast');
-    const cardFoodIcon = $('cardFoodIcon');
-    const cardFoodName = $('cardFoodName');
-    const cardCategory = $('cardCategory');
-    const cardTimeJudgement = $('cardTimeJudgement');
-    const cardDiagnosis = $('cardDiagnosis');
-    const cardMoodTag = $('cardMoodTag');
-    const foodCountBadge = $('foodCountBadge');
+    const el = {
+      sticks: $('sticks'), tube: $('tube'), hint: $('hint'), drawBtn: $('drawBtn'),
+      recall: $('recallBtn'), empty: $('emptyNote'), stage: $('ticketStage'),
+      ticket: $('ticket'), no: $('ticketNo'), icon: $('dishIcon'), name: $('dishName'),
+      cat: $('dishCat'), period: $('dishPeriod'), moodLine: $('moodLine'),
+      timeTitle: $('timeTitle'), timeJudge: $('timeJudge'), verdict: $('verdict'),
+      dos: $('dosList'), donts: $('dontsList'), date: $('ticketDate'), stamp: $('stamp'),
+      accept: $('acceptBtn'), again: $('againBtn'), historyCount: $('historyCount'),
+      drawer: $('drawer'), logList: $('logList'), toast: $('toast'),
+      soundBtn: $('soundBtn'), periodLabel: $('periodLabel'), saveBtn: $('saveBtn'),
+      historyBtn: $('historyBtn'), drawerClose: $('drawerClose'), ticketStage: $('ticketStage')
+    };
 
     // ═══════════════════════════════════════════
-    //  初始化
+    //  工具
     // ═══════════════════════════════════════════
-    function init() {
-      loadState();
-      detectTimePeriod();
-      determineMood();
-      renderInitialUI();
-      generateStickHeads();
-      bindEvents();
+    const wait = ms => new Promise(r => setTimeout(r, ms));
 
-      if (state.mood.name === 'strike') showStrike();
+    function hash(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+      return h;
+    }
 
-      if (state.timePeriod === 'night') {
-        const hour = new Date().getHours();
-        if (hour >= 23 || hour < 5) {
-          document.body.classList.add('night-mode');
-          godName.textContent = '—— 饿鬼道引路人 · 深夜审判 ——';
-          if (Math.random() < 0.3) setTimeout(spawnGhostFace, 3000 + Math.random() * 5000);
-        }
+    function dateKey(d = new Date()) {
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${m}-${day}`;
+    }
+
+    function stampText(d = new Date()) {
+      const p = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}.${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+    }
+
+    function periodNow(h = new Date().getHours()) {
+      if (h >= 5 && h < 10) return 'morning';
+      if (h >= 10 && h < 14) return 'noon';
+      if (h >= 14 && h < 20) return 'evening';
+      return 'night';
+    }
+
+    function byId(id) {
+      return FOOD_DATABASE.find(f => f.id === id) || null;
+    }
+
+    function randomFood(excludeId) {
+      const pool = excludeId ? FOOD_DATABASE.filter(f => f.id !== excludeId) : FOOD_DATABASE;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    function moodOfDay() {
+      const seed = hash(dateKey()) % 100;
+      let acc = 0;
+      for (const m of MOODS) {
+        acc += m.weight;
+        if (seed < acc) return m;
       }
+      return MOODS[0];
+    }
 
-      updateSinScroll();
+    function pickTwo(list, seed, offset) {
+      const a = list[(seed + offset) % list.length];
+      let b = list[(seed + offset + 1 + (seed % 2)) % list.length];
+      if (b === a) b = list[(list.indexOf(a) + 2) % list.length];
+      return [a, b];
+    }
 
-      if (state.godLetterName && state.consecutiveDays >= 1) {
-        setTimeout(() => {
-          showToast(`哦，你就是昨天那个非要给神写信的「${state.godLetterName}」对吧？神记住你了。`);
-        }, 1500);
-      }
+    function dosDonts(food) {
+      const group = DOS_DONTS[food.category] || DOS_DONTS['米饭正餐'];
+      const seed = hash(food.id);
+      return {
+        good: pickTwo(group.good, seed, 0),
+        bad: pickTwo(group.bad, seed, 1)
+      };
+    }
+
+    function ticketNumber(food) {
+      return String(hash(food.id) % 100 + 1).padStart(3, '0');
     }
 
     // ═══════════════════════════════════════════
-    //  localStorage 持久化
+    //  本地存储
     // ═══════════════════════════════════════════
     function loadState() {
       try {
-        const saved = JSON.parse(localStorage.getItem('food_oracle_state') || '{}');
-        state.antiCommandCount = saved.antiCommandCount || 0;
-        state.consecutiveDays = saved.consecutiveDays || 0;
-        state.lastVisitDate = saved.lastVisitDate || null;
-        state.godLetterName = saved.godLetterName || null;
-        state.sinRecords = saved.sinRecords || [];
-        state.poisonModeUnlocked = saved.poisonModeUnlocked || false;
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        if (saved.daily) state.daily = saved.daily;
+        if (Array.isArray(saved.history)) state.history = saved.history.slice(0, 20);
+        if (typeof saved.rejects === 'number') state.rejects = saved.rejects;
+        if (typeof saved.sound === 'boolean') state.sound = saved.sound;
+      } catch (e) { /* 存储损坏时从空白开始 */ }
 
-        const today = new Date().toDateString();
-        if (state.lastVisitDate) {
-          const yesterday = new Date(Date.now() - 86400000).toDateString();
-          if (state.lastVisitDate === yesterday) state.consecutiveDays++;
-          else if (state.lastVisitDate !== today) state.consecutiveDays = 1;
-        } else {
-          state.consecutiveDays = 1;
-        }
-        state.lastVisitDate = today;
-
-        if (state.consecutiveDays >= 3 && !state.poisonModeUnlocked) {
-          state.poisonModeUnlocked = true;
-          setTimeout(() => showToast('你诚意够了——「毒舌模式」已免费开放一周。想听真话吗？'), 2000);
-        }
-        saveState();
-      } catch (e) {
-        state.antiCommandCount = 0; state.sinRecords = [];
+      const today = dateKey();
+      if (state.daily && state.daily.date !== today) {
+        state.daily = null;
+        state.rejects = 0;
       }
     }
 
     function saveState() {
-      localStorage.setItem('food_oracle_state', JSON.stringify({
-        antiCommandCount: state.antiCommandCount,
-        consecutiveDays: state.consecutiveDays,
-        lastVisitDate: state.lastVisitDate,
-        godLetterName: state.godLetterName,
-        sinRecords: state.sinRecords,
-        poisonModeUnlocked: state.poisonModeUnlocked
-      }));
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          daily: state.daily,
+          history: state.history,
+          rejects: state.rejects,
+          sound: state.sound
+        }));
+      } catch (e) { /* 无痕模式下忽略 */ }
     }
 
     // ═══════════════════════════════════════════
-    //  时间检测（静默，不告知用户）
+    //  音效
     // ═══════════════════════════════════════════
-    function detectTimePeriod() {
-      const h = new Date().getHours();
-      if (h < 10) state.timePeriod = TIME_PERIODS.MORNING;
-      else if (h < 14) state.timePeriod = TIME_PERIODS.NOON;
-      else if (h < 20) state.timePeriod = TIME_PERIODS.EVENING;
-      else state.timePeriod = TIME_PERIODS.NIGHT;
+    const sfx = {
+      shake: new Audio('sfx/shake.mp3'),
+      drop: new Audio('sfx/stick_drop.mp3'),
+      reveal: new Audio('sfx/reveal.mp3'),
+      reject: new Audio('sfx/reject.mp3')
+    };
+
+    function play(name) {
+      if (!state.sound) return;
+      const a = sfx[name];
+      if (!a) return;
+      try {
+        a.currentTime = 0;
+        a.play().catch(() => { });
+      } catch (e) { }
+    }
+
+    function unlockAudio() {
+      if (!state.sound) return;
+      Object.values(sfx).forEach(a => {
+        const v = a.volume;
+        a.volume = 0;
+        a.play().then(() => {
+          a.pause();
+          a.currentTime = 0;
+          a.volume = v;
+        }).catch(() => { });
+      });
     }
 
     // ═══════════════════════════════════════════
-    //  神明情绪（按日期种子确定，全天一致）
+    //  渲染
     // ═══════════════════════════════════════════
-    function determineMood() {
-      const seed = new Date().toDateString().split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-      const r = (seed % 100) / 100;
-      if (r < 0.05) state.mood = MOODS.STRIKE;
-      else if (r < 0.18) state.mood = MOODS.ANGRY;
-      else if (r < 0.30) state.mood = MOODS.EMO;
-      else if (r < 0.40) state.mood = MOODS.CHUUNIBYOU;
-      else state.mood = MOODS.NORMAL;
-    }
-
-    // ═══════════════════════════════════════════
-    //  初始 UI 渲染
-    // ═══════════════════════════════════════════
-    function renderInitialUI() {
-      moodIndicator.textContent = state.mood.label;
-      foodCountBadge.textContent = `签筒中共有 ${FOOD_DATABASE.length} 种食物等待审判你`;
-
-      if (state.mood.name === 'angry') {
-        moodIndicator.style.borderColor = '#c42b2b'; moodIndicator.style.color = '#c42b2b';
-      } else if (state.mood.name === 'emo') {
-        moodIndicator.style.borderColor = '#6a8abf'; moodIndicator.style.color = '#6a8abf';
-      } else if (state.mood.name === 'chuunibyou') {
-        moodIndicator.style.borderColor = '#c97a2e'; moodIndicator.style.color = '#c97a2e';
+    function buildSticks() {
+      el.sticks.innerHTML = '';
+      for (let i = 0; i < 26; i++) {
+        const s = document.createElement('span');
+        s.className = 'stick';
+        const x = (Math.random() - 0.5) * 96;
+        s.style.setProperty('--x', x.toFixed(1) + 'px');
+        s.style.setProperty('--r', ((Math.random() - 0.5) * 17).toFixed(1) + 'deg');
+        s.style.setProperty('--h', (52 + Math.random() * 22).toFixed(0) + 'px');
+        s.style.zIndex = String(10 + Math.round(x));
+        el.sticks.appendChild(s);
       }
     }
 
-    function generateStickHeads() {
-      stickHeads.innerHTML = '';
-      for (let i = 0; i < 28; i++) {
-        const s = document.createElement('div');
-        s.className = 'stick-head';
-        s.style.transform = `rotate(${(Math.random() - 0.5) * 15}deg)`;
-        stickHeads.appendChild(s);
+    function renderTicket(food) {
+      const period = periodNow();
+      el.no.textContent = '第 ' + ticketNumber(food) + ' 签';
+      el.icon.textContent = food.icon;
+      el.name.textContent = food.name;
+      el.cat.textContent = food.category;
+      el.period.textContent = PERIOD_LABEL[period];
+      el.timeTitle.textContent = PERIOD_LABEL[period] + '判词';
+      el.timeJudge.textContent = food.time_judgement[period];
+      el.verdict.textContent = food.diagnosis;
+
+      const mood = moodOfDay();
+      el.moodLine.hidden = !mood.line;
+      el.moodLine.textContent = mood.line;
+
+      const picks = dosDonts(food);
+      el.dos.textContent = picks.good.join('、');
+      el.donts.textContent = picks.bad.join('、');
+      el.date.textContent = stampText();
+
+      el.stamp.textContent = '天意';
+      el.stamp.classList.remove('down', 'accepted');
+
+      el.accept.disabled = false;
+      el.accept.textContent = '就吃这个';
+    }
+
+    function renderHistoryCount() {
+      el.historyCount.textContent = String(state.history.length);
+    }
+
+    function renderLog() {
+      if (!state.history.length) {
+        el.logList.innerHTML = '<li class="log-empty">还没有求过签。</li>';
+        return;
       }
+      el.logList.innerHTML = state.history.map(item => {
+        const t = new Date(item.ts);
+        const p = n => String(n).padStart(2, '0');
+        const time = `${p(t.getMonth() + 1)}-${p(t.getDate())} ${p(t.getHours())}:${p(t.getMinutes())}`;
+        return `<li class="log-item">
+          <span class="log-icon">${item.icon}</span>
+          <span class="log-name">${item.name}</span>
+          <span class="log-tag ${item.accepted ? 'accepted' : ''}">${item.accepted ? '吃了' : '没吃'}</span>
+          <span class="log-time">${time}</span>
+        </li>`;
+      }).join('');
+    }
+
+    function showToast(msg, ms = 2400) {
+      el.toast.textContent = msg;
+      el.toast.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => el.toast.classList.remove('show'), ms);
     }
 
     // ═══════════════════════════════════════════
-    //  事件绑定（含 iOS 13+ DeviceOrientation 权限）
+    //  抽签
     // ═══════════════════════════════════════════
-    let _shakeBound = false;
+    function recordHistory(food) {
+      state.history.unshift({
+        id: food.id, name: food.name, icon: food.icon,
+        ts: Date.now(), accepted: false
+      });
+      state.history = state.history.slice(0, 20);
+      renderHistoryCount();
+      saveState();
+    }
 
-    function attachShakeListener() {
-      if (_shakeBound) return;
-      _shakeBound = true;
-      let lastShake = 0, lx = 0, ly = 0, lz = 0;
-      window.addEventListener('devicemotion', (e) => {
+    async function draw(options = {}) {
+      const { reroll = false, review = false } = options;
+      if (state.busy) return;
+      if (el.tube.classList.contains('locked')) return;
+
+      const today = dateKey();
+      let food;
+      let isReview = false;
+
+      if (!reroll && !review && state.daily && state.daily.date === today) {
+        // 今天已经抽过：直接给当天那一签，不重复记录
+        food = byId(state.daily.id) || randomFood();
+        isReview = true;
+      } else if (review && state.daily && state.daily.date === today) {
+        food = byId(state.daily.id) || randomFood();
+        isReview = true;
+      } else if (reroll) {
+        food = randomFood(state.current ? state.current.id : null);
+      } else {
+        food = randomFood();
+        state.daily = { date: today, id: food.id, accepted: false };
+      }
+
+      state.busy = true;
+      state.reviewing = isReview;
+      el.drawBtn.disabled = true;
+      el.recall.hidden = true;
+      el.hint.style.opacity = '.35';
+      el.empty.hidden = true;
+
+      if (!isReview) {
+        state.current = { ...food, accepted: false };
+        recordHistory(food);
+      } else {
+        state.current = { ...food, accepted: !!(state.daily && state.daily.accepted) };
+      }
+
+      play('shake');
+      el.tube.classList.add('shaking');
+      await wait(560);
+      el.tube.classList.remove('shaking');
+
+      // 飞一支签
+      const sticks = el.sticks.querySelectorAll('.stick');
+      const flyer = sticks[Math.floor(sticks.length / 2)];
+      if (flyer) {
+        flyer.classList.add('fly');
+        setTimeout(() => flyer.classList.remove('fly'), 700);
+      }
+      play('drop');
+      await wait(180);
+
+      el.stage.hidden = false;
+      renderTicket(food);
+
+      el.ticket.classList.remove('play');
+      void el.ticket.offsetWidth;
+      el.ticket.classList.add('play');
+      play('reveal');
+
+      if (state.current.accepted) {
+        el.stamp.textContent = '已领';
+        el.stamp.classList.add('accepted');
+        el.accept.disabled = true;
+        el.accept.textContent = '已经记下了';
+      }
+
+      await wait(520);
+      el.stamp.classList.add('down');
+
+      el.hint.style.opacity = '';
+      el.hint.textContent = isReview ? '这是今天的那一签' : '签已出，趁热看';
+      el.drawBtn.disabled = false;
+      state.busy = false;
+      state.reviewing = false;
+
+      el.stage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    // ═══════════════════════════════════════════
+    //  交互
+    // ═══════════════════════════════════════════
+    async function requestMotionPermission() {
+      if (typeof DeviceOrientationEvent === 'undefined' ||
+        typeof DeviceOrientationEvent.requestPermission !== 'function') return;
+      try {
+        const p = await DeviceOrientationEvent.requestPermission();
+        if (p === 'granted') attachShake();
+      } catch (e) { }
+    }
+
+    let shakeBound = false;
+    function attachShake() {
+      if (shakeBound || !window.DeviceMotionEvent) return;
+      shakeBound = true;
+      let last = 0, lx = 0, ly = 0, lz = 0;
+      window.addEventListener('devicemotion', e => {
         const a = e.accelerationIncludingGravity;
         if (!a) return;
         const d = Math.abs(a.x - lx) + Math.abs(a.y - ly) + Math.abs(a.z - lz);
-        if (d > 30 && Date.now() - lastShake > 2000 && !state.isDrawing && state.mood.name !== 'strike') {
-          lastShake = Date.now(); drawFortune();
+        if (d > 28 && Date.now() - last > 2600 && !state.busy) {
+          last = Date.now();
+          draw();
         }
         lx = a.x; ly = a.y; lz = a.z;
       });
     }
 
-    function unlockIOSAudio() {
-      unlockAllAudio();
-    }
-
-
-    function bindEvents() {
-      tube.addEventListener('click', () => {
-        if (state.isDrawing || state.mood.name === 'strike') return;
-        unlockAllAudio();
-        drawFortune();
-      });
-
-      const needsPermission = (
-        typeof DeviceOrientationEvent !== 'undefined' &&
-        typeof DeviceOrientationEvent.requestPermission === 'function'
-      );
-
-      if (needsPermission) {
-        // iOS 13+：需要用户显式授权
-        const btn = document.getElementById('shakePermissionBtn');
-        if (btn) {
-          btn.style.display = 'inline-block';
-          btn.addEventListener('click', async () => {
-            try {
-              const perm = await DeviceOrientationEvent.requestPermission();
-              if (perm === 'granted') {
-                attachShakeListener();
-                unlockIOSAudio();
-                btn.classList.add('removing');
-                setTimeout(() => { btn.style.display = 'none'; btn.classList.remove('removing'); }, 400);
-                showToast('签筒已开启——摇晃手机求签吧');
-              } else {
-                showToast('食神无法感知你的动作……请点击签筒求签');
-              }
-            } catch (e) {
-              showToast('叩拜失败……请直接点击签筒求签吧');
-            }
-          });
-        }
-      } else {
-        // 安卓 / 旧 iOS / 桌面端：直接绑定
-        if (window.DeviceMotionEvent) {
-          attachShakeListener();
-        }
-      }
-    }
-
-
-    // ═══════════════════════════════════════════
-    //  核心：求签
-    // ═══════════════════════════════════════════
-    function drawFortune() {
-      if (state.isDrawing) return;
-      state.isDrawing = true;
-
-      diagnosisCard.classList.remove('revealed');
-      hintText.style.opacity = '0.3';
-      tube.classList.add('shaking');
-      playSfx('shake');
-
-
-
-      const food = FOOD_DATABASE[Math.floor(Math.random() * FOOD_DATABASE.length)];
-      state.currentFood = food;
-
-      setTimeout(() => {
-        tube.classList.remove('shaking');
-        flyingStick.classList.add('active');
-        playSfx('stickDrop');
-
-        setTimeout(() => {
-          flyingStick.classList.remove('active');
-
-
-          revealDiagnosis(food);
-          state.isDrawing = false;
-          hintText.style.opacity = '0.7';
-        }, 1000);
-      }, 600);
-    }
-
-    // ═══════════════════════════════════════════
-    //  揭示诊断书
-    // ═══════════════════════════════════════════
-    function revealDiagnosis(food) {
-      const timeJudge = food.time_judgement[state.timePeriod];
-      let diagnosis = food.diagnosis;
-      let moodTag = '';
-
-      // 情绪滤镜
-      if (state.mood.name === 'angry') {
-        diagnosis = '💢 ' + food.angry_bonus + '\n\n' + diagnosis;
-        moodTag = '⚡ 暴躁日特别版';
-      } else if (state.mood.name === 'emo') {
-        diagnosis = '（食神今日心情低落，但依然为你解签……）\n\n' + diagnosis;
-        moodTag = '🌧️ emo日 · 温柔版';
-      } else if (state.mood.name === 'chuunibyou') {
-        diagnosis = '哼，凡人，这就是你的宿命之食！解开它的封印，你将获得下午摸鱼三小时的秘奥义！\n\n' + diagnosis;
-        moodTag = '🔥 中二病发作版';
-      }
-
-      // 深夜鬼食模式
-      if (state.timePeriod === 'night') {
-        const h = new Date().getHours();
-        if (h >= 23 || h < 5) {
-          diagnosis = '这个时辰还在找吃的，你不是饿，你是心里有一个填不满的洞。来吧，无论抽到什么，今晚它都是你的灵魂镇痛剂，不是食物。\n\n' + diagnosis;
-        }
-      }
-
-      // 署名用户彩蛋
-      if (state.godLetterName && Math.random() < 0.5) {
-        diagnosis = `（食神瞥了一眼签筒旁的卷轴——「${state.godLetterName}」，又是你。）\n\n` + diagnosis;
-      }
-
-      // 毒舌模式彩蛋
-      if (state.poisonModeUnlocked && Math.random() < 0.4) {
-        diagnosis += '\n\n🔥 毒舌模式附赠：「说真的，你抽签之前心里已经有答案了吧？你只是想找个人替你背锅。行，本神背了。」';
-      }
-
-      // 记仇文案：上次抗旨的后果
-      if (state.lastRejectedFood) {
-        const grudgeTemplates = [
-          `⚡ 上次你拒绝了「{food}」，神记着呢。这次给神老实点。`,
-          `📜 神的案卷上写着：此人曾拒「{food}」。你还有一次赎罪的机会。`,
-          `💢 想起你上次拒绝「{food}」，神的手还在抖。今天别再犯。`,
-          `🔮 本神掐指一算——你上次拒了「{food}」，罪业未消。这签是给你赎罪的。`,
-          `⚔️ 上次「{food}」你不吃，这次神换了一个。但别以为神忘了——罪状还在卷轴上。`,
-          `😤 「{food}」事件尚未翻篇。食神虽然宽宏大量，但这笔账还没销。`,
-          `🪷 抗旨一次情有可原，但上次拒绝「{food}」这件事——神今天要你补回来。`,
-          `🔥 食神翻开记仇小本本：第1条就是拒绝「{food}」。今天这签你若再拒——后果自负。`
-        ];
-        const grudge = grudgeTemplates[Math.floor(Math.random() * grudgeTemplates.length)]
-          .replace('{food}', state.lastRejectedFood);
-        diagnosis = grudge + '\n\n' + diagnosis;
-        state.lastRejectedFood = null;
-        saveState();
-      }
-
-
-      // 填充 DOM
-      cardFoodIcon.textContent = food.icon;
-      cardFoodName.textContent = food.name;
-      cardCategory.textContent = food.category;
-      cardTimeJudgement.textContent = timeJudge;
-      cardDiagnosis.textContent = diagnosis;
-      cardMoodTag.textContent = moodTag;
-
-      setTimeout(() => {
-        diagnosisCard.classList.add('revealed');
-        const saveBtn = document.getElementById('btnSave');
-        if (saveBtn) saveBtn.disabled = false;
-
-        playSfx('reveal');
-      }, 100);
-
-    }
-    // ═══════════════════════════════════════════
-    //  截图分享
-    // ═══════════════════════════════════════════
-    async function saveFortuneAsImage() {
-      const card = document.getElementById('diagnosisCard');
-      const btn = document.getElementById('btnSave');
-      if (!card || !card.classList.contains('revealed')) return;
-
-      btn.disabled = true;
-      btn.textContent = '⏳ 渲染中...';
-
-      try {
-        const canvas = await html2canvas(card, {
-          backgroundColor: '#14141f',
-          scale: 2,
-          useCORS: true,
-          allowTaint: true
+    function bind() {
+      el.tube.addEventListener('click', () => {
+        unlockAudio();
+        requestMotionPermission().then(() => {
+          if (state.daily && state.daily.date === dateKey() && !state.reviewing) {
+            draw({ review: true });
+          } else {
+            draw();
+          }
         });
-
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-        const file = new File([blob], '食神签.png', { type: 'image/png' });
-
-        // 移动端：系统分享面板
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-          await navigator.share({
-            title: '食神签 · 今日诊断',
-            text: '食神签 · 今日诊断',
-            files: [file]
-          });
-          showToast('📋 签文已分享！');
-        } else {
-          // 桌面端 & 不支持 share 的移动端：下载
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = '食神签.png';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          showToast('📋 签文已保存！');
-        }
-      } catch (e) {
-        if (e.name !== 'AbortError') {
-          showToast('⚠️ 保存失败，请手动截图');
-          console.error('saveFortuneAsImage:', e);
-        }
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '📋 保存签文';
-      }
-    }
-
-    // ═══════════════════════════════════════════
-    //  从命
-    // ═══════════════════════════════════════════
-    function acceptFortune() {
-      const food = state.currentFood;
-      if (!food) return;
-
-
-      const praises = [
-        `🙏 你从了食神的旨意。去吃${food.name}吧，神会保佑你的胃。`,
-        `🙏 明智的选择。${food.name}已经在等你了——别让它等太久。`,
-        `🙏 食神点头：识时务者为俊杰。今天这顿${food.name}，神给你免辣。`
-      ];
-      showToast(praises[Math.floor(Math.random() * praises.length)]);
-
-      setTimeout(() => {
-        generateStickHeads();
-        diagnosisCard.classList.remove('revealed');
-      }, 800);
-    }
-
-    // ═══════════════════════════════════════════
-    //  抗旨
-    // ═══════════════════════════════════════════
-    function rejectFortune() {
-      const food = state.currentFood;
-      if (!food) return;
-      playSfx('reject');
-      state.lastRejectedFood = food.name;
-
-
-
-      state.antiCommandCount++;
-      state.sinRecords.push({
-        food: food.name, icon: food.icon,
-        time: new Date().toLocaleString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
-        mood: state.mood.label
       });
-      saveState();
-      updateSinScroll();
 
-      let msg;
-      if (state.mood.name === 'angry') {
-        msg = '💢 大胆！！今日食神暴躁你还敢抗旨？！罪加一等！！';
-      } else if (state.mood.name === 'emo') {
-        msg = '😔 连你也拒绝神……也罢，神已经习惯了被辜负。';
-      } else if (state.mood.name === 'chuunibyou') {
-        msg = '⚔️ 哼！竟敢违抗本神之命！你的反叛意志已被记录在暗黑卷轴之上！';
-      } else {
-        const replies = [
-          `⚔️ 你拒绝了${food.name}。食神摇摇头，在小本本上记了一笔。`,
-          `⚔️ 抗旨！食神眉毛一挑：行，你有种。但神会记住的。`,
-          `⚔️ 竟敢抗旨？食神冷笑：你的罪状+1，凑满三条会有惊喜。`
-        ];
-        msg = replies[Math.floor(Math.random() * replies.length)];
+      el.drawBtn.addEventListener('click', () => {
+        unlockAudio();
+        requestMotionPermission().then(() => {
+          if (state.daily && state.daily.date === dateKey() && !state.reviewing) {
+            draw({ review: true });
+          } else {
+            draw();
+          }
+        });
+      });
+
+      el.recall.addEventListener('click', () => draw({ review: true }));
+
+      el.again.addEventListener('click', () => {
+        if (state.busy) return;
+        state.rejects++;
+        saveState();
+        if (state.rejects >= 2) {
+          const idx = Math.min(state.rejects - 2, TAUNTS.length - 1);
+          showToast(TAUNTS[idx]);
+        }
+        play('reject');
+        draw({ reroll: true });
+      });
+
+      el.accept.addEventListener('click', () => {
+        if (!state.current || state.current.accepted) return;
+        state.current.accepted = true;
+        if (state.daily && state.daily.date === dateKey() && state.daily.id === state.current.id) {
+          state.daily.accepted = true;
+        }
+        const last = state.history[0];
+        if (last && last.id === state.current.id && !last.accepted) last.accepted = true;
+        el.stamp.textContent = '已领';
+        el.stamp.classList.add('accepted');
+        el.accept.disabled = true;
+        el.accept.textContent = '已经记下了';
+        saveState();
+        renderLog();
+        showToast(state.current.name + '。行，就它了。', 3000);
+      });
+
+      el.soundBtn.addEventListener('click', () => {
+        state.sound = !state.sound;
+        el.soundBtn.dataset.on = String(state.sound);
+        el.soundBtn.textContent = state.sound ? '声音 开' : '声音 关';
+        el.soundBtn.setAttribute('aria-pressed', String(state.sound));
+        if (state.sound) { unlockAudio(); play('drop'); }
+        saveState();
+      });
+
+      el.historyBtn.addEventListener('click', () => {
+        renderLog();
+        el.drawer.classList.add('open');
+      });
+
+      el.drawerClose.addEventListener('click', () => el.drawer.classList.remove('open'));
+      el.drawer.addEventListener('click', e => {
+        if (e.target === el.drawer) el.drawer.classList.remove('open');
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') el.drawer.classList.remove('open');
+        if (e.code === 'Space' && !el.drawer.classList.contains('open') &&
+          document.activeElement === document.body) {
+          e.preventDefault();
+          el.drawBtn.click();
+        }
+      });
+
+      el.saveBtn.addEventListener('click', () => {
+        if (!state.current) { showToast('先摇一签，才有东西可存。'); return; }
+        saveAsImage(state.current);
+      });
+
+      attachShake();
+    }
+
+    // ═══════════════════════════════════════════
+    //  分享图（canvas 手绘）
+    // ═══════════════════════════════════════════
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const chars = String(text).split('');
+      let line = '';
+      let curY = y;
+      for (let i = 0; i < chars.length; i++) {
+        const test = line + chars[i];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          ctx.fillText(line, x, curY);
+          line = chars[i];
+          curY += lineHeight;
+        } else {
+          line = test;
+        }
       }
-      showToast(msg);
+      if (line) ctx.fillText(line, x, curY);
+      return curY;
+    }
 
-      // 锁定签筒 2 秒
-      const tubeEl = document.getElementById('tube');
-      const angerText = document.getElementById('angerText');
-      tubeEl.classList.add('locked');
-      if (angerText) {
-        angerText.textContent = '神生气了，稍等片刻……';
-        angerText.classList.add('show');
+    function saveAsImage(food) {
+      const W = 1080, H = 1640;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d');
+      const period = periodNow();
+
+      // 纸底
+      ctx.fillStyle = '#f7f0df';
+      ctx.fillRect(0, 0, W, H);
+
+      // 纸纹
+      ctx.save();
+      ctx.globalAlpha = .05;
+      ctx.fillStyle = '#6b5636';
+      for (let i = 0; i < 900; i++) {
+        const x = Math.random() * W;
+        const y = Math.random() * H;
+        ctx.fillRect(x, y, 2, 2);
+      }
+      ctx.restore();
+
+      // 顶部墨绿条
+      ctx.fillStyle = '#1e2a24';
+      ctx.fillRect(0, 0, W, 26);
+
+      // 标题
+      ctx.fillStyle = '#1c1914';
+      ctx.textAlign = 'center';
+      ctx.font = '700 64px "Songti SC","SimSun",serif';
+      ctx.fillText('食 神 签', W / 2, 140);
+
+      ctx.fillStyle = '#7a7161';
+      ctx.font = '24px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText('后厨出的单子，比你自己拿主意准。', W / 2, 190);
+
+      // 分隔
+      ctx.strokeStyle = 'rgba(28,25,20,.18)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(90, 228);
+      ctx.lineTo(W - 90, 228);
+      ctx.stroke();
+
+      // 签号
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#7a7161';
+      ctx.font = '22px "Courier New",monospace';
+      ctx.fillText('第 ' + ticketNumber(food) + ' 签', 90, 286);
+
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#a92f22';
+      ctx.font = '24px "Songti SC","SimSun",serif';
+      ctx.fillText(PERIOD_LABEL[period] + ' · 天意', W - 90, 286);
+
+      // 食物
+      ctx.textAlign = 'left';
+      ctx.font = '96px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+      ctx.fillText(food.icon, 90, 420);
+
+      ctx.fillStyle = '#1c1914';
+      ctx.font = '700 76px "Songti SC","SimSun",serif';
+      ctx.fillText(food.name, 230, 410);
+
+      ctx.fillStyle = '#7a7161';
+      ctx.font = '26px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText(food.category + ' · ' + PERIOD_LABEL[period], 232, 455);
+
+      // 线
+      ctx.strokeStyle = 'rgba(28,25,20,.16)';
+      ctx.beginPath();
+      ctx.moveTo(90, 500);
+      ctx.lineTo(W - 90, 500);
+      ctx.stroke();
+
+      let y = 570;
+
+      // 判词
+      ctx.fillStyle = '#a92f22';
+      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText(PERIOD_LABEL[period] + '判词', 90, y);
+      y += 48;
+
+      ctx.fillStyle = '#4a4337';
+      ctx.font = '30px "PingFang SC","Microsoft YaHei",sans-serif';
+      y = wrapText(ctx, food.time_judgement[period], 90, y, W - 180, 50);
+      y += 56;
+
+      // 断语
+      ctx.fillStyle = '#a92f22';
+      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText('食神断语', 90, y);
+      y += 48;
+
+      ctx.fillStyle = '#4a4337';
+      ctx.font = '30px "PingFang SC","Microsoft YaHei",sans-serif';
+      y = wrapText(ctx, food.diagnosis, 90, y, W - 180, 50);
+      y += 56;
+
+      // 宜忌
+      const picks = dosDonts(food);
+      ctx.strokeStyle = 'rgba(28,25,20,.16)';
+      ctx.beginPath();
+      ctx.moveTo(90, y - 16);
+      ctx.lineTo(W - 90, y - 16);
+      ctx.stroke();
+
+      ctx.fillStyle = '#4f6b4a';
+      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText('宜', 90, y + 32);
+      ctx.fillStyle = '#4a4337';
+      ctx.font = '28px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText(picks.good.join(' · '), 150, y + 32);
+
+      ctx.fillStyle = '#a92f22';
+      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText('忌', 90, y + 82);
+      ctx.fillStyle = '#4a4337';
+      ctx.font = '28px "PingFang SC","Microsoft YaHei",sans-serif';
+      ctx.fillText(picks.bad.join(' · '), 150, y + 82);
+
+      // 底部
+      const footY = H - 150;
+      ctx.strokeStyle = 'rgba(28,25,20,.22)';
+      ctx.setLineDash([10, 10]);
+      ctx.beginPath();
+      ctx.moveTo(90, footY);
+      ctx.lineTo(W - 90, footY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 条形码
+      ctx.fillStyle = '#1c1914';
+      for (let i = 0; i < 40; i++) {
+        const bw = 2 + (i % 4);
+        ctx.fillRect(90 + i * 8, footY + 36, bw, 56);
       }
 
-      setTimeout(() => {
-        tubeEl.classList.remove('locked');
-        if (angerText) angerText.classList.remove('show');
-        generateStickHeads();
-        diagnosisCard.classList.remove('revealed');
-      }, 2000);
+      ctx.fillStyle = '#7a7161';
+      ctx.font = '22px "Courier New",monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText(stampText(), W - 90, footY + 58);
+      ctx.fillText('yileina.cyou/tools/food-oracle', W - 90, footY + 90);
 
-    }
+      // 印章
+      ctx.save();
+      ctx.translate(W - 150, footY - 90);
+      ctx.rotate(-9 * Math.PI / 180);
+      ctx.strokeStyle = '#a92f22';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(-62, -76, 124, 152);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(-54, -68, 108, 136);
+      ctx.fillStyle = '#a92f22';
+      ctx.textAlign = 'center';
+      ctx.font = '700 52px "Songti SC","SimSun",serif';
+      ctx.fillText('天', 0, 4);
+      ctx.fillText('意', 0, 70);
+      ctx.restore();
 
-    // ═══════════════════════════════════════════
-    //  记仇小本本
-    // ═══════════════════════════════════════════
-    function updateSinScroll() {
-      sinBadge.textContent = state.sinRecords.length;
-      sinScroll.classList.toggle('visible', state.sinRecords.length >= 3);
-    }
-
-    function openSinScroll() {
-      sinList.innerHTML = state.sinRecords.map((r, i) => `
-    <li class="sin-item">
-      <span>${r.icon} 第${i + 1}条：拒绝「${r.food}」</span>
-      <span class="sin-item-time">${r.time}</span>
-    </li>
-  `).reverse().join('');
-      sinModal.classList.add('open');
-    }
-
-    function closeSinScroll(e) {
-      if (e.target === sinModal) sinModal.classList.remove('open');
-    }
-
-    function closeSinScrollDirect() {
-      sinModal.classList.remove('open');
-    }
-
-    // ═══════════════════════════════════════════
-    //  食神的信
-    // ═══════════════════════════════════════════
-    function openLetterModal() {
-      letterMessage.textContent = state.godLetterName
-        ? `「${state.godLetterName}」——神认得你了。想换个名号吗？`
-        : '在此留下你的名号（不必是真名），食神会记住你。';
-      letterInput.value = '';
-      letterModal.classList.add('open');
-    }
-
-    function closeLetterModal(e) {
-      if (e.target === letterModal) letterModal.classList.remove('open');
-    }
-
-    function closeLetterModalDirect() {
-      letterModal.classList.remove('open');
-    }
-
-    function submitLetter() {
-      const name = letterInput.value.trim();
-      if (!name) { showToast('不写名号？神怎么记住你？'); return; }
-      state.godLetterName = name;
-      saveState();
-      letterModal.classList.remove('open');
-      showToast(`「${name}」——本神不识字，不会写信。但明天午时再来，心里默念你的名号，神会认出你。`);
-    }
-
-    // ═══════════════════════════════════════════
-    //  罢工日
-    // ═══════════════════════════════════════════
-    function showStrike() {
-      strikeOverlay.classList.add('active');
-    }
-
-    // ═══════════════════════════════════════════
-    //  深夜鬼脸彩蛋
-    // ═══════════════════════════════════════════
-    function spawnGhostFace() {
-      const ghost = document.createElement('div');
-      ghost.className = 'ghost-face';
-      ghost.textContent = ['👻', '💀', '🕯️', '😈'][Math.floor(Math.random() * 4)];
-      ghost.style.left = (10 + Math.random() * 80) + '%';
-      ghost.style.top = (55 + Math.random() * 35) + '%';
-      document.body.appendChild(ghost);
-      setTimeout(() => ghost.remove(), 3500);
-      if (Math.random() < 0.3) setTimeout(spawnGhostFace, 5000 + Math.random() * 8000);
-    }
-
-    // ═══════════════════════════════════════════
-    //  Toast 提示
-    // ═══════════════════════════════════════════
-    let toastTimer;
-    function showToast(msg) {
-      clearTimeout(toastTimer);
-      toast.textContent = msg;
-      toast.classList.add('show');
-      toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+      // 下载
+      canvas.toBlob(blob => {
+        if (!blob) { showToast('生成图片失败，试试直接截图。'); return; }
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '食神签-' + food.name + '.png';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 5000);
+        showToast('图存好了。发给人，让他也别想了。', 3000);
+      }, 'image/png');
     }
 
     // ═══════════════════════════════════════════
     //  启动
     // ═══════════════════════════════════════════
-    init();
+    function init() {
+      loadState();
+      buildSticks();
+      renderHistoryCount();
+      renderLog();
 
-    console.log('🥢 野生食神签 · 百味审判已就绪');
-    console.log('   签筒中共有', FOOD_DATABASE.length, '种食物');
-    console.log('   当前时段:', state.timePeriod);
-    console.log('   今日神谕:', state.mood.label);
-    console.log('   连续签到:', state.consecutiveDays, '天 | 抗旨次数:', state.antiCommandCount);
-    console.log('   📿 点击签筒或摇晃手机求签');
+      el.periodLabel.textContent = PERIOD_LABEL[periodNow()];
+      el.soundBtn.dataset.on = String(state.sound);
+      el.soundBtn.textContent = state.sound ? '声音 开' : '声音 关';
+      el.soundBtn.setAttribute('aria-pressed', String(state.sound));
+
+      if (state.daily && state.daily.date === dateKey()) {
+        el.recall.hidden = false;
+        const food = byId(state.daily.id);
+        if (food) el.hint.textContent = '今天神已经给过你答案了';
+      }
+
+      if (state.daily && state.daily.accepted) {
+        el.recall.textContent = '今天的签已经领了，再看看';
+      }
+
+      bind();
+
+      // 深夜的墙更暗一点
+      if (periodNow() === 'night') {
+        document.documentElement.style.setProperty('--wall', '#18221d');
+        document.documentElement.style.setProperty('--wall-deep', '#101813');
+      }
+    }
+
+    init();
+    console.log('%c食神签 · 一百道菜等你摇', 'color:#a92f22;font-size:14px');
   </script>
 </body>
 

@@ -3,8 +3,8 @@
   'use strict'
 
   var bgList=[]
-  // 使用原始6张 + 桌面壁纸合集（风格统一）
-  for(var i=1;i<=46;i++) bgList.push('/images/backgrounds/bg-'+i+'.webp')
+  // 全部 73 张壁纸（bg-47~73 此前闲置未启用）
+  for(var i=1;i<=73;i++) bgList.push('/images/backgrounds/bg-'+i+'.webp')
 
   // Fisher-Yates 洗牌
   function shuffle(arr){
@@ -17,21 +17,19 @@
   }
 
   var playOrder=shuffle(bgList)  // 乱序播放顺序
-  var idx=0,interval=8000,fade=800
+  var interval=8000,fade=800,prefetched={}
 
-  // 预加载图片：首屏只加载前两张（正在显示+下一张），其余等页面加载完且空闲后再悄悄缓存，
-  // 避免一进页面就把 46 张壁纸(约1.9MB)全部拉下来挤占首屏资源
-  function preloadRest(){
-    playOrder.slice(2).forEach(function(src){
-      var img=new Image()
-      img.src=src
-    })
+  // 滑动窗口预取：只提前缓存"下一张+再下一张"，不做全量 20MB 后台下载
+  function prefetchAhead(orders,i){
+    for(var k=1;k<=2;k++){
+      var src=orders[(i+k)%orders.length]
+      if(src && !prefetched[src]){
+        prefetched[src]=true
+        var img=new Image()
+        img.src=src
+      }
+    }
   }
-  function idlePreload(){
-    setTimeout(preloadRest, 5000)
-  }
-  if(document.readyState==='complete') idlePreload()
-  else window.addEventListener('load', idlePreload)
 
   function init(){
     // 两层背景交替 - 避免白闪
@@ -64,11 +62,16 @@
 
     // 双图层交替 - 乱序完整放完一组后重新打乱
     var active=bg1,inactive=bg2,curIdx=0
+    // 首屏预取第 2、3 张（正在显示 0、1 已由 CSS 加载）
+    prefetched[playOrder[0]]=prefetched[playOrder[1]]=true
+    prefetchAhead(playOrder,1)
     setInterval(function(){
       curIdx++
       if(curIdx>=playOrder.length){
         playOrder=shuffle(bgList)
         curIdx=0
+        prefetched={}
+        prefetchAhead(playOrder,0)
       }
       // 非活跃层换图然后淡入
       inactive.style.backgroundImage='url('+playOrder[curIdx]+')'
@@ -76,6 +79,8 @@
       active.style.opacity='0'
       // 交换引用
       var tmp=active;active=inactive;inactive=tmp
+      // 滑动窗口预取后面两张
+      prefetchAhead(playOrder,curIdx)
     },interval)
   }
 
