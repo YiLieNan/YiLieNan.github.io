@@ -1174,6 +1174,146 @@
       cursor: default;
     }
 
+    /* ── 心情前缀 / 名号 / 小本本 ───────── */
+    .mood-prefix {
+      margin: 6px 0 9px;
+      padding: 7px 10px;
+      border-left: 5px solid var(--red);
+      background: rgba(255, 77, 46, .1);
+      font-size: .82rem;
+      font-weight: 700;
+      line-height: 1.72;
+      color: var(--black);
+    }
+
+    .ticket-tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 3px dashed rgba(17, 17, 17, .3);
+    }
+
+    .tt-btn {
+      appearance: none;
+      background: none;
+      border: 0;
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+      padding: 3px 0;
+      cursor: pointer;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+      text-align: left;
+    }
+
+    .tt-btn:hover {
+      color: var(--red);
+    }
+
+    .sin-count {
+      display: inline-block;
+      min-width: 17px;
+      background: var(--black);
+      color: var(--cream);
+      font-family: var(--display);
+      font-size: .56rem;
+      text-align: center;
+      padding: 1px 4px;
+      margin-left: 2px;
+      text-decoration: none;
+    }
+
+    .name-note,
+    .sin-note {
+      margin: 10px 0 12px;
+      font-size: .74rem;
+      font-weight: 700;
+      line-height: 1.8;
+      color: rgba(17, 17, 17, .65);
+    }
+
+    .name-input {
+      width: 100%;
+      appearance: none;
+      background: var(--cream);
+      color: var(--black);
+      border: 3px solid var(--black);
+      box-shadow: inset 3px 3px 0 rgba(17, 17, 17, .08);
+      font-family: var(--sans);
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .name-input:focus {
+      outline: 3px solid var(--red);
+      outline-offset: 2px;
+    }
+
+    .name-send {
+      width: 100%;
+      padding: 12px 0;
+    }
+
+    .sin-list {
+      list-style: none;
+    }
+
+    .sin-item {
+      border-bottom: 2px solid rgba(17, 17, 17, .12);
+    }
+
+    .sin-row {
+      width: 100%;
+      appearance: none;
+      background: none;
+      border: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 10px 0;
+      font-family: var(--sans);
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--black);
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .sin-row .sin-time {
+      margin-left: auto;
+      font-size: .58rem;
+      font-weight: 700;
+      color: rgba(17, 17, 17, .55);
+      white-space: nowrap;
+    }
+
+    .sin-verdict {
+      margin: 0 0 10px;
+      padding: 8px 10px;
+      border-left: 4px solid var(--red);
+      background: rgba(255, 77, 46, .1);
+      font-size: .74rem;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .sin-empty {
+      padding: 24px 0;
+      text-align: center;
+      font-size: .76rem;
+      font-weight: 700;
+      color: rgba(17, 17, 17, .55);
+    }
+
     /* ── Toast ──────────────────────────── */
     .toast {
       position: fixed;
@@ -1384,6 +1524,7 @@
 
         <div class="block">
           <span class="label">食神断语</span>
+          <p class="mood-prefix" id="moodPrefix" hidden></p>
           <p id="verdict"></p>
         </div>
 
@@ -1412,6 +1553,11 @@
       <div class="actions">
         <button class="btn primary" id="acceptBtn" type="button">就吃这个</button>
         <button class="btn ghost" id="againBtn" type="button">换一签</button>
+      </div>
+
+      <div class="ticket-tools">
+        <button class="tt-btn" id="nameBtn" type="button">神还没记住你的名号</button>
+        <button class="tt-btn" id="sinBtn" type="button">小本本 <span class="sin-count" id="sinCount">0</span></button>
       </div>
 
       <div class="rating-bar" id="ratingBar" hidden>
@@ -1462,6 +1608,29 @@
       </div>
       <div class="profile-body" id="profileBody"></div>
       <button class="btn primary profile-weekly" id="weeklyBtn" type="button">生成本周小结图</button>
+    </div>
+  </div>
+
+  <div class="drawer" id="nameDrawer" role="dialog" aria-modal="true" aria-label="食神的信">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h2>食神的信</h2>
+        <button class="drawer-close" id="nameClose" type="button" aria-label="关闭">✕</button>
+      </div>
+      <p class="name-note" id="nameNote">留个名号，神会记住你。不必是真名。</p>
+      <input class="name-input" id="nameInput" maxlength="12" placeholder="写下你的名号…">
+      <button class="btn primary name-send" id="nameSend" type="button">投 递</button>
+    </div>
+  </div>
+
+  <div class="drawer" id="sinDrawer" role="dialog" aria-modal="true" aria-label="记仇小本本">
+    <div class="drawer-panel">
+      <div class="drawer-head">
+        <h2>记仇小本本</h2>
+        <button class="drawer-close" id="sinClose" type="button" aria-label="关闭">✕</button>
+      </div>
+      <p class="sin-note">每换一签，神都记一笔。点一条，看看神当时想说什么。</p>
+      <ul class="sin-list" id="sinList"></ul>
     </div>
   </div>
 
@@ -2825,16 +2994,22 @@
       el.timeJudge.textContent = food.time_judgement[period];
       el.verdict.textContent = food.diagnosis;
 
-      const mood = moodOfDay();
+      const mood = effectiveMood(food);
       el.moodLine.hidden = !mood.line;
       el.moodLine.textContent = mood.line;
+      if (el.moodPrefix) {
+        el.moodPrefix.hidden = !mood.prefix;
+        el.moodPrefix.textContent = mood.prefix;
+      }
 
       const picks = dosDonts(food);
       el.dos.textContent = picks.good.join('、');
       el.donts.textContent = picks.bad.join('、');
       el.date.textContent = stampText();
 
-      el.stamp.textContent = '天意';
+      const stampLabel = mood.stamp || '天意';
+      el.stamp.textContent = stampLabel;
+      el.stamp.style.fontSize = stampLabel.length > 2 ? '0.84rem' : '';
       el.stamp.classList.remove('down', 'accepted');
 
       el.accept.disabled = false;
@@ -2944,6 +3119,7 @@
 
       if (state.current.accepted) {
         el.stamp.textContent = '已领';
+        el.stamp.style.fontSize = '';
         el.stamp.classList.add('accepted');
         el.accept.disabled = true;
         el.accept.textContent = '已经记下了';
@@ -3025,6 +3201,7 @@
         const item = state.history.find(h => h.id === state.current.id && !h.accepted);
         if (item) item.accepted = true;
         el.stamp.textContent = '已领';
+        el.stamp.style.fontSize = '';
         el.stamp.classList.add('accepted');
         el.accept.disabled = true;
         el.accept.textContent = '已经记下了';
@@ -3739,6 +3916,228 @@ const FOOD_TAGS = {
 
     renderRatingBar();
     renderLog();
+
+
+    // ═══════════════════════════════════════════
+    //  食神的脾气：心情滤镜 / 名号 / 记仇本
+    // ═══════════════════════════════════════════
+    const NAME_KEY = 'food_oracle_name';
+    const SIN_KEY = 'food_oracle_sins';
+
+    el.moodPrefix = document.getElementById('moodPrefix');
+    el.nameBtn = document.getElementById('nameBtn');
+    el.sinBtn = document.getElementById('sinBtn');
+    el.sinCount = document.getElementById('sinCount');
+    el.nameDrawer = document.getElementById('nameDrawer');
+    el.nameClose = document.getElementById('nameClose');
+    el.nameNote = document.getElementById('nameNote');
+    el.nameInput = document.getElementById('nameInput');
+    el.nameSend = document.getElementById('nameSend');
+    el.sinDrawer = document.getElementById('sinDrawer');
+    el.sinClose = document.getElementById('sinClose');
+    el.sinList = document.getElementById('sinList');
+
+    function loadName() {
+      try { return localStorage.getItem(NAME_KEY) || ''; } catch (e) { return ''; }
+    }
+
+    function saveName(v) {
+      try { localStorage.setItem(NAME_KEY, v); } catch (e) { }
+    }
+
+    function loadSins() {
+      try {
+        const a = JSON.parse(localStorage.getItem(SIN_KEY) || '[]');
+        return Array.isArray(a) ? a : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveSins() {
+      try {
+        localStorage.setItem(SIN_KEY, JSON.stringify(state.sins.slice(0, 50)));
+      } catch (e) { }
+    }
+
+    function hasGoodToday() {
+      const today = new Date().toDateString();
+      return state.history.some(h => h.rating === 'good' && new Date(h.ts).toDateString() === today);
+    }
+
+    function effectiveMood(food) {
+      const base = moodOfDay();
+      const call = state.godName ? state.godName + '，' : '';
+      let mood;
+
+      if (state.rejects >= 3) {
+        mood = {
+          key: 'grumpy',
+          line: call + '你今天已经换了 ' + state.rejects + ' 次。神把勺子放下了，自己看着办。',
+          prefix: '先说好，神今天没耐心。' + (food && food.angry_bonus ? ' ' + food.angry_bonus : ''),
+          stamp: '神很烦'
+        };
+      } else if (hasGoodToday()) {
+        mood = {
+          key: 'happy',
+          line: call + '你上次说好吃，神今天心情不错，给你挑个稳的。',
+          prefix: '',
+          stamp: '神准了'
+        };
+      } else {
+        const lines = {
+          calm: call + '神今天心情不错，给你挑个稳的。',
+          grumpy: base.line,
+          low: base.line,
+          chuuni: base.line
+        };
+        const prefixes = {
+          calm: '',
+          grumpy: food && food.angry_bonus ? food.angry_bonus : '神今天脾气不太好。',
+          low: '（神今天不太想说话，但还是给你解了。）',
+          chuuni: '哼，凡人，这就是你的宿命之食。'
+        };
+        const stamps = { calm: '天意', grumpy: '神很烦', low: '神也emo', chuuni: '天命难违' };
+        mood = {
+          key: base.key,
+          line: lines[base.key] || '',
+          prefix: prefixes[base.key] || '',
+          stamp: stamps[base.key] || '天意'
+        };
+      }
+
+      if (periodNow() === 'night') {
+        mood.line += '（这个点还没睡？）';
+        mood.prefix = (mood.prefix ? mood.prefix + ' ' : '') + '夜审：这个点吃饭，胃会记你一笔。';
+      }
+
+      return mood;
+    }
+
+    function updateNameBtn() {
+      if (!el.nameBtn) return;
+      el.nameBtn.textContent = state.godName
+        ? '神记得你：' + state.godName
+        : '神还没记住你的名号';
+    }
+
+    function openName() {
+      if (!el.nameDrawer) return;
+      el.nameInput.value = state.godName || '';
+      el.nameNote.textContent = state.godName
+        ? '「' + state.godName + '」——神认得你。想换个名号吗？'
+        : '留个名号，神会记住你。不必是真名。';
+      el.nameDrawer.classList.add('open');
+      setTimeout(() => el.nameInput.focus(), 150);
+    }
+
+    function sendName() {
+      const v = el.nameInput.value.trim();
+      if (!v) {
+        showToast('不写名号？神怎么记住你。');
+        return;
+      }
+      state.godName = v.slice(0, 12);
+      saveName(state.godName);
+      updateNameBtn();
+      el.nameDrawer.classList.remove('open');
+      showToast('「' + state.godName + '」——神记住了。下次来，会认出你。', 3200);
+
+      if (state.current && el.stage && !el.stage.hidden) {
+        const mood = effectiveMood(state.current);
+        el.moodLine.textContent = mood.line;
+        el.moodLine.hidden = !mood.line;
+      }
+    }
+
+    function renderSins() {
+      if (!el.sinList) return;
+      el.sinCount.textContent = String(state.sins.length);
+      el.sinBtn.setAttribute('aria-label', '记仇小本本，共 ' + state.sins.length + ' 条');
+
+      if (!state.sins.length) {
+        el.sinList.innerHTML = '<li class="sin-empty">本子是空的。你暂时还是个良民。</li>';
+        return;
+      }
+
+      const p = n => String(n).padStart(2, '0');
+      el.sinList.innerHTML = state.sins.map((s, i) => {
+        const t = new Date(s.ts);
+        const time = p(t.getMonth() + 1) + '-' + p(t.getDate()) + ' ' + p(t.getHours()) + ':' + p(t.getMinutes());
+        const food = byId(s.id);
+        return '<li class="sin-item">' +
+          '<button class="sin-row" type="button" data-i="' + i + '">' +
+          '<span>' + s.icon + ' 拒了「' + s.name + '」</span>' +
+          '<span class="sin-time">' + time + '</span>' +
+          '</button>' +
+          (food ? '<p class="sin-verdict" hidden>' + food.angry_bonus + '</p>' : '') +
+          '</li>';
+      }).join('');
+
+      el.sinList.querySelectorAll('.sin-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const v = row.nextElementSibling;
+          if (v && v.classList.contains('sin-verdict')) v.hidden = !v.hidden;
+        });
+      });
+    }
+
+    let _pendingReject = null;
+    document.addEventListener('click', e => {
+      if (e.target && e.target.closest && e.target.closest('#againBtn')) {
+        _pendingReject = state.current;
+      }
+    }, true);
+
+    function addSin(food) {
+      if (!food) return;
+      state.sins.unshift({
+        id: food.id,
+        name: food.name,
+        icon: food.icon,
+        ts: Date.now()
+      });
+      state.sins = state.sins.slice(0, 50);
+      saveSins();
+      renderSins();
+
+      const n = state.sins.length;
+      let line = '';
+      if (n === 3) line = '三条了。神翻了翻小本本，没说话。';
+      else if (n === 5) line = '五条了。神开始怀疑你是不是来砸场子的。';
+      else if (n === 8) line = '八条。神把小本本合上了，说随你。';
+      if (line) setTimeout(() => showToast(line, 3200), 900);
+    }
+
+    // 注册在 bind 之前：拿到的是被拒的旧签
+    el.again.addEventListener('click', () => {
+      if (_pendingReject) addSin(_pendingReject);
+      _pendingReject = null;
+    });
+
+    if (el.nameBtn) el.nameBtn.addEventListener('click', openName);
+    if (el.nameClose) el.nameClose.addEventListener('click', () => el.nameDrawer.classList.remove('open'));
+    if (el.nameDrawer) el.nameDrawer.addEventListener('click', e => {
+      if (e.target === el.nameDrawer) el.nameDrawer.classList.remove('open');
+    });
+    if (el.nameSend) el.nameSend.addEventListener('click', sendName);
+    if (el.nameInput) el.nameInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') sendName();
+    });
+
+    if (el.sinBtn) el.sinBtn.addEventListener('click', () => {
+      renderSins();
+      el.sinDrawer.classList.add('open');
+    });
+    if (el.sinClose) el.sinClose.addEventListener('click', () => el.sinDrawer.classList.remove('open'));
+    if (el.sinDrawer) el.sinDrawer.addEventListener('click', e => {
+      if (e.target === el.sinDrawer) el.sinDrawer.classList.remove('open');
+    });
+
+    state.godName = loadName();
+    state.sins = loadSins();
+    updateNameBtn();
+    renderSins();
 
 
     // ═══════════════════════════════════════════
