@@ -316,8 +316,71 @@
       transition: opacity .3s;
     }
 
+    /* ── 分类筛选 ───────────────────────── */
+    .filters {
+      width: 100%;
+      margin-top: 30px;
+    }
+
+    .filters-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 9px;
+    }
+
+    .filters-title {
+      font-size: .64rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+    }
+
+    .filters-count {
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: rgba(17, 17, 17, .58);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      justify-content: center;
+    }
+
+    .chip {
+      appearance: none;
+      background: var(--cream);
+      color: var(--black);
+      border: 2px solid var(--black);
+      box-shadow: 3px 3px 0 var(--black);
+      font-family: var(--sans);
+      font-size: .68rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+      padding: 6px 10px;
+      cursor: pointer;
+      transition: transform .08s, box-shadow .08s, background .16s, color .16s;
+    }
+
+    .chip:active {
+      transform: translate(2px, 2px);
+      box-shadow: 1px 1px 0 var(--black);
+    }
+
+    .chip.on {
+      background: var(--red);
+      color: var(--cream);
+    }
+
+    .chip:focus-visible {
+      outline: 3px solid var(--black);
+      outline-offset: 2px;
+    }
+
     .draw-btn {
-      margin-top: 12px;
+      margin-top: 16px;
       appearance: none;
       background: var(--cream);
       color: var(--black);
@@ -970,6 +1033,15 @@
       </div>
 
       <p class="hint" id="hint">摇一摇，或者点一下</p>
+
+      <div class="filters">
+        <div class="filters-head">
+          <span class="filters-title">今天想吃</span>
+          <span class="filters-count" id="filterCount">全部 100 道</span>
+        </div>
+        <div class="chips" id="chips" role="group" aria-label="按分类筛选"></div>
+      </div>
+
       <button class="draw-btn" id="drawBtn" type="button">摇 一 签</button>
     </section>
 
@@ -2917,6 +2989,110 @@
     }
 
     init();
+
+    // ═══════════════════════════════════════════
+    //  分类筛选：先圈范围，再让食神在范围里抽
+    // ═══════════════════════════════════════════
+    const CATEGORIES = ['早餐经典', '面食江湖', '米饭正餐', '硬菜盛宴', '快餐小吃', '沙拉轻食', '甜品饮品'];
+
+    el.chips = document.getElementById('chips');
+    el.filterCount = document.getElementById('filterCount');
+
+    function poolOf(filters) {
+      if (!Array.isArray(filters) || !filters.length) return FOOD_DATABASE;
+      return FOOD_DATABASE.filter(f => filters.includes(f.category));
+    }
+
+    // 覆盖原版：抽签只从当前筛选池里取
+    function randomFood(excludeId) {
+      const base = poolOf(state.filters);
+      let cand = excludeId ? base.filter(f => f.id !== excludeId) : base;
+      if (!cand.length) cand = base;
+      return cand[Math.floor(Math.random() * cand.length)];
+    }
+
+    // 覆盖原版：把筛选条件一起存下来
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          daily: state.daily,
+          history: state.history,
+          rejects: state.rejects,
+          sound: state.sound,
+          filters: state.filters
+        }));
+      } catch (e) { /* 无痕模式下忽略 */ }
+    }
+
+    function loadFilters() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        return Array.isArray(saved.filters)
+          ? saved.filters.filter(c => CATEGORIES.includes(c))
+          : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function buildFilterChips() {
+      if (!el.chips) return;
+      el.chips.innerHTML = '';
+
+      const make = (label, cat) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'chip';
+        b.dataset.cat = cat;
+        b.textContent = label;
+        b.addEventListener('click', () => {
+          if (!cat) {
+            state.filters = [];
+          } else {
+            const i = state.filters.indexOf(cat);
+            if (i >= 0) state.filters.splice(i, 1);
+            else state.filters.push(cat);
+          }
+          saveState();
+          syncFilters();
+        });
+        return b;
+      };
+
+      el.chips.appendChild(make('不限', ''));
+      CATEGORIES.forEach(c => el.chips.appendChild(make(c, c)));
+    }
+
+    function syncFilters() {
+      if (!el.chips) return;
+
+      el.chips.querySelectorAll('.chip').forEach(b => {
+        const cat = b.dataset.cat;
+        const on = cat ? state.filters.includes(cat) : state.filters.length === 0;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+
+      const n = poolOf(state.filters).length;
+      if (el.filterCount) {
+        el.filterCount.textContent = state.filters.length
+          ? state.filters.length + ' 类 · ' + n + ' 道'
+          : '全部 ' + n + ' 道';
+      }
+
+      if (el.empty && !el.empty.hidden) {
+        const big = el.empty.querySelector('.big');
+        if (big) {
+          big.textContent = state.filters.length ? '筛完还剩 ' + n + ' 道' : '签筒里备着一百道菜';
+        }
+      }
+    }
+
+    state.filters = loadFilters();
+    buildFilterChips();
+    syncFilters();
+
+
     console.log('%c食神签 · 一百道菜等你摇', 'color:#a92f22;font-size:14px');
   
   </script>
