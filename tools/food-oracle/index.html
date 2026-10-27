@@ -6,25 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>食神签 · 今天吃什么</title>
   <meta name="description" content="食神签：摇一摇签筒，从一百道菜里得一张后厨出的单子。今天吃什么，不用再想。">
-  <meta name="theme-color" content="#1e2a24">
+  <meta name="theme-color" content="#ffd84d">
   <style>
     :root {
-      --wall: #1e2a24;
-      --wall-deep: #141d18;
-      --paper: #f7f0df;
-      --paper-deep: #eadfc7;
-      --ink: #1c1914;
-      --ink-soft: #4a4337;
-      --ink-faint: #7a7161;
-      --cinnabar: #a92f22;
-      --cinnabar-deep: #7c2017;
-      --celadon: #9db3a0;
-      --gold: #b08a45;
-      --line: rgba(28, 25, 20, .16);
-      --serif: "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
+      --yellow: #ffd84d;
+      --red: #ff4d2e;
+      --red-deep: #d93a1f;
+      --black: #111111;
+      --cream: #fffdf5;
+      --mint: #23c9a0;
+      --pink: #ff8f7a;
       --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-      --ease-out: cubic-bezier(.16, 1, .3, 1);
-      --ease-stamp: cubic-bezier(.2, 1.5, .4, 1);
+      --display: "Arial Black", "Microsoft YaHei", "PingFang SC", sans-serif;
+      --serif: "Songti SC", "STSong", "SimSun", serif;
+      --press: cubic-bezier(.2, .9, .3, 1.2);
     }
 
     *,
@@ -42,119 +37,124 @@
     body {
       min-height: 100vh;
       min-height: 100svh;
-      background: var(--wall-deep);
-      color: var(--paper);
+      background: var(--yellow);
+      color: var(--black);
       font-family: var(--sans);
       line-height: 1.7;
       overflow-x: clip;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 食堂的墙：深松绿瓷砖 + 顶灯光斑 */
     .wall {
       position: fixed;
       inset: 0;
       z-index: -2;
       background:
-        linear-gradient(rgba(255, 255, 255, .022) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, .022) 1px, transparent 1px),
-        radial-gradient(ellipse 90% 55% at 50% -8%, rgba(247, 240, 223, .16), transparent 62%),
-        linear-gradient(180deg, #24312a 0%, var(--wall) 42%, var(--wall-deep) 100%);
-      background-size: 46px 46px, 46px 46px, 100% 100%, 100% 100%;
+        radial-gradient(circle, rgba(17, 17, 17, .16) 1.2px, transparent 1.5px) 0 0 / 16px 16px,
+        var(--yellow);
     }
 
     .wall::after {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 45%, rgba(6, 10, 8, .55) 100%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, .22), transparent 22%, transparent 82%, rgba(17, 17, 17, .07));
     }
 
     .counter {
       width: min(100%, 480px);
       margin: 0 auto;
-      padding: 22px 20px calc(40px + env(safe-area-inset-bottom));
+      padding: 18px 18px calc(36px + env(safe-area-inset-bottom));
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    /* ── 顶栏 ───────────────────────────── */
+    /* ── 顶部 ───────────────────────────── */
     .topbar {
       width: 100%;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 26px;
+      margin-bottom: 8px;
     }
 
     .brand-mark {
-      font-family: var(--serif);
-      font-size: .8rem;
-      letter-spacing: .3em;
-      color: var(--celadon);
-      border: 1px solid rgba(157, 179, 160, .35);
-      padding: 4px 3px 4px 8px;
-      line-height: 1;
+      display: inline-block;
+      background: var(--black);
+      color: var(--cream);
+      font-family: var(--display);
+      font-size: .66rem;
+      font-weight: 900;
+      letter-spacing: .24em;
+      padding: 5px 5px 5px 10px;
+      transform: rotate(-2deg);
       user-select: none;
     }
 
     .top-right {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
+      padding-top: 4px;
     }
 
     .period {
-      font-size: .74rem;
-      letter-spacing: .18em;
-      color: rgba(247, 240, 223, .55);
+      font-family: var(--display);
+      font-size: .66rem;
+      font-weight: 900;
+      letter-spacing: .16em;
     }
 
     .sound-btn {
       appearance: none;
       background: none;
       border: 0;
-      color: rgba(247, 240, 223, .55);
-      font: inherit;
-      font-size: .74rem;
-      letter-spacing: .1em;
+      color: var(--black);
+      font-family: inherit;
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 4px 2px;
       cursor: pointer;
-      padding: 6px 4px;
-      transition: color .2s;
-    }
-
-    .sound-btn:hover,
-    .sound-btn:focus-visible {
-      color: var(--paper);
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
     }
 
     .sound-btn[data-on="false"] {
-      color: rgba(247, 240, 223, .3);
+      opacity: .45;
     }
 
-    /* ── 页眉 ───────────────────────────── */
+    /* ── 标题 ───────────────────────────── */
     .masthead {
       text-align: center;
-      margin-bottom: 32px;
+      margin: 8px 0 0;
     }
 
     .masthead h1 {
-      font-family: var(--serif);
-      font-size: clamp(2.5rem, 11vw, 3.15rem);
-      font-weight: 700;
-      letter-spacing: .28em;
-      margin-left: .28em;
-      line-height: 1.1;
-      color: var(--paper);
-      text-shadow: 0 2px 30px rgba(0, 0, 0, .45);
+      font-family: var(--display);
+      font-size: clamp(2.9rem, 14vw, 3.9rem);
+      font-weight: 900;
+      letter-spacing: .02em;
+      line-height: 1.05;
+      color: var(--cream);
+      -webkit-text-stroke: 4px var(--black);
+      paint-order: stroke fill;
+      text-shadow: 7px 7px 0 var(--black);
+      transform: rotate(-1.6deg);
     }
 
     .masthead .sub {
+      display: inline-block;
       margin-top: 14px;
-      font-size: .82rem;
-      letter-spacing: .06em;
-      color: rgba(247, 240, 223, .5);
+      background: var(--black);
+      color: var(--cream);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .04em;
+      padding: 5px 10px;
+      transform: rotate(1.2deg);
     }
 
     /* ── 签筒 ───────────────────────────── */
@@ -167,393 +167,280 @@
 
     .tube-wrap {
       position: relative;
-      width: 190px;
-      height: 214px;
+      margin: 10px 0 0;
+      padding-top: 86px;
       display: flex;
       justify-content: center;
-      align-items: flex-end;
     }
 
     .tube {
       position: relative;
-      width: 158px;
-      height: 200px;
-      background: none;
+      width: 168px;
+      height: 216px;
       border: 0;
       padding: 0;
+      background: none;
+      font: inherit;
+      color: inherit;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      filter: drop-shadow(0 18px 22px rgba(0, 0, 0, .45));
-      transition: transform .2s var(--ease-out);
-    }
-
-    .tube:hover {
-      transform: translateY(-3px);
-    }
-
-    .tube:active {
-      transform: translateY(0) scale(.985);
     }
 
     .tube:focus-visible {
-      outline: 2px solid var(--gold);
+      outline: 4px solid var(--black);
       outline-offset: 10px;
-      border-radius: 20px;
     }
 
-    .tube.locked {
-      pointer-events: none;
-      opacity: .72;
+    .tube.hint-pulse .tube-body {
+      animation: tube-breathe 2.8s ease-in-out infinite;
     }
 
-    /* 筒口露出的签头 */
     .sticks {
       position: absolute;
       left: 50%;
-      bottom: 158px;
-      width: 118px;
-      height: 74px;
+      bottom: 184px;
+      width: 140px;
+      height: 118px;
       transform: translateX(-50%);
       z-index: 1;
+      pointer-events: none;
     }
 
     .stick {
       position: absolute;
       bottom: 0;
       left: 50%;
-      width: 6px;
-      height: var(--h, 62px);
-      margin-left: -3px;
-      border-radius: 3px 3px 1px 1px;
-      background: linear-gradient(180deg, #e6d7b6 0%, #d9c69f 55%, #c4ad82 100%);
-      transform-origin: 50% 100%;
+      width: 9px;
+      height: var(--h, 70px);
+      margin-left: -4.5px;
+      background: var(--cream);
+      border: 2px solid var(--black);
+      border-radius: 0;
       transform: translateX(var(--x, 0)) rotate(var(--r, 0deg));
-      box-shadow: inset -1px 0 0 rgba(90, 70, 40, .35);
+      transform-origin: 50% 100%;
     }
 
     .stick::before {
       content: "";
       position: absolute;
-      top: 7px;
-      left: 1px;
-      right: 1px;
-      height: 2px;
-      border-radius: 1px;
-      background: var(--cinnabar);
-      opacity: .75;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      height: 14px;
+      background: var(--red);
+      border-bottom: 2px solid var(--black);
     }
 
+    .stick:nth-child(5n+3)::before { background: var(--yellow); }
+    .stick:nth-child(5n+5)::before { background: var(--mint); }
+
     .stick.fly {
-      animation: stick-fly .62s var(--ease-out) forwards;
+      animation: stick-fly .72s var(--press) forwards;
     }
 
     @keyframes stick-fly {
-      0% {
-        transform: translateX(var(--x, 0)) translateY(0) rotate(var(--r, 0deg));
-      }
-
-      45% {
-        transform: translateX(var(--x, 0)) translateY(-96px) rotate(14deg);
-      }
-
-      100% {
-        transform: translateX(calc(var(--x, 0px) + 26px)) translateY(-150px) rotate(58deg);
-        opacity: 0;
-      }
+      0% { transform: translateX(var(--x, 0)) translateY(0) rotate(var(--r, 0deg)); }
+      40% { transform: translateX(var(--x, 0)) translateY(-104px) rotate(12deg); }
+      100% { transform: translateX(calc(var(--x, 0px) + 34px)) translateY(-180px) rotate(64deg); opacity: 0; }
     }
 
-    /* 筒身：竹青，上宽下收 */
     .tube-body {
       position: absolute;
       left: 50%;
       bottom: 0;
-      width: 144px;
-      height: 168px;
-      transform: translateX(-50%);
-      border-radius: 6px 6px 52px 52px / 6px 6px 26px 26px;
-      background:
-        linear-gradient(90deg, #55684b 0%, #7d9068 16%, #93a67c 38%, #7b8e66 62%, #4f6145 100%);
-      box-shadow:
-        inset 0 6px 10px rgba(0, 0, 0, .45),
-        inset 0 -14px 24px rgba(0, 0, 0, .3);
-      overflow: hidden;
-    }
-
-    .tube-body::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, transparent 27%, rgba(58, 72, 48, .55) 27.8%, transparent 28.6%),
-        linear-gradient(180deg, transparent 62%, rgba(58, 72, 48, .45) 62.8%, transparent 63.6%);
-    }
-
-    .tube-body::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 12px;
-      width: 10px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .05));
-      border-radius: 6px;
-      filter: blur(1px);
-    }
-
-    /* 筒口内壁 */
-    .tube-mouth {
-      position: absolute;
-      left: 50%;
-      bottom: 160px;
-      width: 144px;
-      height: 34px;
-      transform: translateX(-50%);
-      border-radius: 50%;
-      background: radial-gradient(ellipse at 50% 35%, #0d1611 0%, #1b2a21 55%, #354536 100%);
-      box-shadow:
-        inset 0 5px 10px rgba(0, 0, 0, .9),
-        0 -2px 0 rgba(120, 140, 105, .55);
-      z-index: 2;
-    }
-
-    .tube-label {
-      position: absolute;
-      left: 50%;
-      bottom: 34px;
-      transform: translateX(-50%);
-      writing-mode: vertical-rl;
-      padding: 9px 5px;
-      background: linear-gradient(180deg, #3c3023, #2a2118);
-      color: #d9c8a4;
-      font-family: var(--serif);
-      font-size: .78rem;
-      letter-spacing: .22em;
-      border: 1px solid rgba(0, 0, 0, .5);
-      border-radius: 2px;
-      box-shadow: inset 0 0 0 1px rgba(217, 200, 164, .12);
-      z-index: 3;
-    }
-
-    .tube-shadow {
-      position: absolute;
-      left: 50%;
-      bottom: -12px;
-      width: 150px;
-      height: 24px;
-      transform: translateX(-50%);
-      background: radial-gradient(ellipse, rgba(0, 0, 0, .55), transparent 70%);
-      filter: blur(4px);
+      width: 126px;
+      height: 184px;
+      transform: translateX(-50%) rotate(-2deg);
+      background: var(--red);
+      border: 5px solid var(--black);
+      border-radius: 6px 6px 24px 24px;
+      box-shadow: 9px 9px 0 var(--black);
       z-index: 0;
     }
 
-    /* 摇晃 */
-    .tube.shaking {
-      animation: tube-shake .1s linear 6;
+    .tube-band {
+      position: absolute;
+      left: -5px;
+      right: -5px;
+      top: 42%;
+      height: 34px;
+      background: var(--cream);
+      border-top: 5px solid var(--black);
+      border-bottom: 5px solid var(--black);
+      display: grid;
+      place-items: center;
+      font-family: var(--display);
+      font-size: .74rem;
+      font-weight: 900;
+      letter-spacing: .3em;
+      text-indent: .3em;
+      z-index: 3;
     }
 
-    @keyframes tube-shake {
-      0% {
-        transform: translateX(0) rotate(0);
-      }
+    .tube-mouth {
+      position: absolute;
+      left: 50%;
+      bottom: 168px;
+      width: 126px;
+      height: 28px;
+      transform: translateX(-50%) rotate(-2deg);
+      background: var(--cream);
+      border: 5px solid var(--black);
+      border-radius: 50%;
+      box-shadow: inset 0 7px 0 rgba(17, 17, 17, .16);
+      z-index: 2;
+    }
 
-      25% {
-        transform: translateX(-4px) rotate(-1.6deg);
-      }
-
-      75% {
-        transform: translateX(4px) rotate(1.6deg);
-      }
-
-      100% {
-        transform: translateX(0) rotate(0);
-      }
+    .tube-tip {
+      position: absolute;
+      right: -34px;
+      top: 34%;
+      z-index: 4;
+      background: var(--mint);
+      border: 3px solid var(--black);
+      box-shadow: 4px 4px 0 var(--black);
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .08em;
+      white-space: nowrap;
+      padding: 4px 7px;
+      transform: rotate(7deg);
+      pointer-events: none;
     }
 
     .hint {
-      margin-top: 22px;
-      font-size: .78rem;
-      letter-spacing: .14em;
-      color: rgba(247, 240, 223, .42);
+      margin-top: 34px;
+      font-size: .72rem;
+      font-weight: 900;
+      letter-spacing: .16em;
       transition: opacity .3s;
     }
 
     .draw-btn {
-      margin-top: 14px;
+      margin-top: 12px;
       appearance: none;
-      background: none;
-      border: 1px solid rgba(157, 179, 160, .4);
-      color: var(--celadon);
-      font: inherit;
-      font-size: .8rem;
-      letter-spacing: .2em;
-      padding: 9px 26px 9px 28px;
-      border-radius: 2px;
+      background: var(--cream);
+      color: var(--black);
+      border: 4px solid var(--black);
+      box-shadow: 6px 6px 0 var(--black);
+      font-family: var(--display);
+      font-size: .82rem;
+      font-weight: 900;
+      letter-spacing: .26em;
+      text-indent: .26em;
+      padding: 13px 36px;
       cursor: pointer;
-      transition: background .25s, color .25s, border-color .25s;
+      transition: transform .08s, box-shadow .08s;
     }
 
-    .draw-btn:hover,
+    .draw-btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: 2px 2px 0 var(--black);
+    }
+
     .draw-btn:focus-visible {
-      background: rgba(157, 179, 160, .12);
-      color: var(--paper);
-      border-color: rgba(157, 179, 160, .7);
+      outline: 4px solid var(--black);
+      outline-offset: 3px;
     }
 
     .draw-btn:disabled {
-      opacity: .4;
+      opacity: .5;
       cursor: default;
     }
 
-    /* ── 空签 ───────────────────────────── */
+    /* ── 空签占位 ───────────────────────── */
     .empty-note {
       width: 100%;
-      margin-top: 42px;
-      padding: 30px 26px;
-      border: 1px dashed rgba(247, 240, 223, .18);
-      border-radius: 3px;
+      margin-top: 38px;
+      padding: 26px 22px;
+      background:
+        repeating-linear-gradient(-45deg, rgba(17, 17, 17, .05) 0 2px, transparent 2px 9px),
+        var(--cream);
+      border: 4px dashed var(--black);
       text-align: center;
-      color: rgba(247, 240, 223, .34);
-      font-size: .82rem;
-      line-height: 2.1;
+      font-size: .78rem;
+      font-weight: 700;
+      line-height: 1.95;
+      transform: rotate(-.5deg);
     }
 
     .empty-note .big {
       display: block;
-      font-family: var(--serif);
-      font-size: 1.05rem;
-      letter-spacing: .18em;
-      color: rgba(247, 240, 223, .5);
-      margin-bottom: 6px;
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      margin-bottom: 4px;
     }
 
     /* ── 签纸 ───────────────────────────── */
     .ticket-stage {
       width: 100%;
       margin-top: 40px;
-      perspective: 1200px;
       scroll-margin-top: 16px;
     }
 
     .ticket {
       position: relative;
       width: 100%;
-      background: var(--paper);
-      color: var(--ink);
-      border-radius: 3px;
-      box-shadow:
-        0 1px 0 rgba(255, 255, 255, .5) inset,
-        0 26px 54px rgba(0, 0, 0, .52),
-        0 3px 8px rgba(0, 0, 0, .3);
-      /* 纸纹 */
-      background-image:
-        repeating-linear-gradient(0deg, rgba(120, 96, 54, .028) 0 1px, transparent 1px 3px),
-        radial-gradient(circle at 82% 76%, rgba(120, 96, 54, .09) 0 26px, transparent 27px);
-    }
-
-    /* 两侧票据缺口 */
-    .ticket::before,
-    .ticket::after {
-      content: "";
-      position: absolute;
-      top: 74px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--wall);
-      box-shadow: inset 0 2px 5px rgba(0, 0, 0, .55);
-      z-index: 3;
-    }
-
-    .ticket::before {
-      left: -9px;
-    }
-
-    .ticket::after {
-      right: -9px;
+      background: var(--cream);
+      border: 5px solid var(--black);
+      box-shadow: 12px 12px 0 var(--black);
+      padding: 18px 18px 22px;
+      transform: rotate(-.7deg);
     }
 
     .ticket.play {
-      animation: ticket-out .82s var(--ease-out) both;
+      animation: ticket-out .62s var(--press) both;
     }
 
     @keyframes ticket-out {
-      0% {
-        clip-path: inset(100% 0 0 0);
-        transform: translateY(26px);
-      }
-
-      100% {
-        clip-path: inset(0 0 0 0);
-        transform: translateY(0);
-      }
+      0% { clip-path: inset(100% 0 0 0); translate: 0 30px; }
+      100% { clip-path: inset(0 0 0 0); translate: 0 0; }
     }
 
-    .ticket-tear {
-      margin: 0 18px;
-      padding-top: 20px;
-      border-top: 2px dashed rgba(28, 25, 20, .2);
-      position: relative;
-    }
-
-    .ticket-tear::before,
-    .ticket-tear::after {
-      content: "";
-      position: absolute;
-      top: -6px;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--wall);
-    }
-
-    .ticket-tear::before {
-      left: -24px;
-    }
-
-    .ticket-tear::after {
-      right: -24px;
-    }
-
-    .ticket-body {
-      padding: 4px 24px 104px;
-    }
-
-    .ticket-head {
+    .ticket-top {
       display: flex;
-      align-items: baseline;
+      align-items: flex-start;
       justify-content: space-between;
-      margin-bottom: 20px;
+      gap: 10px;
     }
 
     .ticket-no {
-      font-family: "Courier New", monospace;
-      font-size: .72rem;
-      letter-spacing: .16em;
-      color: var(--ink-faint);
+      display: inline-block;
+      background: var(--black);
+      color: var(--cream);
+      font-family: var(--display);
+      font-size: .66rem;
+      font-weight: 900;
+      letter-spacing: .14em;
+      padding: 4px 9px;
+      transform: rotate(-2deg);
     }
 
-    .ticket-brand {
-      writing-mode: vertical-rl;
-      font-family: var(--serif);
-      font-size: .68rem;
-      letter-spacing: .3em;
-      color: var(--cinnabar);
+    .ticket-cert {
+      font-size: .56rem;
+      font-weight: 900;
+      letter-spacing: .1em;
+      color: var(--red);
+      border: 2px solid var(--red);
+      padding: 3px 5px;
+      margin-right: 46px;
+      transform: rotate(6deg);
       opacity: .85;
-      line-height: 1;
     }
 
     .dish {
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--line);
+      gap: 12px;
+      margin: 4px 0 0;
     }
 
     .dish-icon {
-      font-size: 2.9rem;
+      font-size: 3.4rem;
       line-height: 1;
-      filter: drop-shadow(0 3px 3px rgba(0, 0, 0, .12));
+      filter: drop-shadow(3px 3px 0 rgba(17, 17, 17, .18));
     }
 
     .dish-text {
@@ -561,270 +448,248 @@
     }
 
     .dish-name {
-      font-family: var(--serif);
-      font-size: clamp(1.75rem, 8vw, 2.1rem);
-      font-weight: 700;
-      letter-spacing: .06em;
-      line-height: 1.25;
-      color: var(--ink);
+      display: inline-block;
+      font-family: var(--display);
+      font-size: clamp(2.1rem, 10vw, 2.7rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1.05;
+      padding-bottom: 4px;
+      border-bottom: 7px solid var(--red);
     }
 
     .dish-meta {
-      margin-top: 5px;
+      margin-top: 9px;
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: .72rem;
+      gap: 8px;
+      font-size: .62rem;
+      font-weight: 900;
       letter-spacing: .1em;
-      color: var(--ink-faint);
     }
 
-    .dish-meta .dot {
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: var(--ink-faint);
-      opacity: .6;
+    .dish-meta .cat {
+      border: 2px solid var(--black);
+      background: var(--yellow);
+      padding: 2px 6px;
+      transform: rotate(-1deg);
     }
 
     .mood-line {
-      margin-top: 18px;
-      padding-left: 11px;
-      border-left: 2px solid rgba(169, 47, 34, .35);
-      font-size: .76rem;
-      line-height: 1.8;
-      color: var(--cinnabar-deep);
-      opacity: .85;
+      margin-top: 14px;
+      padding: 8px 10px;
+      border: 3px solid var(--black);
+      background: var(--cream);
+      font-size: .72rem;
+      font-weight: 700;
+      line-height: 1.7;
+      transform: rotate(.4deg);
     }
 
     .block {
-      margin-top: 22px;
+      margin-top: 16px;
     }
 
-    .block h3,
-    .dos h3 {
-      font-family: var(--sans);
-      font-size: .68rem;
-      font-weight: 600;
-      letter-spacing: .26em;
-      color: var(--cinnabar);
+    .block .label {
+      display: inline-block;
+      background: var(--black);
+      color: var(--cream);
+      font-size: .6rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      padding: 3px 8px;
       margin-bottom: 7px;
     }
 
     .block p {
       font-size: .9rem;
-      line-height: 1.95;
-      color: var(--ink-soft);
+      line-height: 1.92;
+      color: var(--black);
       text-align: justify;
-    }
-
-    .block p + p {
-      margin-top: 10px;
     }
 
     .dos {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0;
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--line);
+      gap: 8px;
+      margin-top: 18px;
     }
 
-    .dos > div {
-      padding-right: 14px;
+    .do {
+      border: 3px solid var(--black);
+      padding: 7px 9px;
+      background: var(--mint);
     }
 
-    .dos > div + div {
-      padding-right: 0;
-      padding-left: 16px;
-      border-left: 1px solid var(--line);
+    .do.dont {
+      background: var(--pink);
     }
 
-    .dos p {
-      font-size: .82rem;
-      line-height: 1.9;
-      color: var(--ink-soft);
+    .do b {
+      display: block;
+      font-family: var(--display);
+      font-size: .62rem;
+      font-weight: 900;
+      letter-spacing: .2em;
+      margin-bottom: 3px;
     }
 
-    .dos .good h3 {
-      color: #4f6b4a;
+    .do span {
+      font-size: .76rem;
+      font-weight: 700;
+      line-height: 1.65;
     }
 
     .ticket-foot {
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 10px;
-      margin-top: 26px;
-      padding-top: 16px;
-      border-top: 1px dashed rgba(28, 25, 20, .22);
-      font-family: "Courier New", monospace;
-      font-size: .58rem;
-      letter-spacing: .06em;
-      color: var(--ink-faint);
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 3px dashed var(--black);
     }
 
     .barcode {
       width: 92px;
-      height: 22px;
+      height: 24px;
       background: repeating-linear-gradient(90deg,
-          var(--ink) 0 2px, transparent 2px 4px,
-          var(--ink) 4px 5px, transparent 5px 8px,
-          var(--ink) 8px 11px, transparent 11px 13px);
-      opacity: .55;
+          var(--black) 0 3px, transparent 3px 6px,
+          var(--black) 6px 8px, transparent 8px 12px);
       flex-shrink: 0;
     }
 
     .foot-meta {
+      margin-right: 58px;
       text-align: right;
+      font-size: .56rem;
+      font-weight: 900;
+      letter-spacing: .05em;
       line-height: 1.7;
     }
 
     .stamp {
       position: absolute;
-      right: 22px;
-      bottom: 12px;
-      width: 62px;
-      height: 76px;
+      right: 16px;
+      bottom: 14px;
+      width: 50px;
+      height: 60px;
       display: grid;
       place-items: center;
-      border: 3px solid var(--cinnabar);
-      border-radius: 4px;
-      color: var(--cinnabar);
-      font-family: var(--serif);
-      font-size: 1.32rem;
-      font-weight: 700;
-      letter-spacing: .06em;
+      border: 4px solid var(--red);
+      color: var(--red);
+      font-family: var(--display);
+      font-size: 1.18rem;
+      font-weight: 900;
+      letter-spacing: .04em;
       writing-mode: vertical-rl;
-      line-height: 1.15;
-      transform: rotate(-9deg) scale(1.2);
+      line-height: 1.1;
+      transform: rotate(-9deg) scale(1.6);
       opacity: 0;
-      mix-blend-mode: multiply;
       pointer-events: none;
     }
 
-    .stamp::after {
-      content: "";
-      position: absolute;
-      inset: 3px;
-      border: 1px solid rgba(169, 47, 34, .55);
-      border-radius: 2px;
-    }
-
     .stamp.down {
-      animation: stamp-drop .34s var(--ease-stamp) .12s forwards;
+      animation: stamp-drop .3s var(--press) .1s forwards;
     }
 
     @keyframes stamp-drop {
-      0% {
-        opacity: 0;
-        transform: rotate(-9deg) scale(1.7);
-      }
-
-      100% {
-        opacity: .92;
-        transform: rotate(-9deg) scale(1);
-      }
+      0% { opacity: 0; transform: rotate(-9deg) scale(1.7); }
+      100% { opacity: .92; transform: rotate(-9deg) scale(1); }
     }
 
     .stamp.accepted {
-      color: #4f6b4a;
-      border-color: #4f6b4a;
-      opacity: .8;
+      color: var(--mint);
+      border-color: var(--mint);
+      opacity: .95;
     }
 
-    .stamp.accepted::after {
-      border-color: rgba(79, 107, 74, .5);
-    }
-
-    /* ── 签纸下方按钮 ───────────────────── */
+    /* ── 按钮 ───────────────────────────── */
     .actions {
       display: flex;
-      gap: 10px;
-      margin-top: 18px;
+      gap: 12px;
+      margin-top: 26px;
     }
 
     .btn {
       flex: 1;
       appearance: none;
-      font: inherit;
-      font-size: .88rem;
-      letter-spacing: .16em;
-      padding: 14px 10px 14px calc(10px + .16em);
-      border-radius: 2px;
+      font-family: var(--display);
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-indent: .18em;
+      padding: 14px 8px;
+      border: 4px solid var(--black);
+      box-shadow: 6px 6px 0 var(--black);
       cursor: pointer;
-      transition: background .22s, color .22s, border-color .22s, transform .12s;
+      transition: transform .08s, box-shadow .08s;
     }
 
     .btn:active {
-      transform: translateY(1px);
+      transform: translate(4px, 4px);
+      box-shadow: 2px 2px 0 var(--black);
+    }
+
+    .btn:focus-visible {
+      outline: 4px solid var(--black);
+      outline-offset: 3px;
     }
 
     .btn.primary {
-      background: var(--cinnabar);
-      color: var(--paper);
-      border: 1px solid var(--cinnabar);
-    }
-
-    .btn.primary:hover,
-    .btn.primary:focus-visible {
-      background: var(--cinnabar-deep);
-      border-color: var(--cinnabar-deep);
+      background: var(--red);
+      color: var(--cream);
     }
 
     .btn.primary:disabled {
-      background: #6f6a5c;
-      border-color: #6f6a5c;
-      color: rgba(247, 240, 223, .75);
+      background: var(--cream);
+      color: var(--black);
+      opacity: .6;
       cursor: default;
     }
 
     .btn.ghost {
-      background: transparent;
-      color: rgba(247, 240, 223, .78);
-      border: 1px solid rgba(247, 240, 223, .28);
+      background: var(--cream);
+      color: var(--black);
     }
 
-    .btn.ghost:hover,
-    .btn.ghost:focus-visible {
-      background: rgba(247, 240, 223, .08);
-      border-color: rgba(247, 240, 223, .55);
-      color: var(--paper);
-    }
-
-    /* ── 页脚工具 ───────────────────────── */
+    /* ── 页脚 ───────────────────────────── */
     .dock {
       width: 100%;
       display: flex;
       justify-content: center;
-      gap: 26px;
-      margin-top: 34px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(247, 240, 223, .1);
+      gap: 22px;
+      margin-top: 38px;
+      padding-top: 14px;
+      border-top: 3px dashed rgba(17, 17, 17, .35);
     }
 
     .dock button {
       appearance: none;
       background: none;
       border: 0;
-      color: rgba(247, 240, 223, .45);
-      font: inherit;
-      font-size: .76rem;
-      letter-spacing: .1em;
-      padding: 6px 2px;
+      color: var(--black);
+      font-family: var(--sans);
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      padding: 5px 2px;
       cursor: pointer;
-      transition: color .2s;
-    }
-
-    .dock button:hover,
-    .dock button:focus-visible {
-      color: var(--paper);
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 4px;
     }
 
     .dock .count {
-      color: rgba(157, 179, 160, .8);
-      font-variant-numeric: tabular-nums;
+      display: inline-block;
+      min-width: 18px;
+      background: var(--black);
+      color: var(--cream);
+      font-family: var(--display);
+      font-size: .62rem;
+      text-align: center;
+      padding: 1px 4px;
+      margin-left: 3px;
+      text-decoration: none;
     }
 
     /* ── 抽屉 ───────────────────────────── */
@@ -835,13 +700,13 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      background: rgba(8, 12, 10, 0);
+      background: rgba(17, 17, 17, 0);
       visibility: hidden;
-      transition: background .28s, visibility .28s;
+      transition: background .25s, visibility .25s;
     }
 
     .drawer.open {
-      background: rgba(8, 12, 10, .62);
+      background: rgba(17, 17, 17, .55);
       visibility: visible;
     }
 
@@ -849,12 +714,13 @@
       width: min(100%, 480px);
       max-height: 72vh;
       overflow-y: auto;
-      background: var(--paper);
-      color: var(--ink);
-      border-radius: 4px 4px 0 0;
-      padding: 22px 22px calc(24px + env(safe-area-inset-bottom));
+      background: var(--cream);
+      border: 5px solid var(--black);
+      border-bottom: 0;
+      box-shadow: 0 -10px 0 rgba(17, 17, 17, .2);
+      padding: 18px 18px calc(22px + env(safe-area-inset-bottom));
       transform: translateY(102%);
-      transition: transform .34s var(--ease-out);
+      transition: transform .3s var(--press);
     }
 
     .drawer.open .drawer-panel {
@@ -865,28 +731,29 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
-      margin-bottom: 6px;
+      padding-bottom: 10px;
+      border-bottom: 3px dashed var(--black);
+      margin-bottom: 4px;
     }
 
     .drawer-head h2 {
-      font-family: var(--serif);
-      font-size: 1.1rem;
-      font-weight: 700;
-      letter-spacing: .14em;
+      font-family: var(--display);
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: .1em;
     }
 
     .drawer-close {
       appearance: none;
-      background: none;
-      border: 0;
+      background: var(--cream);
+      border: 3px solid var(--black);
+      box-shadow: 3px 3px 0 var(--black);
       font: inherit;
-      font-size: 1.1rem;
+      font-size: .9rem;
+      font-weight: 900;
       line-height: 1;
-      color: var(--ink-faint);
+      padding: 3px 8px;
       cursor: pointer;
-      padding: 6px 8px;
     }
 
     .log-list {
@@ -896,72 +763,73 @@
     .log-item {
       display: flex;
       align-items: baseline;
-      gap: 10px;
-      padding: 11px 0;
-      border-bottom: 1px solid rgba(28, 25, 20, .08);
-      font-size: .84rem;
+      gap: 8px;
+      padding: 10px 0;
+      border-bottom: 2px solid rgba(17, 17, 17, .14);
+      font-size: .8rem;
     }
 
-    .log-item .log-icon {
+    .log-icon {
       font-size: 1rem;
       flex-shrink: 0;
     }
 
-    .log-item .log-name {
-      font-family: var(--serif);
-      font-size: .95rem;
+    .log-name {
+      font-family: var(--display);
+      font-size: .9rem;
+      font-weight: 900;
       flex-shrink: 0;
     }
 
-    .log-item .log-time {
-      margin-left: auto;
-      font-family: "Courier New", monospace;
-      font-size: .64rem;
-      color: var(--ink-faint);
-      white-space: nowrap;
-    }
-
-    .log-item .log-tag {
-      font-size: .64rem;
-      letter-spacing: .08em;
-      color: var(--ink-faint);
-      border: 1px solid rgba(28, 25, 20, .18);
+    .log-tag {
+      font-size: .58rem;
+      font-weight: 900;
+      letter-spacing: .06em;
+      border: 2px solid var(--black);
       padding: 1px 5px;
-      border-radius: 2px;
       white-space: nowrap;
     }
 
-    .log-item .log-tag.accepted {
-      color: #4f6b4a;
-      border-color: rgba(79, 107, 74, .4);
+    .log-tag.accepted {
+      background: var(--mint);
+    }
+
+    .log-time {
+      margin-left: auto;
+      font-size: .58rem;
+      font-weight: 700;
+      color: rgba(17, 17, 17, .55);
+      white-space: nowrap;
     }
 
     .log-empty {
-      padding: 26px 0;
+      padding: 24px 0;
       text-align: center;
-      color: var(--ink-faint);
-      font-size: .82rem;
+      font-size: .78rem;
+      font-weight: 700;
+      color: rgba(17, 17, 17, .55);
     }
 
     /* ── Toast ──────────────────────────── */
     .toast {
       position: fixed;
       left: 50%;
-      bottom: calc(30px + env(safe-area-inset-bottom));
+      bottom: calc(28px + env(safe-area-inset-bottom));
       z-index: 60;
       transform: translate(-50%, 16px);
       max-width: min(88vw, 400px);
-      padding: 10px 18px;
-      background: var(--paper);
-      color: var(--ink);
-      font-size: .8rem;
+      padding: 10px 16px;
+      background: var(--black);
+      color: var(--cream);
+      border: 3px solid var(--cream);
+      box-shadow: 5px 5px 0 rgba(17, 17, 17, .4);
+      font-size: .76rem;
+      font-weight: 700;
       line-height: 1.6;
       text-align: center;
-      border-radius: 2px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, .4);
       opacity: 0;
       pointer-events: none;
-      transition: opacity .25s, transform .25s var(--ease-out);
+      transition: opacity .22s, transform .22s var(--press);
     }
 
     .toast.show {
@@ -969,20 +837,90 @@
       transform: translate(-50%, 0);
     }
 
-    /* ── 响应式与可访问性 ───────────────── */
-    @media (max-width: 370px) {
+    /* ── 动画与响应式 ───────────────────── */
+    @keyframes tube-breathe {
+      0%, 100% { transform: translateX(-50%) rotate(-2deg); }
+      50% { transform: translateX(-50%) rotate(-1deg) translateY(-2px); }
+    }
+
+    .tube.shaking .tube-body,
+    .tube.shaking .tube-mouth,
+    .tube.shaking .tube-band,
+    .tube.shaking .sticks {
+      animation: tube-shake .6s ease-in-out;
+    }
+
+    .tube.shaking .stick:nth-child(3n) {
+      animation: stick-hop .6s ease-in-out;
+    }
+
+    @keyframes tube-shake {
+      0%, 100% { translate: 0 0; rotate: 0deg; }
+      18% { translate: -6px 0; rotate: -2.4deg; }
+      42% { translate: 6px 0; rotate: 2deg; }
+      66% { translate: -3px 0; rotate: -1deg; }
+    }
+
+    @keyframes stick-hop {
+      0%, 100% { translate: 0 0; }
+      38% { translate: 0 -9px; }
+    }
+
+    @media (min-width: 560px) {
+      .tube-wrap {
+        transform: scale(1.14);
+        margin: 24px 0 18px;
+      }
+    }
+
+    @media (max-width: 380px) {
       .counter {
-        padding-left: 14px;
-        padding-right: 14px;
+        padding-left: 12px;
+        padding-right: 12px;
       }
 
-      .ticket-body {
-        padding-left: 18px;
-        padding-right: 18px;
+      .tube {
+        width: 154px;
+        height: 200px;
       }
 
-      .dish-icon {
-        font-size: 2.4rem;
+      .sticks {
+        bottom: 170px;
+        width: 128px;
+      }
+
+      .tube-body {
+        width: 116px;
+        height: 170px;
+      }
+
+      .tube-mouth {
+        bottom: 154px;
+        width: 116px;
+      }
+
+      .tube-tip {
+        right: -24px;
+      }
+
+      .tube-wrap {
+        padding-top: 78px;
+      }
+
+      .ticket {
+        padding: 15px 14px 20px;
+      }
+
+      .stamp {
+        right: 12px;
+        bottom: 12px;
+        width: 44px;
+        height: 54px;
+        font-size: 1rem;
+      }
+
+      .foot-meta {
+        margin-right: 50px;
       }
     }
 
@@ -998,7 +936,8 @@
     }
 
     ::selection {
-      background: rgba(169, 47, 34, .2);
+      background: var(--red);
+      color: var(--cream);
     }
   </style>
 </head>
@@ -1008,7 +947,7 @@
 
   <main class="counter">
     <div class="topbar">
-      <span class="brand-mark" aria-hidden="true">食神</span>
+      <span class="brand-mark" aria-hidden="true">食 神</span>
       <div class="top-right">
         <span class="period" id="periodLabel">午时</span>
         <button class="sound-btn" id="soundBtn" type="button" data-on="true" aria-pressed="true">声音 开</button>
@@ -1017,21 +956,20 @@
 
     <header class="masthead">
       <h1>食神签</h1>
-      <p class="sub">后厨出的单子，比你自己拿主意准。</p>
+      <p class="sub">后厨出的单子，比你自己拿主意准</p>
     </header>
 
     <section class="oracle" aria-label="求签">
       <div class="tube-wrap">
-        <button class="tube" id="tube" type="button" aria-label="摇一签">
+        <button class="tube hint-pulse" id="tube" type="button" aria-label="摇一签">
           <span class="sticks" id="sticks" aria-hidden="true"></span>
+          <span class="tube-body"><span class="tube-band">食 神</span></span>
           <span class="tube-mouth" aria-hidden="true"></span>
-          <span class="tube-body" aria-hidden="true"></span>
-          <span class="tube-label" aria-hidden="true">食神</span>
+          <span class="tube-tip" aria-hidden="true">↙ 摇这里</span>
         </button>
-        <span class="tube-shadow" aria-hidden="true"></span>
       </div>
 
-      <p class="hint" id="hint">摇一摇，或者点一下签筒</p>
+      <p class="hint" id="hint">摇一摇，或者点一下</p>
       <button class="draw-btn" id="drawBtn" type="button">摇 一 签</button>
     </section>
 
@@ -1042,58 +980,54 @@
 
     <section class="ticket-stage" id="ticketStage" hidden>
       <article class="ticket" id="ticket" aria-live="polite">
-        <div class="ticket-tear" aria-hidden="true"></div>
-        <div class="ticket-body">
-          <div class="ticket-head">
-            <span class="ticket-no" id="ticketNo">第 001 签</span>
-            <span class="ticket-brand" aria-hidden="true">食神签</span>
-          </div>
-
-          <div class="dish">
-            <span class="dish-icon" id="dishIcon" aria-hidden="true">🍜</span>
-            <div class="dish-text">
-              <h2 class="dish-name" id="dishName">—</h2>
-              <p class="dish-meta">
-                <span id="dishCat">—</span>
-                <span class="dot" aria-hidden="true"></span>
-                <span id="dishPeriod">—</span>
-              </p>
-            </div>
-          </div>
-
-          <p class="mood-line" id="moodLine" hidden></p>
-
-          <div class="block">
-            <h3 id="timeTitle">午时判词</h3>
-            <p id="timeJudge"></p>
-          </div>
-
-          <div class="block">
-            <h3>食神断语</h3>
-            <p id="verdict"></p>
-          </div>
-
-          <div class="dos">
-            <div class="good">
-              <h3>宜</h3>
-              <p id="dosList"></p>
-            </div>
-            <div>
-              <h3>忌</h3>
-              <p id="dontsList"></p>
-            </div>
-          </div>
-
-          <div class="ticket-foot">
-            <span class="barcode" aria-hidden="true"></span>
-            <span class="foot-meta">
-              <span id="ticketDate">—</span><br>
-              <span>yileina.cyou</span>
-            </span>
-          </div>
-
-          <div class="stamp" id="stamp" aria-hidden="true">天意</div>
+        <div class="ticket-top">
+          <span class="ticket-no" id="ticketNo">第 001 签</span>
+          <span class="ticket-cert" aria-hidden="true">食 神 认 证</span>
         </div>
+
+        <div class="dish">
+          <span class="dish-icon" id="dishIcon" aria-hidden="true">🍜</span>
+          <div class="dish-text">
+            <h2 class="dish-name" id="dishName">—</h2>
+            <p class="dish-meta">
+              <span class="cat" id="dishCat">—</span>
+              <span id="dishPeriod">—</span>
+            </p>
+          </div>
+        </div>
+
+        <p class="mood-line" id="moodLine" hidden></p>
+
+        <div class="block">
+          <span class="label" id="timeTitle">午时判词</span>
+          <p id="timeJudge"></p>
+        </div>
+
+        <div class="block">
+          <span class="label">食神断语</span>
+          <p id="verdict"></p>
+        </div>
+
+        <div class="dos">
+          <div class="do">
+            <b>宜</b>
+            <span id="dosList"></span>
+          </div>
+          <div class="do dont">
+            <b>忌</b>
+            <span id="dontsList"></span>
+          </div>
+        </div>
+
+        <div class="ticket-foot">
+          <span class="barcode" aria-hidden="true"></span>
+          <span class="foot-meta">
+            <span id="ticketDate">—</span><br>
+            <span>yileina.cyou</span>
+          </span>
+        </div>
+
+        <div class="stamp" id="stamp" aria-hidden="true">天意</div>
       </article>
 
       <div class="actions">
@@ -1121,6 +1055,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
+
     const FOOD_DATABASE = [
 
       // ── 早餐经典 (18) ──────────────────────
@@ -2454,13 +2389,13 @@
     // ═══════════════════════════════════════════
     function buildSticks() {
       el.sticks.innerHTML = '';
-      for (let i = 0; i < 26; i++) {
+      for (let i = 0; i < 16; i++) {
         const s = document.createElement('span');
         s.className = 'stick';
-        const x = (Math.random() - 0.5) * 96;
+        const x = (Math.random() - 0.5) * 92;
         s.style.setProperty('--x', x.toFixed(1) + 'px');
-        s.style.setProperty('--r', ((Math.random() - 0.5) * 17).toFixed(1) + 'deg');
-        s.style.setProperty('--h', (52 + Math.random() * 22).toFixed(0) + 'px');
+        s.style.setProperty('--r', ((Math.random() - 0.5) * 16).toFixed(1) + 'deg');
+        s.style.setProperty('--h', (66 + Math.random() * 18).toFixed(0) + 'px');
         s.style.zIndex = String(10 + Math.round(x));
         el.sticks.appendChild(s);
       }
@@ -2745,10 +2680,17 @@
       const W = 1080;
       const period = periodNow();
       const picks = dosDonts(food);
-      const bodyFont = '30px "PingFang SC","Microsoft YaHei",sans-serif';
-      const lineH = 50;
+      const bodyFont = '500 32px "PingFang SC","Microsoft YaHei",sans-serif';
+      const lineH = 54;
+      const pad = 56;
+      const paperX = pad;
+      const paperY = 92;
+      const paperW = W - pad * 2;
+      const innerX = paperX + 44;
+      const textW = paperW - 88;
+      const labelH = 34;
+      const gapLabel = 30;
 
-      // 先量一遍文字行数，决定签纸图的高度
       const measure = document.createElement('canvas').getContext('2d');
       const countLines = (text, font, maxWidth) => {
         measure.font = font;
@@ -2765,173 +2707,173 @@
         return lines;
       };
 
-      const timeLines = countLines(food.time_judgement[period], bodyFont, W - 180);
-      const verdictLines = countLines(food.diagnosis, bodyFont, W - 180);
+      const timeLines = countLines(food.time_judgement[period], bodyFont, textW);
+      const verdictLines = countLines(food.diagnosis, bodyFont, textW);
 
-      // 与下方绘制相同的纵向排布
-      const y1 = 570 + 48 + (timeLines - 1) * lineH;
-      const y2 = y1 + 56 + 48 + (verdictLines - 1) * lineH;
-      const contentBottom = y2 + 56 + 110;
-      const H = Math.max(1420, Math.min(2100, contentBottom + 330));
+      // 一次性把整张签纸的纵向坐标算出来，绘制时不再累加
+      const L = {};
+      L.no = 40;
+      L.dish = 168;
+      L.cat = 210;
+      L.timeLabel = 264;
+      L.timeText = L.timeLabel + labelH + gapLabel;
+      L.verdictLabel = L.timeText + (timeLines - 1) * lineH + 44;
+      L.verdictText = L.verdictLabel + labelH + gapLabel;
+      L.dos = L.verdictText + (verdictLines - 1) * lineH + 40;
+      L.foot = L.dos + 108 + 34;
+      L.paperH = L.foot + 76 + 44;
 
+      const H = paperY + L.paperH + 96;
       const canvas = document.createElement('canvas');
       canvas.width = W;
       canvas.height = H;
       const ctx = canvas.getContext('2d');
 
-      // 纸底
-      ctx.fillStyle = '#f7f0df';
+      // 黄底 + 点阵
+      ctx.fillStyle = '#ffd84d';
       ctx.fillRect(0, 0, W, H);
-
-      // 纸纹
-      ctx.save();
-      ctx.globalAlpha = .05;
-      ctx.fillStyle = '#6b5636';
-      for (let i = 0; i < 900; i++) {
-        const x = Math.random() * W;
-        const y = Math.random() * H;
-        ctx.fillRect(x, y, 2, 2);
+      ctx.fillStyle = 'rgba(17,17,17,.16)';
+      for (let py = 12; py < H; py += 24) {
+        for (let px = 12; px < W; px += 24) {
+          ctx.beginPath();
+          ctx.arc(px, py, 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
-      ctx.restore();
 
-      // 顶部墨绿条
-      ctx.fillStyle = '#1e2a24';
-      ctx.fillRect(0, 0, W, 26);
-
-      // 标题
-      ctx.fillStyle = '#1c1914';
-      ctx.textAlign = 'center';
-      ctx.font = '700 64px "Songti SC","SimSun",serif';
-      ctx.fillText('食 神 签', W / 2, 140);
-
-      ctx.fillStyle = '#7a7161';
-      ctx.font = '24px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText('后厨出的单子，比你自己拿主意准。', W / 2, 190);
-
-      // 分隔
-      ctx.strokeStyle = 'rgba(28,25,20,.18)';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(90, 228);
-      ctx.lineTo(W - 90, 228);
-      ctx.stroke();
+      // 硬阴影 + 签纸
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(paperX + 16, paperY + 16, paperW, L.paperH);
+      ctx.fillStyle = '#fffdf5';
+      ctx.fillRect(paperX, paperY, paperW, L.paperH);
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 10;
+      ctx.strokeRect(paperX, paperY, paperW, L.paperH);
 
       // 签号
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(innerX, paperY + L.no, 214, 46);
+      ctx.fillStyle = '#fffdf5';
+      ctx.font = '900 26px "Arial Black","Microsoft YaHei",sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillStyle = '#7a7161';
-      ctx.font = '22px "Courier New",monospace';
-      ctx.fillText('第 ' + ticketNumber(food) + ' 签', 90, 286);
+      ctx.fillText('第 ' + ticketNumber(food) + ' 签', innerX + 16, paperY + L.no + 32);
 
-      ctx.textAlign = 'right';
-      ctx.fillStyle = '#a92f22';
-      ctx.font = '24px "Songti SC","SimSun",serif';
-      ctx.fillText(PERIOD_LABEL[period] + ' · 天意', W - 90, 286);
+      // 认证
+      ctx.strokeStyle = '#ff4d2e';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(W - pad - 190, paperY + L.no + 4, 190, 38);
+      ctx.fillStyle = '#ff4d2e';
+      ctx.font = '900 18px "Arial Black","Microsoft YaHei",sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('食神认证', W - pad - 95, paperY + L.no + 30);
 
       // 食物
       ctx.textAlign = 'left';
-      ctx.font = '96px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
-      ctx.fillText(food.icon, 90, 420);
+      ctx.font = '900 82px "Segoe UI Emoji","Apple Color Emoji",sans-serif';
+      ctx.fillText(food.icon, innerX, paperY + L.dish + 4);
+      ctx.fillStyle = '#111111';
+      ctx.font = '900 76px "Arial Black","Microsoft YaHei",sans-serif';
+      ctx.fillText(food.name, innerX + 138, paperY + L.dish);
+      ctx.fillStyle = '#ff4d2e';
+      const nameW = Math.min(textW - 138, Math.max(150, 74 * food.name.length));
+      ctx.fillRect(innerX + 138, paperY + L.dish + 18, nameW, 9);
 
-      ctx.fillStyle = '#1c1914';
-      ctx.font = '700 76px "Songti SC","SimSun",serif';
-      ctx.fillText(food.name, 230, 410);
-
-      ctx.fillStyle = '#7a7161';
-      ctx.font = '26px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText(food.category + ' · ' + PERIOD_LABEL[period], 232, 455);
-
-      // 线
-      ctx.strokeStyle = 'rgba(28,25,20,.16)';
-      ctx.beginPath();
-      ctx.moveTo(90, 500);
-      ctx.lineTo(W - 90, 500);
-      ctx.stroke();
-
-      let y = 570;
+      // 分类
+      ctx.fillStyle = '#ffd84d';
+      ctx.fillRect(innerX, paperY + L.cat, 340, 42);
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(innerX, paperY + L.cat, 340, 42);
+      ctx.fillStyle = '#111111';
+      ctx.font = '900 20px "Arial Black","Microsoft YaHei",sans-serif';
+      ctx.fillText(food.category + ' · ' + PERIOD_LABEL[period], innerX + 14, paperY + L.cat + 29);
 
       // 判词
-      ctx.fillStyle = '#a92f22';
-      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText(PERIOD_LABEL[period] + '判词', 90, y);
-      y += 48;
-
-      ctx.fillStyle = '#4a4337';
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(innerX, paperY + L.timeLabel, 154, labelH);
+      ctx.fillStyle = '#fffdf5';
+      ctx.font = '900 20px "Microsoft YaHei",sans-serif';
+      ctx.fillText(PERIOD_LABEL[period] + '判词', innerX + 14, paperY + L.timeLabel + 25);
+      ctx.fillStyle = '#111111';
       ctx.font = bodyFont;
-      y = wrapText(ctx, food.time_judgement[period], 90, y, W - 180, lineH);
-      y += 56;
+      wrapText(ctx, food.time_judgement[period], innerX, paperY + L.timeText, textW, lineH);
 
       // 断语
-      ctx.fillStyle = '#a92f22';
-      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText('食神断语', 90, y);
-      y += 48;
-
-      ctx.fillStyle = '#4a4337';
+      ctx.fillStyle = '#111111';
+      ctx.fillRect(innerX, paperY + L.verdictLabel, 154, labelH);
+      ctx.fillStyle = '#fffdf5';
+      ctx.font = '900 20px "Microsoft YaHei",sans-serif';
+      ctx.fillText('食神断语', innerX + 14, paperY + L.verdictLabel + 25);
+      ctx.fillStyle = '#111111';
       ctx.font = bodyFont;
-      y = wrapText(ctx, food.diagnosis, 90, y, W - 180, lineH);
-      y += 56;
+      wrapText(ctx, food.diagnosis, innerX, paperY + L.verdictText, textW, lineH);
 
       // 宜忌
-      ctx.strokeStyle = 'rgba(28,25,20,.16)';
+      const boxW = (textW - 22) / 2;
+      const boxH = 108;
+      const boxY = paperY + L.dos;
+      ctx.fillStyle = '#23c9a0';
+      ctx.fillRect(innerX, boxY, boxW, boxH);
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(innerX, boxY, boxW, boxH);
+      ctx.fillStyle = '#111111';
+      ctx.font = '900 20px "Microsoft YaHei",sans-serif';
+      ctx.fillText('宜', innerX + 16, boxY + 32);
+      ctx.font = '700 22px "Microsoft YaHei",sans-serif';
+      ctx.fillText(picks.good.join('、'), innerX + 16, boxY + 72);
+
+      const x2 = innerX + boxW + 22;
+      ctx.fillStyle = '#ff8f7a';
+      ctx.fillRect(x2, boxY, boxW, boxH);
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x2, boxY, boxW, boxH);
+      ctx.fillStyle = '#111111';
+      ctx.font = '900 20px "Microsoft YaHei",sans-serif';
+      ctx.fillText('忌', x2 + 16, boxY + 32);
+      ctx.font = '700 22px "Microsoft YaHei",sans-serif';
+      ctx.fillText(picks.bad.join('、'), x2 + 16, boxY + 72);
+
+      // 底部虚线
+      const footY = paperY + L.foot;
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([12, 10]);
       ctx.beginPath();
-      ctx.moveTo(90, y - 16);
-      ctx.lineTo(W - 90, y - 16);
-      ctx.stroke();
-
-      ctx.fillStyle = '#4f6b4a';
-      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText('宜', 90, y + 32);
-      ctx.fillStyle = '#4a4337';
-      ctx.font = '28px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText(picks.good.join(' · '), 150, y + 32);
-
-      ctx.fillStyle = '#a92f22';
-      ctx.font = '600 26px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText('忌', 90, y + 82);
-      ctx.fillStyle = '#4a4337';
-      ctx.font = '28px "PingFang SC","Microsoft YaHei",sans-serif';
-      ctx.fillText(picks.bad.join(' · '), 150, y + 82);
-
-      // 底部
-      const footY = H - 150;
-      ctx.strokeStyle = 'rgba(28,25,20,.22)';
-      ctx.setLineDash([10, 10]);
-      ctx.beginPath();
-      ctx.moveTo(90, footY);
-      ctx.lineTo(W - 90, footY);
+      ctx.moveTo(innerX, footY);
+      ctx.lineTo(innerX + textW, footY);
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // 条形码
-      ctx.fillStyle = '#1c1914';
-      for (let i = 0; i < 40; i++) {
-        const bw = 2 + (i % 4);
-        ctx.fillRect(90 + i * 8, footY + 36, bw, 56);
+      // 条码
+      ctx.fillStyle = '#111111';
+      for (let i = 0; i < 34; i++) {
+        const bw = 3 + (i % 3);
+        ctx.fillRect(innerX + i * 9, footY + 22, bw, 52);
       }
 
-      ctx.fillStyle = '#7a7161';
-      ctx.font = '22px "Courier New",monospace';
+      // 日期域名：右对齐到印章左侧
+      ctx.fillStyle = '#111111';
+      ctx.font = '900 17px "Courier New",monospace';
       ctx.textAlign = 'right';
-      ctx.fillText(stampText(), W - 90, footY + 58);
-      ctx.fillText('yileina.cyou/tools/food-oracle', W - 90, footY + 90);
+      ctx.fillText(stampText(), innerX + textW - 148, footY + 46);
+      ctx.fillText('yileina.cyou/tools/food-oracle', innerX + textW - 148, footY + 74);
 
-      // 印章
+      // 印章：右下角，压在虚线上
       ctx.save();
-      ctx.translate(W - 150, footY - 90);
+      ctx.translate(innerX + textW - 66, footY + 26);
       ctx.rotate(-9 * Math.PI / 180);
-      ctx.strokeStyle = '#a92f22';
+      ctx.strokeStyle = '#ff4d2e';
       ctx.lineWidth = 6;
-      ctx.strokeRect(-62, -76, 124, 152);
-      ctx.lineWidth = 2;
-      ctx.strokeRect(-54, -68, 108, 136);
-      ctx.fillStyle = '#a92f22';
+      ctx.strokeRect(-46, -50, 92, 100);
+      ctx.fillStyle = '#ff4d2e';
       ctx.textAlign = 'center';
-      ctx.font = '700 52px "Songti SC","SimSun",serif';
-      ctx.fillText('天', 0, 4);
-      ctx.fillText('意', 0, 70);
+      ctx.font = '900 42px "Arial Black","Microsoft YaHei",sans-serif';
+      ctx.fillText('天', 0, -4);
+      ctx.fillText('意', 0, 46);
       ctx.restore();
 
-      // 下载
       canvas.toBlob(blob => {
         if (!blob) { showToast('生成图片失败，试试直接截图。'); return; }
         const url = URL.createObjectURL(blob);
@@ -2945,8 +2887,6 @@
         showToast('图存好了。发给人，让他也别想了。', 3000);
       }, 'image/png');
     }
-
-    // ═══════════════════════════════════════════
     //  启动
     // ═══════════════════════════════════════════
     function init() {
@@ -2978,6 +2918,7 @@
 
     init();
     console.log('%c食神签 · 一百道菜等你摇', 'color:#a92f22;font-size:14px');
+  
   </script>
 </body>
 
