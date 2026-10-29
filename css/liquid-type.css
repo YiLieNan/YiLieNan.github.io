@@ -1,0 +1,37 @@
+/* ============================================================
+   字体浮雕 v2（克制版 2026-10-30）
+   v1 的珠光渐变填充 + 多层 drop-shadow + 光泽扫过效果过火（且 Chromium 下
+   background-clip:text 配合 filter 会出现文字变灰的渲染缺陷），整体回退。
+   仅保留极轻的凹凸浮雕，保持文字清晰、几乎无感但更精致：
+   - 亮色：上缘 1px 白色高光（微微凸起）
+   - 暗色：下缘柔和暗影（浅浅下沉）
+   首页大标题不再额外处理，恢复主题原样。
+   ============================================================ */
+
+/* 文章页大标题 */
+body article h1 {
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.26),
+    0 2px 4px rgba(20, 20, 50, 0.08);
+}
+html[data-theme="dark"] body article h1 {
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.22),
+    0 2px 6px rgba(0, 0, 0, 0.30);
+}
+
+/* 首页卡片标题 */
+body h2.post-title {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+html[data-theme="dark"] body h2.post-title {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
+}
+
+/* 正文小节标题 */
+body .article-entry h2 {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+html[data-theme="dark"] body .article-entry h2 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.32);
+}
