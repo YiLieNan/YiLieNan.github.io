@@ -35,10 +35,11 @@
     // 两层背景交替 - 避免白闪
     var bg1=document.createElement('div')
     var bg2=document.createElement('div')
-    bg1.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;pointer-events:none;background:url('+playOrder[0]+') center/cover no-repeat;opacity:1;transition:opacity '+fade+'ms ease'
-    bg2.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;background:url('+playOrder[1]+') center/cover no-repeat;opacity:0;transition:opacity '+fade+'ms ease'
+    bg1.className='elaina-bg-layer';bg1.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;pointer-events:none;background:url('+playOrder[0]+') center/cover no-repeat;opacity:1;transition:opacity '+fade+'ms ease'
+    bg2.className='elaina-bg-layer';bg2.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;pointer-events:none;background:url('+playOrder[1]+') center/cover no-repeat;opacity:0;transition:opacity '+fade+'ms ease'
     document.body.insertBefore(bg2,document.body.firstChild)
     document.body.insertBefore(bg1,document.body.firstChild)
+    ;[bg1,bg2].forEach(function(b){b.style.transition='transform 0.25s ease-out'})
 
     // 样式
     var s=document.createElement('style')

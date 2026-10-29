@@ -1,7 +1,11 @@
-/* 液态玻璃光斑跟随 v1（2026-10-28）
- * 桌面鼠标设备上，把指针位置写入玻璃卡片的 --gx/--gy（供 ::after 光斑定位）。
- * 事件委托在 document 上：pjax 切页、动态插入的卡片都天然生效，无需重建。
- * 触屏设备 / 系统"减少动态效果"时整段跳过（光斑由 CSS 隐藏）。
+/* 液态玻璃交互 v2（2026-10-29）
+ * ① 3D 朝向倾斜：玻璃卡片随鼠标位置轻微转动（perspective + rotateX/Y）
+ * ② 光斑跟随：--gx/--gy 驱动 ::after 径向高光
+ * ③ 珠光角度：--angle 驱动 ::before 棱镜描边方向
+ * ④ 背景视差：两层壁纸随鼠标反向微移，整站"活"起来
+ * 约束：仅桌面鼠标设备（pointer:fine + hover）+ 非 reduced-motion；
+ *       document 事件委托，pjax/动态元素天然生效；
+ *       倾斜加在外层容器，避开 AOS 在卡片本体上的 transform。
  */
 (function () {
   'use strict';
@@ -10,28 +14,85 @@
   if (!matchMedia('(pointer: fine) and (hover: hover)').matches) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var SEL = '.post-wrap,.article-inner,.sidebar-wrap,.widget-wrap,.blog-comments-card,.tool-card';
+  var CARD_SEL = '.post-wrap,.article-inner,.sidebar-wrap,.widget-wrap,.blog-comments-card,.tool-card';
+  var MAX_TILT = 3.2;            // 最大倾斜角度(deg)，克制才高级
+  var PARALLAX = 7;              // 背景视差最大位移(px)
+
+  var currentCard = null;        // 当前悬停的玻璃卡
+  var currentTilt = null;        // 实际应用 transform 的元素（外层容器或自身）
   var lastEvt = null;
   var raf = 0;
+
+  /* 倾斜目标：优先外层容器（内层有 AOS transform，直接改会打架） */
+  function tiltTarget(el) {
+    if (el.matches('.post-wrap')) return el.parentElement || el;
+    if (el.matches('.article-inner')) return el.closest('article') || el;
+    if (el.matches('.widget-wrap')) return el.closest('.widget-wrapper') || el;
+    if (el.matches('.sidebar-wrap')) return el.closest('.sidebar-wrapper') || el;
+    return el; // 评论卡 / 工具箱卡片：自身无 AOS，直接倾斜
+  }
+
+  function resetTilt(el) {
+    if (!el) return;
+    el.style.transform = '';
+    el.classList.remove('glass-tilting');
+    el.classList.add('glass-tilt');
+  }
 
   function apply() {
     raf = 0;
     var ev = lastEvt;
     if (!ev || !ev.target || !ev.target.closest) return;
-    var el = ev.target.closest(SEL);
-    if (!el) return;
-    var r = el.getBoundingClientRect();
+
+    /* ---- 背景视差（始终生效） ---- */
+    var nx = (ev.clientX / window.innerWidth) - 0.5;   // -0.5 .. 0.5
+    var ny = (ev.clientY / window.innerHeight) - 0.5;
+    var layers = document.querySelectorAll('.elaina-bg-layer');
+    for (var i = 0; i < layers.length; i++) {
+      layers[i].style.transform = 'translate(' + (nx * -PARALLAX).toFixed(1) + 'px,' + (ny * -PARALLAX).toFixed(1) + 'px)';
+    }
+
+    /* ---- 卡片跟随 ---- */
+    var card = ev.target.closest(CARD_SEL);
+    if (card !== currentCard) {
+      resetTilt(currentTilt);
+      currentCard = card;
+      currentTilt = card ? tiltTarget(card) : null;
+    }
+    if (!card) return;
+
+    var r = card.getBoundingClientRect();
     if (!r.width || !r.height) return;
-    el.style.setProperty('--gx', (((ev.clientX - r.left) / r.width) * 100).toFixed(1) + '%');
-    el.style.setProperty('--gy', (((ev.clientY - r.top) / r.height) * 100).toFixed(1) + '%');
+    var px = (ev.clientX - r.left) / r.width;    // 0..1
+    var py = (ev.clientY - r.top) / r.height;    // 0..1
+
+    /* 光斑坐标 + 珠光角度 */
+    card.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
+    card.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
+    card.style.setProperty('--angle', (100 + py * 80).toFixed(0) + 'deg');
+
+    /* 3D 朝向 */
+    if (currentTilt) {
+      var ry = (px - 0.5) * 2 * MAX_TILT;
+      var rx = (0.5 - py) * 2 * MAX_TILT;
+      currentTilt.classList.add('glass-tilt', 'glass-tilting');
+      currentTilt.style.transform =
+        'perspective(900px) rotateX(' + rx.toFixed(2) + 'deg) rotateY(' + ry.toFixed(2) + 'deg)';
+    }
   }
 
-  document.addEventListener(
-    'mousemove',
-    function (ev) {
-      lastEvt = ev;
-      if (!raf) raf = requestAnimationFrame(apply);
-    },
-    { passive: true },
-  );
+  document.addEventListener('mousemove', function (ev) {
+    lastEvt = ev;
+    if (!raf) raf = requestAnimationFrame(apply);
+  }, { passive: true });
+
+  /* 鼠标离开窗口：背景归位、卡片回正 */
+  document.addEventListener('mouseleave', function () {
+    document.querySelectorAll('.elaina-bg-layer').forEach(function (el) {
+      el.style.transform = '';
+    });
+    resetTilt(currentTilt);
+    currentCard = null;
+    currentTilt = null;
+  });
 })();
