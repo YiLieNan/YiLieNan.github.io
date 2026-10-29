@@ -1,0 +1,211 @@
+/* ============================================================
+   液态玻璃 + 沉浸光感 v1（2026-10-28）
+   iOS 26 Liquid Glass 质感：半透明磨砂、渐变描边、顶部反光、光随鼠标
+   兼容：暗色模式（html[data-theme=dark]）/ 手机降级 / 减弱动效 / 无 backdrop-filter 降级
+   依赖：glass-light.js 提供 --gx/--gy 光斑坐标（不加载时回退 50%/0%）
+   ============================================================ */
+
+/* ---------- 变量 ---------- */
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-navy: rgba(255, 255, 255, 0.68);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-border-dim: rgba(255, 255, 255, 0.30);
+  --glass-blur: 16px;
+  --glass-saturate: 165%;
+  --glass-shadow: 0 8px 32px rgba(30, 38, 80, 0.10), 0 2px 8px rgba(30, 38, 80, 0.06);
+  --glass-shadow-hover: 0 14px 44px rgba(30, 38, 80, 0.16), 0 4px 14px rgba(30, 38, 80, 0.08);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.65), inset 0 -1px 0 rgba(255, 255, 255, 0.12);
+  --glass-light: rgba(255, 255, 255, 0.38);
+  --glass-top-glow: rgba(255, 255, 255, 0.22);
+}
+html[data-theme="dark"] {
+  --glass-bg: rgba(28, 30, 38, 0.50);
+  --glass-bg-navy: rgba(30, 32, 42, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.20);
+  --glass-border-dim: rgba(255, 255, 255, 0.10);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.38), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --glass-shadow-hover: 0 14px 44px rgba(0, 0, 0, 0.50), 0 4px 14px rgba(0, 0, 0, 0.30);
+  --glass-inset: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  --glass-light: rgba(255, 255, 255, 0.16);
+  --glass-top-glow: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- 玻璃卡片基底 ---------- */
+body .post-wrap,
+body .article-inner,
+body .sidebar-wrap,
+body .widget-wrap,
+body .blog-comments-card,
+body .popup {
+  position: relative;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border-dim);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+  /* 覆盖主题 AOS 的 transition-property: all（避免 backdrop-filter 参与过渡造成重绘卡顿） */
+  transition: box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
+}
+body .post-wrap:hover,
+body .article-inner:hover,
+body .sidebar-wrap:hover,
+body .widget-wrap:hover,
+body .blog-comments-card:hover {
+  box-shadow: var(--glass-shadow-hover), var(--glass-inset);
+  border-color: var(--glass-border);
+}
+
+/* ---------- 液态细节：渐变描边(::before) + 顶部反光&光斑(::after) ---------- */
+body .post-wrap::before,
+body .article-inner::before,
+body .sidebar-wrap::before,
+body .widget-wrap::before,
+body .blog-comments-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--glass-border) 0%,
+    transparent 32%,
+    transparent 62%,
+    var(--glass-border-dim) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 1;
+}
+body .post-wrap::after,
+body .article-inner::after,
+body .sidebar-wrap::after,
+body .widget-wrap::after,
+body .blog-comments-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(
+      280px circle at var(--gx, 50%) var(--gy, 0%),
+      var(--glass-light),
+      transparent 65%
+    ),
+    linear-gradient(180deg, var(--glass-top-glow), transparent 30%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+body .post-wrap:hover::after,
+body .article-inner:hover::after,
+body .sidebar-wrap:hover::after,
+body .widget-wrap:hover::after,
+body .blog-comments-card:hover::after {
+  opacity: 1;
+}
+
+/* ---------- 导航栏玻璃 ---------- */
+#header-nav,
+#header-nav.elaina-scrolled {
+  background: var(--glass-bg-navy) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(var(--glass-saturate));
+  backdrop-filter: blur(18px) saturate(var(--glass-saturate));
+  border-bottom: 1px solid var(--glass-border-dim);
+  box-shadow: var(--glass-shadow);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+/* 导航文字配色跟随主题（覆盖 elaina-bg 注入的白字） */
+html:not([data-theme="dark"]) #header-nav .main-nav-link,
+html:not([data-theme="dark"]) #sub-nav .nav-icon {
+  color: #232838 !important;
+  text-shadow: none !important;
+}
+html[data-theme="dark"] #header-nav .main-nav-link,
+html[data-theme="dark"] #sub-nav .nav-icon {
+  color: #f3f4f8 !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ---------- 工具箱卡片（覆盖页面内联样式，需 important） ---------- */
+.toolbox-grid .tool-card {
+  background: var(--glass-bg) !important;
+  border: 1px solid var(--glass-border-dim) !important;
+  box-shadow: var(--glass-shadow), var(--glass-inset) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  position: relative;
+}
+.toolbox-grid .tool-card:hover {
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-hover), var(--glass-inset) !important;
+}
+html[data-theme="dark"] .tool-card .tag {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #d8d9e4 !important;
+}
+
+/* ---------- 评论区输入框 ---------- */
+body .blog-comments-card input.comment-input,
+body .blog-comments-card textarea.comment-input {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border-dim);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+/* ---------- 手机端降级（低 blur、关光斑） ---------- */
+@media (max-width: 768px) {
+  :root {
+    --glass-blur: 10px;
+    --glass-bg: rgba(255, 255, 255, 0.62);
+    --glass-bg-navy: rgba(255, 255, 255, 0.72);
+  }
+  html[data-theme="dark"] {
+    --glass-bg: rgba(28, 30, 38, 0.60);
+    --glass-bg-navy: rgba(30, 32, 42, 0.70);
+  }
+  body .post-wrap::after,
+  body .article-inner::after,
+  body .sidebar-wrap::after,
+  body .widget-wrap::after,
+  body .blog-comments-card::after {
+    display: none;
+  }
+}
+
+/* ---------- 减弱动效：关闭光斑 ---------- */
+@media (prefers-reduced-motion: reduce) {
+  body .post-wrap::after,
+  body .article-inner::after,
+  body .sidebar-wrap::after,
+  body .widget-wrap::after,
+  body .blog-comments-card::after {
+    display: none;
+  }
+  body .post-wrap,
+  body .article-inner,
+  body .sidebar-wrap,
+  body .widget-wrap,
+  body .blog-comments-card,
+  #header-nav {
+    transition: none;
+  }
+}
+
+/* ---------- 不支持 backdrop-filter 时退回半透明实色 ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-bg: rgba(255, 255, 255, 0.92);
+    --glass-bg-navy: rgba(255, 255, 255, 0.95);
+  }
+  html[data-theme="dark"] {
+    --glass-bg: rgba(30, 32, 40, 0.94);
+    --glass-bg-navy: rgba(30, 32, 42, 0.96);
+  }
+}

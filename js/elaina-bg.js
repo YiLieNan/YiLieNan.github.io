@@ -43,17 +43,19 @@
     // 样式
     var s=document.createElement('style')
     s.textContent=
-      '#header-nav{background:rgba(0,0,0,0.2)!important}'+
       '#header-nav .main-nav-link,#sub-nav .nav-icon{color:#fff!important;text-shadow:0 1px 6px rgba(0,0,0,0.6)}'+
       '#header-nav .main-nav-link:hover{color:#a78bfa!important}'+
       '.banner{background:transparent!important}'+
       '.banner .banner-bg{opacity:0!important}'+
-      '#container{background:rgba(255,255,255,0.88)!important}'+
+      /* 底板半透明：壁纸透出，供液态玻璃卡片磨砂取样（亮/暗各一套） */
+      '#container{background:rgba(255,255,255,0.42)!important}'+
+      'html[data-theme="dark"] #container{background:rgba(20,22,28,0.46)!important}'+
       '#wrap{background:transparent!important}'+
-      '.post,.sidebar,.sidebar-author,.widget-wrap,.archive-year,.category-list-item{background:transparent!important}'+
+      '.post,.sidebar,.sidebar-author,.archive-year,.category-list-item{background:transparent!important}'+
       /* 手机端优化 */
       '@media(max-width:768px){'+
-        '#container{background:rgba(255,255,255,0.95)!important}'+
+        '#container{background:rgba(255,255,255,0.55)!important}'+
+        'html[data-theme="dark"] #container{background:rgba(20,22,28,0.55)!important}'+
         '.post{padding:12px 8px!important}'+
         'pre code{font-size:12px!important}'+
         'img{max-width:100%!important;height:auto!important}'+
