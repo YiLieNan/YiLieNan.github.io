@@ -72,6 +72,14 @@
     card.style.setProperty('--gy', (py * 100).toFixed(1) + '%');
     card.style.setProperty('--angle', (100 + py * 80).toFixed(0) + 'deg');
 
+    /* 工具卡进阶跟随：彩光起点跟随鼠标方位 + 内容深度视差 */
+    if (card.hasAttribute && card.hasAttribute('data-tc')) {
+      var ang = Math.atan2(ev.y - (r.top + r.height / 2), ev.x - (r.left + r.width / 2)) * 180 / Math.PI + 90;
+      card.style.setProperty('--tc-angle', ang.toFixed(0) + 'deg');
+      card.style.setProperty('--px', (px - 0.5).toFixed(3));
+      card.style.setProperty('--py', (py - 0.5).toFixed(3));
+    }
+
     /* 3D 朝向 */
     if (currentTilt) {
       var ry = (px - 0.5) * 2 * MAX_TILT;

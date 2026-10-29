@@ -47,7 +47,7 @@
 <meta name="generator" content="Hexo 8.1.2"></head>
 
   <body>
-      <link rel="stylesheet" href="/css/mobile-optimize.css?v=1784550620"><link rel="stylesheet" href="/css/liquid-glass.css?v=20261033"><link rel="stylesheet" href="/css/liquid-type.css?v=20261032"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"YiLieNan の 小屋","description":"YiLieNan 的个人博客，记录学习与生活","url":"https://yileina.cyou"}</script>
+      <link rel="stylesheet" href="/css/mobile-optimize.css?v=1784550620"><link rel="stylesheet" href="/css/liquid-glass.css?v=20261034"><link rel="stylesheet" href="/css/liquid-type.css?v=20261032"><script type="application/ld+json">{"@context":"https://schema.org","@type":"Blog","name":"YiLieNan の 小屋","description":"YiLieNan 的个人博客，记录学习与生活","url":"https://yileina.cyou"}</script>
       <div id='loader'>
     <div class="loading-left-bg loading-bg"></div>
     <div class="loading-right-bg loading-bg"></div>
@@ -410,6 +410,53 @@ padding: 2px 10px; border-radius: 6px; font-size: 11px; margin-top: 2px;
 .tool-card[data-tc="food"]    { --tc-a: #fb7185; --tc-b: #fbbf24; }
 @media (max-width: 768px), (prefers-reduced-motion: reduce) {
   .tool-card[data-tc]::before { animation: none; }
+}
+
+/* ===== 工具卡进阶跟随 v2（2026-10-30）：彩光跟鼠标 + 边框高亮 + 深度视差 ===== */
+/* 边框双层光：鼠标位置的主题色高亮 + 环绕彩光（起点跟随鼠标方位） */
+.tool-card[data-tc]::before {
+  background:
+    radial-gradient(140px circle at var(--gx, 50%) var(--gy, 0%), var(--tc-a), transparent 70%),
+    conic-gradient(from var(--tc-angle, 0deg),
+      var(--tc-a), var(--tc-b), var(--tc-a) 45%, transparent 58%, var(--tc-b) 72%, var(--tc-a));
+}
+/* 卡内跟随光晕（主题色，悬停显示） */
+.tool-card[data-tc]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(240px circle at var(--gx, 50%) var(--gy, 0%), var(--tc-a), transparent 68%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  z-index: 0;
+}
+.tool-card[data-tc]:hover::after { opacity: 0.55; }
+/* 深度视差：图标随鼠标正向轻微位移，文字反向更小幅度（3D 分层手感） */
+.tool-card[data-tc] .icon {
+  transform: translate3d(calc(var(--px, 0) * 6px), calc(var(--py, 0) * 6px), 0);
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+}
+.tool-card[data-tc] .name,
+.tool-card[data-tc] .desc,
+.tool-card[data-tc] .tag {
+  transform: translate3d(calc(var(--px, 0) * -2.5px), calc(var(--py, 0) * -2.5px), 0);
+  transition: transform 0.15s ease-out;
+}
+/* 图标层浮起，内容让光晕在文字下层 */
+.tool-card[data-tc] .icon { position: relative; z-index: 2; }
+.tool-card[data-tc] .name,
+.tool-card[data-tc] .desc,
+.tool-card[data-tc] .tag { position: relative; z-index: 1; }
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .tool-card[data-tc] .icon,
+  .tool-card[data-tc] .name,
+  .tool-card[data-tc] .desc,
+  .tool-card[data-tc] .tag { transform: none; transition: none; }
 }
 </style>
 
@@ -791,6 +838,6 @@ padding: 2px 10px; border-radius: 6px; font-size: 11px; margin-top: 2px;
 
 
 
-      <script src="/js/player-drag.js?v=1784550620"></script><script src="/js/mobile-optimize.js?v=1784550620"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author");if(a){a.style.cursor="pointer";a.addEventListener("click",function(){location.href="/intro"})}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script><script src="/js/blog-comments.js?v=1784550620" defer></script><script src="/js/spherical-player.js?v=1784550620" defer></script><script src="/lib/gsap/gsap.min.js" defer></script><script src="/lib/gsap/ScrollTrigger.min.js" defer></script><script src="/js/elaina-motion.js?v=20261029" defer></script><script src="/js/glass-light.js?v=20261031" defer></script>
+      <script src="/js/player-drag.js?v=1784550620"></script><script src="/js/mobile-optimize.js?v=1784550620"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author");if(a){a.style.cursor="pointer";a.addEventListener("click",function(){location.href="/intro"})}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script><script src="/js/blog-comments.js?v=1784550620" defer></script><script src="/js/spherical-player.js?v=1784550620" defer></script><script src="/lib/gsap/gsap.min.js" defer></script><script src="/lib/gsap/ScrollTrigger.min.js" defer></script><script src="/js/elaina-motion.js?v=20261029" defer></script><script src="/js/glass-light.js?v=20261032" defer></script>
   <!-- hexo injector body_end start --><script src="/js/elaina-bg.js?v=20261029"></script><script>(function(){var t0=Date.now();function fsHide(){var l=document.getElementById("loader");if(!l)return;l.classList.add("loading");if(Date.now()-t0>5000){var s=document.createElement("style");s.textContent="#loader{display:none!important}";document.head.appendChild(s);}}if(document.readyState==="complete"){setTimeout(fsHide,1200)}else{window.addEventListener("load",function(){setTimeout(fsHide,600)});setTimeout(fsHide,3500)}})();</script><!-- hexo injector body_end end --></body>
   </html>
