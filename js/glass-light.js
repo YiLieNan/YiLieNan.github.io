@@ -26,11 +26,11 @@
   /* 倾斜目标：优先外层容器（内层有 AOS transform，直接改会打架） */
   function tiltTarget(el) {
     if (el.id === 'header-nav') return null; // 导航只做光效，不倾斜
-    if (el.matches('.post-wrap')) return el.parentElement || el;
-    if (el.matches('.article-inner')) return el.closest('article') || el;
+    /* 大卡片保持静止（只留光斑），倾斜只给小卡片 */
+    if (el.matches('.post-wrap') || el.matches('.article-inner') || el.matches('.blog-comments-card')) return null;
     if (el.matches('.widget-wrap')) return el.closest('.widget-wrapper') || el;
     if (el.matches('.sidebar-wrap')) return el.closest('.sidebar-wrapper') || el;
-    return el; // 评论卡 / 工具箱卡片：自身无 AOS，直接倾斜
+    return el; // 工具箱小卡片：自身倾斜
   }
 
   function resetTilt(el) {
