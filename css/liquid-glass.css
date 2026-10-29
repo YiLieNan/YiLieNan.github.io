@@ -53,8 +53,7 @@ body .post-wrap,
 body .article-inner,
 body .sidebar-wrap,
 body .widget-wrap,
-body .blog-comments-card,
-body .popup {
+body .blog-comments-card {
   position: relative;
   background: var(--glass-bg);
   -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
@@ -63,6 +62,15 @@ body .popup {
   box-shadow: var(--glass-shadow), var(--glass-inset);
   transition: box-shadow 0.35s ease, border-color 0.35s ease, background 0.35s ease;
 }
+/* 搜索弹层：保持主题的 fixed 定位，只换玻璃皮肤 */
+body .popup {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border-dim);
+  box-shadow: var(--glass-shadow), var(--glass-inset);
+}
+
 body .post-wrap:hover,
 body .article-inner:hover,
 body .sidebar-wrap:hover,
