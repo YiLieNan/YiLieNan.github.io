@@ -14,7 +14,7 @@
   if (!matchMedia('(pointer: fine) and (hover: hover)').matches) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var CARD_SEL = '.post-wrap,.article-inner,.sidebar-wrap,.widget-wrap,.blog-comments-card,.tool-card';
+  var CARD_SEL = '.post-wrap,.article-inner,.sidebar-wrap,.widget-wrap,.blog-comments-card,.tool-card,#header-nav';
   var MAX_TILT = 3.2;            // 最大倾斜角度(deg)，克制才高级
   var PARALLAX = 7;              // 背景视差最大位移(px)
 
@@ -25,6 +25,7 @@
 
   /* 倾斜目标：优先外层容器（内层有 AOS transform，直接改会打架） */
   function tiltTarget(el) {
+    if (el.id === 'header-nav') return null; // 导航只做光效，不倾斜
     if (el.matches('.post-wrap')) return el.parentElement || el;
     if (el.matches('.article-inner')) return el.closest('article') || el;
     if (el.matches('.widget-wrap')) return el.closest('.widget-wrapper') || el;
@@ -42,18 +43,18 @@
   function apply() {
     raf = 0;
     var ev = lastEvt;
-    if (!ev || !ev.target || !ev.target.closest) return;
+    if (!ev) return;
 
     /* ---- 背景视差（始终生效） ---- */
-    var nx = (ev.clientX / window.innerWidth) - 0.5;   // -0.5 .. 0.5
-    var ny = (ev.clientY / window.innerHeight) - 0.5;
+    var nx = (ev.x / window.innerWidth) - 0.5;   // -0.5 .. 0.5
+    var ny = (ev.y / window.innerHeight) - 0.5;
     var layers = document.querySelectorAll('.elaina-bg-layer');
     for (var i = 0; i < layers.length; i++) {
       layers[i].style.transform = 'translate(' + (nx * -PARALLAX).toFixed(1) + 'px,' + (ny * -PARALLAX).toFixed(1) + 'px)';
     }
 
     /* ---- 卡片跟随 ---- */
-    var card = ev.target.closest(CARD_SEL);
+    var card = ev.card;
     if (card !== currentCard) {
       resetTilt(currentTilt);
       currentCard = card;
@@ -63,8 +64,8 @@
 
     var r = card.getBoundingClientRect();
     if (!r.width || !r.height) return;
-    var px = (ev.clientX - r.left) / r.width;    // 0..1
-    var py = (ev.clientY - r.top) / r.height;    // 0..1
+    var px = (ev.x - r.left) / r.width;    // 0..1
+    var py = (ev.y - r.top) / r.height;    // 0..1
 
     /* 光斑坐标 + 珠光角度 */
     card.style.setProperty('--gx', (px * 100).toFixed(1) + '%');
@@ -82,7 +83,9 @@
   }
 
   document.addEventListener('mousemove', function (ev) {
-    lastEvt = ev;
+    // 事件对象在 rAF 回调里访问不可靠，必须在监听器内同步快照
+    var card = ev.target && ev.target.closest ? ev.target.closest(CARD_SEL) : null;
+    lastEvt = { x: ev.clientX, y: ev.clientY, card: card };
     if (!raf) raf = requestAnimationFrame(apply);
   }, { passive: true });
 

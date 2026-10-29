@@ -145,11 +145,33 @@ body .blog-comments-card:hover::after {
 #header-nav,
 #header-nav.elaina-scrolled {
   background: var(--glass-bg-navy) !important;
-  -webkit-backdrop-filter: blur(18px) saturate(var(--glass-saturate));
-  backdrop-filter: blur(18px) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(18px) saturate(var(--glass-saturate)) !important;
+  backdrop-filter: blur(18px) saturate(var(--glass-saturate)) !important;
   border-bottom: 1px solid var(--glass-border-dim);
   box-shadow: var(--glass-shadow);
   transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+/* 顶栏光斑跟随（--gx/--gy 由 glass-light.js 写入）+ 底部珠光线 */
+#header-nav::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), var(--glass-light), transparent 72%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+#header-nav:hover::after { opacity: 1; }
+#header-nav::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: var(--glass-prism);
+  opacity: 0.9;
+  pointer-events: none;
 }
 html:not([data-theme="dark"]) #header-nav .main-nav-link,
 html:not([data-theme="dark"]) #sub-nav .nav-icon {

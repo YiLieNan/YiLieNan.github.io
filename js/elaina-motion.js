@@ -27,7 +27,7 @@
     s.textContent =
       '#elaina-progress{position:fixed;top:0;left:0;width:100%;height:3px;z-index:9999;' +
       'background:linear-gradient(90deg,#a78bfa,#7c3aed);transform:scaleX(0);transform-origin:left;pointer-events:none}' +
-      '#header-nav.elaina-scrolled{box-shadow:0 4px 24px rgba(0,0,0,.18);backdrop-filter:blur(14px)}';
+      '#header-nav.elaina-scrolled{box-shadow:0 4px 24px rgba(0,0,0,.18)}';
     document.head.appendChild(s);
   }
 
