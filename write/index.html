@@ -785,7 +785,7 @@ body {
 <script>
 // ═══════════════════ 配置 ═══════════════════
 var CONFIG = {
-  pwdHash: 'N5qtvn5EtLtpgZC0k3pwvnVS5uzydc8UVKdQoDoWpTg=',
+  pwdHash: 'tO08OPZ1mAUcTw+hRPVGB0B1wo1NzpMDPKee6UV9wyU=',
   repo: '',
   branch: 'main',
   storageKey: { token: 'gh_token', drafts: 'write_drafts', currentDraft: 'current_draft_id', pwdHash: 'custom_pwd_hash', repo: 'custom_repo_name' }
@@ -830,8 +830,7 @@ async function doLogin() {
   var input = document.getElementById('admin-pwd').value;
   var inputHash = await sha256Base64(input);
   // 先检查硬编码密码，再检查 localStorage 中的自定义密码
-  var customHash = localStorage.getItem(CONFIG.storageKey.pwdHash);
-  var valid = inputHash === CONFIG.pwdHash || inputHash === customHash;
+  var valid = inputHash === CONFIG.pwdHash;
   if (valid) {
     document.getElementById('login-box').style.display = 'none';
     document.getElementById('editor-app').style.display = 'block';
@@ -912,11 +911,8 @@ async function changePassword() {
     statusEl.textContent = '⚠️ 两次输入不一致'; statusEl.style.color = '#ef4444'; return;
   }
 
-  var hash = await sha256Base64(pwd);
-  CONFIG.pwdHash = hash;
-  localStorage.setItem(CONFIG.storageKey.pwdHash, hash);
-  statusEl.innerHTML = '✅ 已修改！新密码已生效。<br><small style="color:#999">请牢记新密码！</small>';
-  statusEl.style.color = '#059669';
+  statusEl.innerHTML = '⚠️ 纯静态站点不支持前端改密（安全升级已移除该能力）。<br><small style="color:#999">如需改密请联系站长更新部署。</small>';
+  statusEl.style.color = '#d97706';
   document.getElementById('settings-new-pwd').value = '';
   document.getElementById('settings-confirm-pwd').value = '';
 }
