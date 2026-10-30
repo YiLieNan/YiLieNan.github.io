@@ -358,9 +358,13 @@ return url;
 }
 
 function escapeHtml(str) {
-var div = document.createElement('div');
-div.textContent = str;
-return div.innerHTML;
+// 安全修复(S3)：在 HTML 实体转义基础上补逃引号，防止属性注入
+return String(str == null ? '' : str)
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;')
+  .replace(/'/g, '&#39;');
 }
 
 fetch('/friend/data.json')

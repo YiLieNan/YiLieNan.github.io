@@ -91,12 +91,14 @@
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
     hits.slice(start, end).forEach((hit) => {
-      searchResult.insertAdjacentHTML(
-        "beforeend",
-        `<a href="${hit.url}" class="reimu-hit-item-link" title="${
-          hit.title || ""
-        }">${hit.title}</a>`
-      );
+      // 安全修复(S1，渗透报告 4.5.4)：DOM 构建 + textContent 转义，杜绝 insertAdjacentHTML 注入
+      const link = document.createElement("a");
+      link.className = "reimu-hit-item-link";
+      const rawUrl = String(hit.url || "#");
+      link.setAttribute("href", /^(https?:\/\/|\/)/i.test(rawUrl) ? rawUrl : "#");
+      link.title = String(hit.title || "");
+      link.textContent = String(hit.title || "");
+      searchResult.appendChild(link);
     });
   }
 

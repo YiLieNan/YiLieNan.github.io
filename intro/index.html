@@ -361,12 +361,17 @@ document.getElementById('intro-desc').textContent = d.description || '';
 var linksHtml = '';
 if (d.links && d.links.length) {
 d.links.forEach(function(l) {
-linksHtml += '<a href="' + l.url + '" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:#fce8e8;color:#d63031;text-decoration:none;font-size:14px">' + esc(l.label) + '</a>';
+linksHtml += '<a href="' + safeUrl(l.url) + '" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:10px;background:#fce8e8;color:#d63031;text-decoration:none;font-size:14px">' + esc(l.label) + '</a>';
 });
 }
 document.getElementById('intro-links').innerHTML = linksHtml;
 })
 .catch(function() { /* 保留默认显示 */ });
+function safeUrl(u) {
+  // 安全修复(S4)：链接白名单，只允许 http(s)，其余丢弃
+  var s = String(u == null ? '' : u);
+  return /^https?:\/\//i.test(s) ? s.replace(/"/g, '%22').replace(/'/g, '%27') : '#';
+}
 function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 </script>
 
