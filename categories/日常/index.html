@@ -12,7 +12,6 @@
     目录: 日常 | YiLieNan の 小屋
   </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="preload" as="style" href="/css/gfonts.css" onload="this.rel='stylesheet'" crossorigin>
     <link rel="preload" href="//at.alicdn.com/t/c/font_4552607_ex15nbittbh.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     
 <link rel="stylesheet" href="/css/loader.css">
@@ -153,12 +152,8 @@
 </div>
 <header id="header" aria-label="Site header">
       <picture>
-              <source media="(max-width: 479px)" srcset="/images/banner-600w.webp">
-              <source media="(max-width: 799px)" srcset="/images/banner-800w.webp">
-              <source media="(min-width: 800px)" srcset="/images/banner.webp">
-          <img  fetchpriority="high" src="/images/elaina-banner-desktop.webp" alt="">
       </picture>
-        <img alt="" style="visibility: hidden;">
+        <img  fetchpriority="high" src="/images/blank.webp" alt="">
   <div id="header-outer">
     <div id="header-title">
           <span id="logo">
@@ -330,25 +325,10 @@
       <a class="archives-tag-list-link" href="/tags/%E6%9D%82%E8%B0%88/">杂谈</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Hexo/">Hexo</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
       <a class="archives-tag-list-link" href="/tags/%E6%95%99%E7%A8%8B/">教程</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/">配置教程</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Hermes-Agent/">Hermes Agent</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
       <a class="archives-tag-list-link" href="/tags/AI/">AI</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/DeepSeek/">DeepSeek</a>
-    </div>
-    <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/Windows/">Windows</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
       <a class="archives-tag-list-link" href="/tags/%E5%89%8D%E7%AB%AF/">前端</a>
@@ -363,6 +343,12 @@
       <a class="archives-tag-list-link" href="/tags/%E7%BC%96%E7%A8%8B/">编程</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
+      <a class="archives-tag-list-link" href="/tags/Hexo/">Hexo</a>
+    </div>
+    <div class="archives-tag-list-item" data-aos="zoom-in">
+      <a class="archives-tag-list-link" href="/tags/%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/">配置教程</a>
+    </div>
+    <div class="archives-tag-list-item" data-aos="zoom-in">
       <a class="archives-tag-list-link" href="/tags/%E4%B8%80%E7%94%9F%E4%B8%80%E8%8A%AF/">一生一芯</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
@@ -372,13 +358,22 @@
       <a class="archives-tag-list-link" href="/tags/%E5%B7%A5%E5%85%B7/">工具</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
-      <a class="archives-tag-list-link" href="/tags/%E6%9C%BA%E6%A2%B0%E8%AE%BE%E8%AE%A1/">机械设计</a>
+      <a class="archives-tag-list-link" href="/tags/Hermes-Agent/">Hermes Agent</a>
+    </div>
+    <div class="archives-tag-list-item" data-aos="zoom-in">
+      <a class="archives-tag-list-link" href="/tags/DeepSeek/">DeepSeek</a>
+    </div>
+    <div class="archives-tag-list-item" data-aos="zoom-in">
+      <a class="archives-tag-list-link" href="/tags/Windows/">Windows</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
       <a class="archives-tag-list-link" href="/tags/%E5%9B%BA%E4%BD%93%E7%89%A9%E7%90%86/">固体物理</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
       <a class="archives-tag-list-link" href="/tags/Node-js/">Node.js</a>
+    </div>
+    <div class="archives-tag-list-item" data-aos="zoom-in">
+      <a class="archives-tag-list-link" href="/tags/%E6%9C%BA%E6%A2%B0%E8%AE%BE%E8%AE%A1/">机械设计</a>
     </div>
     <div class="archives-tag-list-item" data-aos="zoom-in">
       <a class="archives-tag-list-link" href="/tags/%E7%94%B5%E8%B7%AF/">电路</a>
@@ -703,5 +698,5 @@
 
 
       <script src="/js/player-drag.js?v=1784550620"></script><script src="/js/mobile-optimize.js?v=1784550620"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author");if(a){a.style.cursor="pointer";a.addEventListener("click",function(){location.href="/intro"})}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script><script src="/js/blog-comments.js?v=1784550620" defer></script><script src="/js/spherical-player.js?v=1784550620" defer></script><script src="/lib/gsap/gsap.min.js" defer></script><script src="/lib/gsap/ScrollTrigger.min.js" defer></script><script src="/js/elaina-motion.js?v=20261029" defer></script><script src="/js/glass-light.js?v=20261033" defer></script>
-  <!-- hexo injector body_end start --><script src="/js/elaina-bg.js?v=20261029"></script><script>(function(){var t0=Date.now();function fsHide(){var l=document.getElementById("loader");if(!l)return;l.classList.add("loading");if(Date.now()-t0>5000){var s=document.createElement("style");s.textContent="#loader{display:none!important}";document.head.appendChild(s);}}if(document.readyState==="complete"){setTimeout(fsHide,1200)}else{window.addEventListener("load",function(){setTimeout(fsHide,600)});setTimeout(fsHide,3500)}})();</script><!-- hexo injector body_end end --></body>
+  <!-- hexo injector body_end start --><script src="/js/elaina-bg.js?v=20261111"></script><script>(function(){var t0=Date.now();function fsHide(){var l=document.getElementById("loader");if(!l)return;l.classList.add("loading");if(Date.now()-t0>5000){var s=document.createElement("style");s.textContent="#loader{display:none!important}";document.head.appendChild(s);}}if(document.readyState==="complete"){setTimeout(fsHide,1200)}else{window.addEventListener("load",function(){setTimeout(fsHide,600)});setTimeout(fsHide,3500)}})();</script><!-- hexo injector body_end end --></body>
   </html>

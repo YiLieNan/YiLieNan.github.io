@@ -2,7 +2,6 @@
  * Copyright (c) 2018 GitHub Inc.
  * https://github.com/primer/primitives/blob/main/LICENSE
  */
-@import url("/css/gfonts.css");
 main {
   --red-0: #ff0000;
   --red-1: #ff5252;
@@ -108,7 +107,7 @@ main .gsc-loading-image {
 }
 main {
   cursor: var(--cursor-default);
-  font-family: 'undefined',  '-apple-system','PingFang SC','Microsoft YaHei','sans-serif';
+  font-family: '-apple-system','PingFang SC','Microsoft YaHei','sans-serif';
 }
 a,
 button {
