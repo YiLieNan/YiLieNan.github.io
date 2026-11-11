@@ -12,6 +12,12 @@
   const baseUrl = window.REIMU_CONFIG?.relative;
   const searchUrl = baseUrl ? `${baseUrl}search.json`
     : "/search.json";
+  let _searchData = null;
+  let _searchLoading = false;
+  // 性能优化：搜索数据懒加载——点开搜索时才拉 search.json（首屏省 26KB）
+  function loadSearchData() {
+  if (_searchData || _searchLoading) return;
+  _searchLoading = true;
   fetch(searchUrl)
     .then((response) => {
       if (!response.ok) {
@@ -20,6 +26,7 @@
       return response.json();
     })
     .then((data) => {
+        _searchData = data;
       _$("#search-form")
         .off("submit")
         .on("submit", (event) => {
@@ -85,6 +92,7 @@
         error
       );
     });
+  }
 
   function displayHits(hits, page, itemsPerPage) {
     searchResult.innerHTML = "";
@@ -112,6 +120,7 @@
       _$("#header-nav").style.marginRight = scrollWidth + "px";
       const popup = _$(".popup");
       popup.classList.add("show");
+      loadSearchData();
       _$("#mask").classList.remove("hide");
       document.body.style.overflow = "hidden";
       setTimeout(() => {
