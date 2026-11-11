@@ -154,8 +154,12 @@
 </div>
 <header id="header" aria-label="Site header">
         <picture>
+                <source media="(max-width: 479px)" srcset="/images/banner-600w.webp">
+                <source media="(max-width: 799px)" srcset="/images/banner-800w.webp">
+                <source media="(min-width: 800px)" srcset="/images/banner.webp">
+            <img  fetchpriority="high" src="/images/elaina-banner-desktop.webp" alt="帮朋友写了个齿轮参数计算器">
         </picture>
-          <img  fetchpriority="high" src="/images/blank.webp" alt="帮朋友写了个齿轮参数计算器">
+          <img alt="帮朋友写了个齿轮参数计算器" style="visibility: hidden;">
   <div id="header-outer">
     <div id="header-title">
           <span id="logo">
@@ -589,7 +593,7 @@
           stripContent: "朋友学机械的，需要一个齿轮参数计算工具。花了一个周末帮他撸了一个，放在 GitHub Pages 上直接用。   地址👉 https://zhuxueqi469.github.io/gear-calculator/ 功能 基本参数计算：输入模数、齿数、分度圆直径中任意两个，自动算第三个。支持可调压力角（14.5°&amp;#x2F;20°&amp;#x2F;25°）、齿顶高系数、变位系数 啮合分析：计算中心距、传动比、重合度、滑动率，带动态啮合动画 强度校核：基于 GB&amp;#x2F;T 3480 校核齿面接触强",
           date: "Mon Jun 08 2026 21:58:52 GMT+0800",
           updated: "Mon Jun 08 2026 22:01:49 GMT+0800",
-          cover: "/images/blank.webp",
+          cover: "/images/elaina-banner-desktop.webp",
         };
       </script>
         
@@ -655,6 +659,6 @@
 
 
 
-      <script src="/js/player-drag.js?v=1784550620"></script><script src="/js/mobile-optimize.js?v=1784550620"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author");if(a){a.style.cursor="pointer";a.addEventListener("click",function(){location.href="/intro"})}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script><script src="/js/blog-comments.js?v=1784550620" defer></script><script src="/js/spherical-player.js?v=1784550620" defer></script><script src="/lib/gsap/gsap.min.js" defer></script><script src="/lib/gsap/ScrollTrigger.min.js" defer></script><script src="/js/elaina-motion.js?v=20261029" defer></script><script src="/js/glass-light.js?v=20261033" defer></script>
+      <script src="/js/player-drag.js?v=1784550620"></script><script src="/js/mobile-optimize.js?v=1784550620"></script><script>function bindAvatar(){var a=document.querySelector(".sidebar-author");if(a){a.style.cursor="pointer";a.addEventListener("click",function(){location.href="/intro"})}}document.addEventListener("DOMContentLoaded",bindAvatar);document.addEventListener("pjax:complete",bindAvatar);</script><script src="/js/blog-comments.js?v=1784550620" defer></script><script src="/js/spherical-player.js?v=1784550620" defer></script><script src="/lib/gsap/gsap.min.js" defer></script><script src="/lib/gsap/ScrollTrigger.min.js" defer></script><script src="/js/elaina-motion.js?v=20261029" defer></script><script src="/js/glass-light.js?v=20261112" defer></script>
   <!-- hexo injector body_end start --><script src="/js/elaina-bg.js?v=20261111"></script><script>(function(){var t0=Date.now();function fsHide(){var l=document.getElementById("loader");if(!l)return;l.classList.add("loading");if(Date.now()-t0>5000){var s=document.createElement("style");s.textContent="#loader{display:none!important}";document.head.appendChild(s);}}if(document.readyState==="complete"){setTimeout(fsHide,1200)}else{window.addEventListener("load",function(){setTimeout(fsHide,600)});setTimeout(fsHide,3500)}})();</script><!-- hexo injector body_end end --></body>
   </html>

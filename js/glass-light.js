@@ -18,6 +18,7 @@
   var MAX_TILT = 3.2;            // 最大倾斜角度(deg)，克制才高级
   var PARALLAX = 7;              // 背景视差最大位移(px)
 
+  window.__glassLightReady = true; // 诊断标记：脚本已执行
   var currentCard = null;        // 当前悬停的玻璃卡
   var currentTilt = null;        // 实际应用 transform 的元素（外层容器或自身）
   var lastEvt = null;
@@ -26,8 +27,10 @@
   /* 倾斜目标：优先外层容器（内层有 AOS transform，直接改会打架） */
   function tiltTarget(el) {
     if (el.id === 'header-nav') return null; // 导航只做光效，不倾斜
-    /* 大卡片保持静止（只留光斑），倾斜只给小卡片 */
-    if (el.matches('.post-wrap') || el.matches('.article-inner') || el.matches('.blog-comments-card')) return null;
+    /* 文章大卡恢复 3D 倾斜（11-11 用户要求恢复），加在外层容器上避开 AOS 的 transform */
+    if (el.matches('.post-wrap')) return el.parentElement || el;
+    if (el.matches('.article-inner')) return el.closest('article') || el;
+    if (el.matches('.blog-comments-card')) return null; // 评论区保持不倾斜
     if (el.matches('.widget-wrap')) return el.closest('.widget-wrapper') || el;
     if (el.matches('.sidebar-wrap')) return el.closest('.sidebar-wrapper') || el;
     return el; // 工具箱小卡片：自身倾斜
