@@ -17,7 +17,7 @@
   }
 
   var playOrder=shuffle(bgList)  // 乱序播放顺序
-  var interval=12000  // 性能：8s->12s，降低带宽占用,fade=800,prefetched={}
+  var interval=12000,fade=800,prefetched={}  // 性能：切换间隔 8s->12s
 
   // 滑动窗口预取：只提前缓存"下一张+再下一张"，不做全量 20MB 后台下载
   function prefetchAhead(orders,i){
