@@ -17,7 +17,7 @@
   }
 
   var playOrder=shuffle(bgList)  // 乱序播放顺序
-  var interval=12000,fade=800,prefetched={}  // 性能：切换间隔 8s->12s
+  var interval=12000,fade=1400,prefetched={}  // 性能：切换间隔 8s->12s
 
   // 滑动窗口预取：只提前缓存"下一张+再下一张"，不做全量 20MB 后台下载
   function prefetchAhead(orders,i){
@@ -76,9 +76,15 @@
         prefetched={}
         prefetchAhead(playOrder,0)
       }
-      // 非活跃层换图然后淡入
+      // 非活跃层换图然后柔滑淡入（带微缩放 = "推近"感）
       inactive.style.backgroundImage='url('+playOrder[curIdx]+')'
+      inactive.style.transform='scale(1.04)'
+      inactive.style.transition='opacity '+fade+'ms cubic-bezier(0.4,0,0.2,1), transform '+fade+'ms cubic-bezier(0.4,0,0.2,1)'
+      // 强制 reflow 让 transform 起点生效
+      void inactive.offsetWidth
       inactive.style.opacity='1'
+      inactive.style.transform='scale(1)'
+      active.style.transition='opacity '+fade+'ms cubic-bezier(0.4,0,0.2,1)'
       active.style.opacity='0'
       // 交换引用
       var tmp=active;active=inactive;inactive=tmp

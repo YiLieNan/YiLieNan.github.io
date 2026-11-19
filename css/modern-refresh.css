@@ -85,15 +85,18 @@ html[data-theme="dark"] {
   transition: opacity 0.8s ease 0.3s;
 }
 
-/* ---------- 5. Mesh 渐变层 ---------- */
-.elaina-mesh-layer {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  mix-blend-mode: overlay;
-  opacity: 0.5;
+
+
+/* ---------- 6. Banner Ken Burns（头图缓慢推拉，让静态图"活"起来） ---------- */
+@keyframes banner-kenburns {
+  0%   { transform: scale(1) translate(0, 0); }
+  50%  { transform: scale(1.06) translate(-1%, 0.5%); }
+  100% { transform: scale(1) translate(0, 0); }
 }
-@media (max-width: 768px) {
-  .elaina-mesh-layer { opacity: 0.3; }
+#header img {
+  animation: banner-kenburns 30s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  #header img { animation: none; }
 }
