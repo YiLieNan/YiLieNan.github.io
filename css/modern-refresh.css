@@ -100,9 +100,22 @@ html[data-theme="dark"] {
   translate: 0 var(--header-parallax, 0px);
   transition: translate 0.1s linear;
   will-change: translate;
-  /* 补回底部渐隐（scale 放大后原 mask 50% 被推出可视区，收到 35% 抵消） */
-  -webkit-mask: linear-gradient(to top, transparent, #fff 35%);
-  mask: linear-gradient(to top, transparent, #fff 35%);
+}
+
+/* 6a-2. 底部渐隐覆盖：头图底部柔滑过渡到内容区（不受 img scale 影响） */
+#header::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--color-background, rgba(238,238,238,0.9)));
+}
+html[data-theme="dark"] #header::before {
+  background: linear-gradient(to bottom, transparent, #21252b);
 }
 
 /* 6b. 光泽扫过：柔光从左到右缓缓掠过（8 秒一次） */
