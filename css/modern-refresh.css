@@ -87,16 +87,60 @@ html[data-theme="dark"] {
 
 
 
-/* ---------- 6. Banner Ken Burns（头图缓慢推拉，让静态图"活"起来） ---------- */
-@keyframes banner-kenburns {
-  0%   { transform: scale(1) translate(0, 0); }
-  50%  { transform: scale(1.06) translate(-1%, 0.5%); }
-  100% { transform: scale(1) translate(0, 0); }
+/* ---------- 6. 头图动感三件套：视差 + 光泽扫过 + Ken Burns ---------- */
+
+/* 6a. 视差滚动：头图比内容慢，往下滑时图"后退"产生深度 */
+#header {
+  position: relative;
+  overflow: hidden;
 }
 #header img {
-  animation: banner-kenburns 30s ease-in-out infinite;
-  will-change: transform;
+  /* 底层缩放留余量，视差平移时不会露边 */
+  scale: 1.15;
+  translate: 0 var(--header-parallax, 0px);
+  transition: translate 0.1s linear;
+  will-change: translate;
 }
+
+/* 6b. 光泽扫过：柔光从左到右缓缓掠过（8 秒一次） */
+#header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255,255,255,0.06) 42%,
+    rgba(255,255,255,0.14) 50%,
+    rgba(255,255,255,0.06) 58%,
+    transparent 70%
+  );
+  background-size: 250% 100%;
+  animation: banner-sheen 8s ease-in-out infinite;
+}
+@keyframes banner-sheen {
+  0%   { background-position: -120% 0; }
+  40%  { background-position: 120% 0; }
+  100% { background-position: 120% 0; }
+}
+
+/* 6c. Ken Burns：极缓推拉（跟视差叠加，不冲突——KB 动 scale，视差动 translate） */
+@keyframes banner-kenburns {
+  0%   { scale: 1.15; }
+  50%  { scale: 1.20; }
+  100% { scale: 1.15; }
+}
+#header img {
+  animation: banner-kenburns 25s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  #header img { animation: none; }
+  #header img { animation: none; scale: 1.15; }
+  #header::after { animation: none; opacity: 0; }
+}
+/* 手机端关光泽（省电） */
+@media (max-width: 768px) {
+  #header::after { animation: none; opacity: 0; }
 }
