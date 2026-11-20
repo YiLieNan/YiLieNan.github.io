@@ -88,24 +88,31 @@ html[data-theme="dark"] {
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  /* 渐变：下半部渐浓到容器色 */
   background: linear-gradient(to bottom,
     transparent 0%,
     transparent 35%,
-    rgba(255,255,255,0.03) 50%,
-    rgba(255,255,255,0.10) 65%,
-    rgba(255,255,255,0.22) 80%,
-    rgba(255,255,255,0.35) 92%,
+    rgba(255,255,255,0.06) 52%,
+    rgba(255,255,255,0.16) 68%,
+    rgba(255,255,255,0.28) 82%,
+    rgba(255,255,255,0.38) 94%,
     rgba(255,255,255,0.42) 100%
   );
+  /* 雾化：下半部模糊头图（衔接处的图像突变被 blur 柔化） */
+  -webkit-backdrop-filter: blur(0px) blur(16px);
+  backdrop-filter: blur(0px) blur(16px);
+  /* mask 让 blur+渐变只在下半部生效（上半部完全不影响头图清晰度） */
+  -webkit-mask: linear-gradient(to bottom, transparent 38%, black 65%);
+  mask: linear-gradient(to bottom, transparent 38%, black 65%);
 }
 html[data-theme="dark"] #header::after {
   background: linear-gradient(to bottom,
     transparent 0%,
     transparent 35%,
-    rgba(20,22,28,0.04) 50%,
-    rgba(20,22,28,0.12) 65%,
-    rgba(20,22,28,0.25) 80%,
-    rgba(20,22,28,0.40) 92%,
+    rgba(20,22,28,0.08) 52%,
+    rgba(20,22,28,0.18) 68%,
+    rgba(20,22,28,0.30) 82%,
+    rgba(20,22,28,0.42) 94%,
     rgba(20,22,28,0.50) 100%
   );
 }
