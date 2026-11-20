@@ -85,17 +85,22 @@ html[data-theme="dark"] {
 #header::after {
   content: "";
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 180%; /* 跟头图 img 的 180% 一致，盖住图片全部显示区域 */
   z-index: -1;
   pointer-events: none;
-  /* 渐变：下半部渐浓到容器色 */
+  /* 渐变：0% 透明 → 55%(≈header底边) 开始加浓 → 80% 接近容器色 → 100% 完全浓
+     保证图片底边处浓度已足够高，分界线被"浓雾"盖住 */
   background: linear-gradient(to bottom,
     transparent 0%,
-    transparent 35%,
-    rgba(255,255,255,0.06) 52%,
-    rgba(255,255,255,0.16) 68%,
-    rgba(255,255,255,0.28) 82%,
-    rgba(255,255,255,0.38) 94%,
+    transparent 28%,
+    rgba(255,255,255,0.03) 42%,
+    rgba(255,255,255,0.10) 52%,
+    rgba(255,255,255,0.20) 60%,
+    rgba(255,255,255,0.30) 70%,
+    rgba(255,255,255,0.38) 80%,
     rgba(255,255,255,0.42) 100%
   );
 }
