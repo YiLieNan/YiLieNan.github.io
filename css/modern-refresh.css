@@ -77,23 +77,37 @@ html[data-theme="dark"] {
   letter-spacing: 0.01em;
 }
 
-/* ---------- 3.5 头图底部渐隐过渡（补回"雾感"，不改变全局容器透明度） ---------- */
-/* 原理：头图 z=-2，内容 z>0，这层 z=-1 夹在中间。
-   用跟 #container 同色的半透明渐变，从头图底部开始渐浓，
-   视觉上重现"图消融入雾"的效果。 */
+/* ---------- 3.5 头图全程渐隐（无接缝，从头图顶部开始极缓加浓） ---------- */
+/* 原理：整层覆盖 #header（z=-1，夹在 img 和内容之间），
+   顶部完全透明 → 底部渐浓到容器色。
+   渐变曲线用多个停靠点保证"没有起点感"，视觉上是
+   头图从上到下自然"溶入雾中"。 */
 #header::after {
   content: "";
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.42));
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    transparent 35%,
+    rgba(255,255,255,0.03) 50%,
+    rgba(255,255,255,0.10) 65%,
+    rgba(255,255,255,0.22) 80%,
+    rgba(255,255,255,0.35) 92%,
+    rgba(255,255,255,0.42) 100%
+  );
 }
 html[data-theme="dark"] #header::after {
-  background: linear-gradient(to bottom, transparent, rgba(20,22,28,0.55));
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    transparent 35%,
+    rgba(20,22,28,0.04) 50%,
+    rgba(20,22,28,0.12) 65%,
+    rgba(20,22,28,0.25) 80%,
+    rgba(20,22,28,0.40) 92%,
+    rgba(20,22,28,0.50) 100%
+  );
 }
 
 /* ---------- 4. 打字机标题 ---------- */
