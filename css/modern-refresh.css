@@ -98,12 +98,6 @@ html[data-theme="dark"] {
     rgba(255,255,255,0.38) 94%,
     rgba(255,255,255,0.42) 100%
   );
-  /* 雾化：下半部模糊头图（衔接处的图像突变被 blur 柔化） */
-  -webkit-backdrop-filter: blur(0px) blur(16px);
-  backdrop-filter: blur(0px) blur(16px);
-  /* mask 让 blur+渐变只在下半部生效（上半部完全不影响头图清晰度） */
-  -webkit-mask: linear-gradient(to bottom, transparent 38%, black 65%);
-  mask: linear-gradient(to bottom, transparent 38%, black 65%);
 }
 html[data-theme="dark"] #header::after {
   background: linear-gradient(to bottom,
